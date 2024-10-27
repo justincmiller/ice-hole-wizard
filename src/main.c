@@ -1,6 +1,12 @@
-#include <stdio.h>
+#include <cave_wizard.h>
 
-int main(int argc, char argv[])
+int main(void)
 {
-    return 0;
+    while (status(GET) != QUIT)
+    {
+        update();
+        render();
+    }
+
+    return EXIT_SUCCESS;
 }
