@@ -44,7 +44,7 @@ void update()
 
 void render()
 {
-    
+
 }
 
 void cursorKey(const char key)

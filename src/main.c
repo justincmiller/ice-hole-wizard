@@ -2,6 +2,7 @@
 
 int main(void)
 {
+    Instance ins;
     while (status(GET) != QUIT)
     {
         update();

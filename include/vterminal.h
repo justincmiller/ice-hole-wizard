@@ -27,4 +27,12 @@ enum keyCodes
     END = 'F'
 };
 
+typedef struct Instance
+{
+    HANDLE hd;
+    int top, left, width, height;
+}Instance;
+
+void init(Instance* ins);
+
 #endif
