@@ -8,6 +8,6 @@ int main(void)
         update();
         render();
     }
-
+//i edited this
     return EXIT_SUCCESS;
 }
