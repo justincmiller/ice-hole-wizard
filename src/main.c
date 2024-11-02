@@ -1,12 +1,13 @@
+//cave_wizard header includes program operation code
 #include <cave_wizard.h>
 
 int main(void)
 {
-    init();
+    init(); //initializes the console setup
 
-    while (getState() != QUIT)
+    while (getState() != QUIT) //while the quit state is not triggered continuously call update
     {
-        update();
+        update(); //updates program based on keyboard input
     }
 
     return EXIT_SUCCESS;
