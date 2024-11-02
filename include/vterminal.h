@@ -10,6 +10,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #define CSI "\x1B["
+#define CUU(n)      printf(CSI "%dA", (n)); //cursor up by n
+#define CUD(n)      printf(CSI "%dB", (n)); //cursor down by n
+#define CUF(n)      printf(CSI "%dC", (n)); //cursor forward by n
+#define CUB(n)      printf(CSI "%dD", (n)); //cursor backward by n
+#define CUP(x,y)    printf(CSI "%d;%dH", (y), (x)); //cursor position
+
 
 enum keyCodes
 {
@@ -26,7 +32,5 @@ enum keyCodes
     HOME = 'H',
     END = 'F'
 };
-
-void init();
 
 #endif
