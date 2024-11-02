@@ -189,19 +189,19 @@ void draw(const char key)
 {
     switch (key)
     {
-        case ARROW_UP:
+        case ARROW_UP: //draws map in the positive latitude direction 1 unit
             break;
-        case ARROW_DOWN:
+        case ARROW_DOWN: //draws map in the negative latitude direction 1 unit
             break;
-        case ARROW_RIGHT:
+        case ARROW_RIGHT: //draws map in the positive longitude direction 1 unit
             break;
-        case ARROW_LEFT:
+        case ARROW_LEFT: //draws map in the negaite longitude direction 1 unit
             break;
-        case HOME:
+        case HOME: //moves to map layer 0
             break;
-        case END:
+        case END: //move to the last map layer created
             break;
-        default:
+        default: //handles unforseen input
             break;
     }
 }
