@@ -1,70 +1,82 @@
 #include "cave_wizard.h"
 
+//initializes the console with screen buffer and window settings
 void init()
 {
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    COORD buffer = {100, 100};
-    SMALL_RECT window;
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE); //handle to console's standard output
+    CONSOLE_SCREEN_BUFFER_INFO info; //structure to hold buffer information
+    COORD buffer = {100, 100}; //console screen buffer size
+    SMALL_RECT window; //defines the area for the console window
     int width, height;
 
-    GetConsoleScreenBufferInfo(console, &info);
-    width = info.srWindow.Right - info.srWindow.Left + 1;
-    height = info.srWindow.Bottom - info.srWindow.Top + 1;
-    window.Left = (buffer.X - width)/2;
+    GetConsoleScreenBufferInfo(console, &info); //get current console screen buffer information
+    width = info.srWindow.Right - info.srWindow.Left + 1; //calculate current window width
+    height = info.srWindow.Bottom - info.srWindow.Top + 1; //calculate current window height
+    
+    //center the new window in the buffer 
+    window.Left = (buffer.X - width)/2; 
     window.Top = (buffer.Y - height)/2;
     window.Right = (window.Left + width);
     window.Bottom = (window.Top + height);
 
+    //set console screen buffer to the desired size
     SetConsoleScreenBufferSize(console, buffer);
+
+    //adjust the console to the new centered window
     SetConsoleWindowInfo(console, TRUE, &window);
 }
 
+//manages state data and viewport data
 void wizard(const int action, void* data)
 {
+    //static variables to retain stat and viewport between function calls
     static int state;
     static SMALL_RECT viewport;
 
+    //determine action based on the input parameter
     switch (action)
     {
-        case GET_STATE:
+        case GET_STATE: //retrieve current state
             *(int*)data = state;
             return;
-        case SET_STATE:
+        case SET_STATE: //update state
             state = *(int*)data;
             return;
-        case GET_VIEW:
+        case GET_VIEW: //retrieve current viewport
             *(SMALL_RECT*)data = viewport;
             return;
-        case SET_VIEW:
+        case SET_VIEW: //update viewport
             viewport = *(SMALL_RECT*)data;
             return;
-        default:
+        default: //incase of unexpected input
             return;
     }
 }
 
+//get current state using the wizard function
 int getState()
 {
     int state = 0;
-    wizard(GET_STATE, &state);
+    wizard(GET_STATE, &state); //called with get_state to retrieve current state
     return state;
 }
 
+//sets new state using the wizard function
 void setState(const int state)
 {
-    wizard(SET_STATE, &state);
+    wizard(SET_STATE, &state); //called with set_state to update the state
 }
 
+//toggles the current state between move and draw modes
 void toggleState()
 {
     if (getState() == MOVE)
     {
-        setState(DRAW);
+        setState(DRAW); //if in move state, set to draw
     }
     else if (getState() == DRAW)
     {
-        setState(MOVE);
+        setState(MOVE); //if in draw, set to move state
     }
 }
 
@@ -92,10 +104,13 @@ char pollWindow()
     return 0;
 }*/
 
+//updates program state based on user input
 void update()
 {
+    //check if key has been pressed
     if (_kbhit() == 0) return;
     
+    //if a key was pressed, get key character
     char key = (char)_getch();
 
     //update as necessary for addtional alphanumeric entries
@@ -103,8 +118,9 @@ void update()
     {
         //edit cell properties
     }
-    else if (key == ESC && (char)_getch() == '[')
+    else if (key == ESC && (char)_getch() == '[') //check for escape sequence for special keys
     {
+        //get the next character to feed into the switch case
         key = (char)_getch();
 
         switch (key)
@@ -115,41 +131,43 @@ void update()
             case ARROW_LEFT:
             case HOME:
             case END:
-                if (getState() == MOVE) move(key);
-                else if (getState() == DRAW) draw(key);
+                if (getState() == MOVE) move(key); //move cursor if in move state
+                else if (getState() == DRAW) draw(key); //draw if in draw state
                 break;
             default:
-                parseKey(key);
+                parseKey(key); //if input was not an arrow or movement key
                 break;
         }
     }
 }
 
+//renders the console
 void render()
 {
-
+    //functionality to be defined as needed
 }
 
+//handles cursor movement in move state
 void move(const char key)
 {
     switch (key)
     {
-        case ARROW_UP:
+        case ARROW_UP: //moves cursor up by 1 unit
             CUU(1);
             break;
-        case ARROW_DOWN:
+        case ARROW_DOWN: //moves cursor down by 1 unit
             CUD(1);
             break;
-        case ARROW_RIGHT:
+        case ARROW_RIGHT: //moves cursor right by 1 unit
             CUF(1);
             break;
-        case ARROW_LEFT:
+        case ARROW_LEFT: //moves cursor left by 1 unit
             CUB(1);
             break;
-        case HOME:
+        case HOME: //sets cursor to position 1,1
             
             break;
-        case END:
+        case END: //sets state to QUIT
             setState(QUIT);
             return;
         default:
@@ -157,6 +175,7 @@ void move(const char key)
     }
 }
 
+//handles drawing operations in draw state
 void draw(const char key)
 {
     switch (key)
@@ -178,6 +197,7 @@ void draw(const char key)
     }
 }
 
+//parses additional key inputs, used for control commands
 void parseKey(const char key)
 {
     switch (key)
