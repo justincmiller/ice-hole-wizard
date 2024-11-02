@@ -3,12 +3,13 @@
 //initializes the console with screen buffer and window settings
 void init()
 {
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    COORD buffer = {100, 100};
-    SMALL_RECT window;
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE); //handle to the console's standard output
+    CONSOLE_SCREEN_BUFFER_INFO info; //structure to hold information about the console screen buffer
+    COORD buffer = {100, 100}; //console screen buffer size
+    SMALL_RECT window; //defines area for console window
     int width, height;
 
+    //
     if (!(GetConsoleScreenBufferInfo(output, &info)))
     {
         printf(">> Error: unable to get console screen buffer info.\n");
