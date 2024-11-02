@@ -192,36 +192,31 @@ void draw(const char key)
     {
         case ARROW_UP: //draws map in the positive latitude direction 1 unit
             CUU(1);
-
-            EAM;
+            _putch('x'); //vertical line
             break;
         case ARROW_DOWN: //draws map in the negative latitude direction 1 unit
             CUD(1);
-
-            EAM;
+            _putch('x');
             break;
         case ARROW_RIGHT: //draws map in the positive longitude direction 1 unit
             CUF(1);
-
-            EAM;
+            _putch('q'); //horizontal line
             break;
         case ARROW_LEFT: //draws map in the negaite longitude direction 1 unit
             CUB(1);
-
-            EAM;
+            _putch('q');
             break;
         case HOME: //moves to map layer 0
-            EAM;
-
+            CUP(0, 0);
             break;
         case END: //move to the last map layer created
-            EAM;
-
+            //?
             break;
         default: //handles unforseen input
-            EAM;
             break;
     }
+
+    EAM; //enables ASCII Mode
 }
 
 //parses additional key inputs, used for control commands
