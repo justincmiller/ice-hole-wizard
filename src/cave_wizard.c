@@ -35,21 +35,25 @@ void init()
     window.Right = width - 1;
     window.Bottom = height - 1;
 
-    //sets the console screen buffer size
+    //sets the console window size
     if (!(SetConsoleWindowInfo(output, TRUE, &window)))
     {
+        //print error if it fails
         printf(">> Error: unable to set console window size. Error code: %lu\n", GetLastError());
-        setState(QUIT);
+        setState(QUIT); //exits program
         return;
     }
 
+    //sets the console screen buffer size
     if (!(SetConsoleScreenBufferSize(output, buffer)))
     {
+        //print error if it fails
         printf(">> Error: unable to set console buffer size. Error code: %lu\n", GetLastError());
-        setState(QUIT);
+        setState(QUIT); //exits program
         return;
     }
 
+    //set the screen buffer size and window position for the console
     SetConsoleScreenBufferSize(console, buffer);
     SetConsoleWindowInfo(console, TRUE, &window);
 }
