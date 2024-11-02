@@ -3,8 +3,10 @@
 
 #include "vterminal.h"
 
-#define XPOS(col) (col - 50)
-#define YPOS(row) (row - 50)
+#define GET_X(col) ((col) - 50)
+#define GET_Y(row) (50 - (row))
+#define GET_COL(x) ((x) + 50)
+#define GET_ROW(y) (50 - (y))
 
 enum status
 {

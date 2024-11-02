@@ -2,22 +2,97 @@
 
 void init()
 {
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
+    if (input == INVALID_HANDLE_VALUE)
+    {
+        printf(">> Error: unable to get input handle.\n");
+        setState(QUIT);
+        return;
+    }
+
+    HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (output == INVALID_HANDLE_VALUE)
+    {
+        printf(">> Error: unable to get output handle.\n");
+        setState(QUIT);
+        return;
+    }    
+
+    DWORD inmode, outmode;
+
+    if (!(GetConsoleMode(input, &inmode)))
+    {
+        printf(">> Error: unable to get input mode.\n");
+        setState(QUIT);
+        return;
+    }
+
+    if (!(GetConsoleMode(output, &outmode)))
+    {
+        printf(">> Error: unable to get output mode.\n");
+        setState(QUIT);
+        return;
+    }
+
+    outmode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    if (!(SetConsoleMode(output, outmode)))
+    {
+        printf(">> Error: unable to set output mode.\n");
+        setState(QUIT);
+        return;
+    }
+
+    inmode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
+    if (!(SetConsoleMode(input, inmode)))
+    {
+        printf(">> Error: unable to set input mode.\n");
+        setState(QUIT);
+        return;
+    }
+
     CONSOLE_SCREEN_BUFFER_INFO info;
     COORD buffer = {100, 100};
     SMALL_RECT window;
     int width, height;
 
-    GetConsoleScreenBufferInfo(console, &info);
+    if (!(GetConsoleScreenBufferInfo(output, &info)))
+    {
+        printf(">> Error: unable to get console screen buffer info.\n");
+        setState(QUIT);
+        return;
+    }
+
     width = info.srWindow.Right - info.srWindow.Left + 1;
     height = info.srWindow.Bottom - info.srWindow.Top + 1;
-    window.Left = (buffer.X - width)/2;
-    window.Top = (buffer.Y - height)/2;
-    window.Right = (window.Left + width);
-    window.Bottom = (window.Top + height);
 
-    SetConsoleScreenBufferSize(console, buffer);
-    SetConsoleWindowInfo(console, TRUE, &window);
+    if (buffer.X < width || buffer.Y < height)
+    {
+        buffer.X = width;
+        buffer.Y = height;
+    }
+
+    window.Left = 0;
+    window.Top = 0;
+    window.Right = width - 1;
+    window.Bottom = height - 1;
+
+    if (!(SetConsoleWindowInfo(output, TRUE, &window)))
+    {
+        printf(">> Error: unable to set console window size. Error code: %lu\n", GetLastError());
+        setState(QUIT);
+        return;
+    }
+
+    if (!(SetConsoleScreenBufferSize(output, buffer)))
+    {
+        printf(">> Error: unable to set console buffer size. Error code: %lu\n", GetLastError());
+        setState(QUIT);
+        return;
+    }
+
+    CUP(GET_ROW(1), GET_COL(1));
+    setState(MOVE);
 }
 
 void wizard(const int action, void* data)
@@ -68,30 +143,6 @@ void toggleState()
     }
 }
 
-/*
-MAY NOT BE NEEDED: Console buffer may handle itself
-char pollWindow()
-{
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    SMALL_RECT window;
-    int width, height;
-
-    wizard(GET_VIEW, &window);
-    width = window.Right - window.Left;
-    height = window.Bottom - window.Top;
-
-    GetConsoleScreenBufferInfo(console, &info);
-    if (info.srWindow.Right - info.srWindow.Left != width 
-    || info.srWindow.Bottom - info.srWindow.Top != height)
-    {
-        wizard(SET_VIEW, &info.srWindow);
-        return 1;
-    }
-
-    return 0;
-}*/
-
 void update()
 {
     if (_kbhit() == 0) return;
@@ -125,10 +176,11 @@ void update()
     }
 }
 
+/*
 void render()
 {
 
-}
+}*/
 
 void move(const char key)
 {
@@ -147,7 +199,8 @@ void move(const char key)
             CUB(1);
             break;
         case HOME:
-            
+            //move cursor to position 1,1
+            CUP(GET_COL(1), GET_ROW(1));
             break;
         case END:
             setState(QUIT);
