@@ -7,7 +7,6 @@ int main(void)
     while (getState() != QUIT)
     {
         update();
-        render();
     }
 
     return EXIT_SUCCESS;

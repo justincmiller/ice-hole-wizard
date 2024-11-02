@@ -3,26 +3,48 @@
 //initializes the console with screen buffer and window settings
 void init()
 {
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE); //handle to console's standard output
-    CONSOLE_SCREEN_BUFFER_INFO info; //structure to hold buffer information
-    COORD buffer = {100, 100}; //console screen buffer size
-    SMALL_RECT window; //defines the area for the console window
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    COORD buffer = {100, 100};
+    SMALL_RECT window;
     int width, height;
 
-    GetConsoleScreenBufferInfo(console, &info); //get current console screen buffer information
-    width = info.srWindow.Right - info.srWindow.Left + 1; //calculate current window width
-    height = info.srWindow.Bottom - info.srWindow.Top + 1; //calculate current window height
-    
-    //center the new window in the buffer 
-    window.Left = (buffer.X - width)/2; 
-    window.Top = (buffer.Y - height)/2;
-    window.Right = (window.Left + width);
-    window.Bottom = (window.Top + height);
+    if (!(GetConsoleScreenBufferInfo(output, &info)))
+    {
+        printf(">> Error: unable to get console screen buffer info.\n");
+        setState(QUIT);
+        return;
+    }
 
-    //set console screen buffer to the desired size
+    width = info.srWindow.Right - info.srWindow.Left + 1;
+    height = info.srWindow.Bottom - info.srWindow.Top + 1;
+
+    if (buffer.X < width || buffer.Y < height)
+    {
+        buffer.X = width;
+        buffer.Y = height;
+    }
+
+    window.Left = 0;
+    window.Top = 0;
+    window.Right = width - 1;
+    window.Bottom = height - 1;
+
+    if (!(SetConsoleWindowInfo(output, TRUE, &window)))
+    {
+        printf(">> Error: unable to set console window size. Error code: %lu\n", GetLastError());
+        setState(QUIT);
+        return;
+    }
+
+    if (!(SetConsoleScreenBufferSize(output, buffer)))
+    {
+        printf(">> Error: unable to set console buffer size. Error code: %lu\n", GetLastError());
+        setState(QUIT);
+        return;
+    }
+
     SetConsoleScreenBufferSize(console, buffer);
-
-    //adjust the console to the new centered window
     SetConsoleWindowInfo(console, TRUE, &window);
 }
 
@@ -80,31 +102,9 @@ void toggleState()
     }
 }
 
-/*
-MAY NOT BE NEEDED: Console buffer may handle itself
-char pollWindow()
-{
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    SMALL_RECT window;
-    int width, height;
-
-    wizard(GET_VIEW, &window);
-    width = window.Right - window.Left;
-    height = window.Bottom - window.Top;
-
-    GetConsoleScreenBufferInfo(console, &info);
-    if (info.srWindow.Right - info.srWindow.Left != width 
-    || info.srWindow.Bottom - info.srWindow.Top != height)
-    {
-        wizard(SET_VIEW, &info.srWindow);
-        return 1;
-    }
-
     return 0;
 }*/
 
-//updates program state based on user input
 void update()
 {
     //check if key has been pressed
@@ -141,10 +141,9 @@ void update()
     }
 }
 
-//renders the console
 void render()
 {
-    //functionality to be defined as needed
+
 }
 
 //handles cursor movement in move state
@@ -164,7 +163,7 @@ void move(const char key)
         case ARROW_LEFT: //moves cursor left by 1 unit
             CUB(1);
             break;
-        case HOME: //sets cursor to position 1,1
+        case HOME:
             
             break;
         case END: //sets state to QUIT

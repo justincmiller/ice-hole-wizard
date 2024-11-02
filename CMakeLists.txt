@@ -8,6 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 set(SOURCES
-    ${CMAKE_SOURCE_DIR}/src/main.c)
+    ${CMAKE_SOURCE_DIR}/src/main.c
+    ${CMAKE_SOURCE_DIR}/src/cave_wizard.c)
 
 add_executable(ice-hole-wizard ${SOURCES})
