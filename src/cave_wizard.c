@@ -9,28 +9,33 @@ void init()
     SMALL_RECT window; //defines area for console window
     int width, height;
 
-    //
+    //retrieve current console screen buffer information
     if (!(GetConsoleScreenBufferInfo(output, &info)))
     {
+        //display error if it fails
         printf(">> Error: unable to get console screen buffer info.\n");
-        setState(QUIT);
+        setState(QUIT); //exits program
         return;
     }
 
+    //calculate the width and height of the console window
     width = info.srWindow.Right - info.srWindow.Left + 1;
     height = info.srWindow.Bottom - info.srWindow.Top + 1;
 
+    //adjust buffer if it is smaller than the current window dimensions
     if (buffer.X < width || buffer.Y < height)
     {
         buffer.X = width;
         buffer.Y = height;
     }
 
+    //set the window size parameters starting from (0,0)
     window.Left = 0;
     window.Top = 0;
     window.Right = width - 1;
     window.Bottom = height - 1;
 
+    //sets the console screen buffer size
     if (!(SetConsoleWindowInfo(output, TRUE, &window)))
     {
         printf(">> Error: unable to set console window size. Error code: %lu\n", GetLastError());
