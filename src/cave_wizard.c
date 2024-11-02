@@ -112,9 +112,6 @@ void toggleState()
     }
 }
 
-    return 0;
-}*/
-
 void update()
 {
     //check if key has been pressed
