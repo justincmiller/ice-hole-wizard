@@ -183,7 +183,7 @@ void move(const char key)
 //handles drawing operations in draw state
 void draw(const char key)
 {
-    EDLDM; //enables DEC Line Drawing Mode
+    EDLDM(); //enables DEC Line Drawing Mode
 
     switch (key)
     {
@@ -204,7 +204,7 @@ void draw(const char key)
             _putch('q');
             break;
         case HOME: //moves to map layer 0
-            CUP(0, 0);
+            CUP(0,0);
             break;
         case END: //move to the last map layer created
             //?
@@ -213,7 +213,7 @@ void draw(const char key)
             break;
     }
 
-    EAM; //enables ASCII Mode
+    EAM(); //enables ASCII Mode
 }
 
 //parses additional key inputs, used for control commands
