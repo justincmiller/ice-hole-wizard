@@ -161,22 +161,21 @@ void move(const char key)
 {
     switch (key)
     {
-        case ARROW_UP: //moves cursor up by 1 unit
+        case ARROW_UP: //moves cursor up columns by 1 unit
             CUU(1);
             break;
-        case ARROW_DOWN: //moves cursor down by 1 unit
+        case ARROW_DOWN: //moves cursor down columns by 1 unit
             CUD(1);
             break;
-        case ARROW_RIGHT: //moves cursor right by 1 unit
+        case ARROW_RIGHT: //moves cursor right in the row by 1 unit
             CUF(1);
             break;
-        case ARROW_LEFT: //moves cursor left by 1 unit
+        case ARROW_LEFT: //moves cursor left in the row by 1 unit
             CUB(1);
             break;
-        case HOME:
-            
+        case HOME: //moves cursor to screen position (1,1)
             break;
-        case END: //sets state to QUIT
+        case END: //sets state to QUIT (exits the program)
             setState(QUIT);
             return;
         default:
