@@ -202,24 +202,24 @@ void parseKey(const char key)
     switch (key)
     {
         case CTRL:
-            if (_getch() == ';' && _getch() == '5')
+            if (_getch() == ';' && _getch() == '5') //Ctrl + 5
             {
                 //pan window
             }
             break;
         case INSERT:
-            if (_getch() == '~') toggleState();
+            if (_getch() == '~') toggleState(); //Insert + ~
             break;
         case DEL:
-            if (_getch() == '~')
+            if (_getch() == '~') //Delete + ~
                 //erase character
             break;
         case PG_UP:
-            if (_getch() == '~')
+            if (_getch() == '~') //Page Up + ~
                 //save buffer and move up
             break;
         case PG_DN:
-            if (_getch() == '~')
+            if (_getch() == '~') //Page Down + ~
                 //save buffer and move down
             break;
         default:
