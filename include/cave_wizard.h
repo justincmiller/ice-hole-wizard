@@ -5,10 +5,15 @@
 
 enum status
 {
-    GET, MOVE, DRAW, QUIT
+    MOVE, DRAW, QUIT
 };
 
-int status(const int action);
+enum actions
+{
+    GET_STATE, SET_STATE, GET_VIEW, SET_VIEW
+};
+
+void wizard(const int action, void* data);
 void update();
 void render();
 void cursorKey(const char key);

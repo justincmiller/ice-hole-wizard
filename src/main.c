@@ -2,11 +2,14 @@
 
 int main(void)
 {
-    Instance ins;
-    while (status(GET) != QUIT)
+    int state = MOVE;
+    init();
+
+    while (state != QUIT)
     {
         update();
         render();
+        wizard(GET_STATE, &state);
     }
 
     return EXIT_SUCCESS;

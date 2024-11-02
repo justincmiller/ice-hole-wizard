@@ -1,14 +1,52 @@
 #include "cave_wizard.h"
 
-int status(const int action)
+void wizard(const int action, void* data)
 {
-    static int state = MOVE;
+    static int state;
+    static SMALL_RECT viewport;
 
-    if (action == GET) return state;
-    else state = action;
-
-    return state;
+    switch (action)
+    {
+        case GET_STATE:
+            *(int*)data = state;
+            return;
+        case SET_STATE:
+            state = *(int*)data;
+            return;
+        case GET_VIEW:
+            *(SMALL_RECT*)data = viewport;
+            return;
+        case SET_VIEW:
+            viewport = *(SMALL_RECT*)data;
+            break;
+        default:
+            return;
+    }
 }
+
+/*
+MAY NOT BE NEEDED: Console buffer may handle itself
+char pollWindow()
+{
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    SMALL_RECT window;
+    int width, height;
+
+    wizard(GET_VIEW, &window);
+    width = window.Right - window.Left;
+    height = window.Bottom - window.Top;
+
+    GetConsoleScreenBufferInfo(console, &info);
+    if (info.srWindow.Right - info.srWindow.Left != width 
+    || info.srWindow.Bottom - info.srWindow.Top != height)
+    {
+        wizard(SET_VIEW, &info.srWindow);
+        return 1;
+    }
+
+    return 0;
+}*/
 
 void update()
 {
