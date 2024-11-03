@@ -176,26 +176,22 @@ void draw(const char key)
     switch (key)
     {
         case ARROW_UP: //draws map in the positive latitude direction 1 unit
-            CUU(1);
-            _putch('x'); //vertical line
+            //
             break;
         case ARROW_DOWN: //draws map in the negative latitude direction 1 unit
-            CUD(1);
-            _putch('x');
+            //
             break;
         case ARROW_RIGHT: //draws map in the positive longitude direction 1 unit
-            CUF(1);
-            _putch('q'); //horizontal line
+            //
             break;
         case ARROW_LEFT: //draws map in the negaite longitude direction 1 unit
-            CUB(1);
-            _putch('q');
+            //
             break;
         case HOME: //moves to map layer 0
-            CUP(0,0);
+            //
             break;
         case END: //move to the last map layer created
-            //?
+            //
             break;
         default: //handles unforseen input
             break;
