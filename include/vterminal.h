@@ -23,7 +23,7 @@
 *  Credit is given to Dr. Larry Hughes for providing the reference code
 *  that was used throughout this program specifically the DEC Line Drawing Mode
 *  which uses much of Dr. Hughes' work.
-*  Credit to Dr. Hughes for the following code: lines 28 - 65
+*  Credit to Dr. Hughes for the following code: lines 28 - 86
 */
 /* Some commonly used VT-100 commands */
 #define EL(r)		printf(CSI "%d;1H" CSI "K", (r)); /* Erase in Line */
@@ -46,6 +46,9 @@ enum VT100_COLOURS {
 
 /* DEC line drawing mode characters*/
 enum symbol { LR, UR, UL, LL, XX, HR, TR, TL, TU, TD, VR, EM };
+
+#define START_SYM '*'
+
 enum direction { NORTH, SOUTH, EAST, WEST, IDLE };
 
 /* Tunnel symbol to display [new dir][old dir] */
@@ -63,6 +66,24 @@ short del_x[] = { 0, 0, 1, -1 };
 /* ASCII-to-DEC graphic characters */
 enum symbol asc_dec[] = {
     'j', 'k', 'l', 'm', 'n', 'q', 't', 'u', 'v', 'w', 'x', ' ' };
+
+int draw_object(int col, int MIN_COL, int MAX_COL, int row, int MIN_ROW, int MAX_ROW, int symbol)
+{
+    /*
+     - Attempts to draw symbol at position col, row
+     - Returns -1 if illegal location, 0 otherwise
+    */
+    if (col <= MIN_COL || row <= MIN_ROW ||
+        col >= MAX_COL || row >= MAX_ROW)
+        /* Outside view screen - do not draw */
+        return -1;
+
+    CUP(col, row);
+    _putch(symbol);
+
+    return 0;
+
+}
 //End of credited material.
 
 enum keyCodes

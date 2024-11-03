@@ -5,7 +5,7 @@ void init()
 {
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE); //handle to the console's standard output
     CONSOLE_SCREEN_BUFFER_INFO info; //structure to hold information about the console screen buffer
-    COORD buffer = {100, 100}; //console screen buffer size
+    COORD buffer = { 100, 100 }; //console screen buffer size
     SMALL_RECT window; //defines area for console window
     int width, height;
 
@@ -57,13 +57,22 @@ void init()
     SetConsoleScreenBufferSize(console, buffer);
     SetConsoleWindowInfo(console, TRUE, &window);
 
+
     /*
     *  Credit is given to Dr. Larry Hughes for providing the reference code
     *  that was used throughout this program specifically the DEC Line Drawing Mode
     *  which uses much of Dr. Hughes' work.
     *  Credit to Dr. Hughes for the following code: lines 28 - 65
     */
+
     //initialize cursor to center of the screen
+    int initial_x = width / 2;
+    int initial_y = height / 2;
+    int current_direction = IDLE;
+
+    printf(CSI "%dm" CSI "%dm", BGYELLOW, FGBLACK);
+
+    draw_object(initial_x, window.Bottom, window.Top, initial_y, window.Left, window.Right, START_SYM);
 }
 
 //manages state data and viewport data

@@ -33,5 +33,5 @@ void render(); //renders the console
 void draw(const char key); //handles draw state operations
 void move(const char key); //handles move state operations
 void parseKey(const char key); //handles non-movement keystrokes
-
+int draw_object(int col, int row, int symbol); //Dr. Hughe's function to draw symbols at position
 #endif
