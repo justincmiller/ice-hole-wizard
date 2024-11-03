@@ -175,6 +175,7 @@ void move(const char key)
             CUB(1);
             break;
         case HOME: //moves cursor to screen position (1,1)
+            CUP(1, 1);
             break;
         case END: //sets state to QUIT (exits the program)
             setState(QUIT);
@@ -226,9 +227,10 @@ void parseKey(const char key)
     switch (key)
     {
         case CTRL:
-            if (_getch() == ';' && _getch() == '5')
+            if ((char)_getch() == ';' && (char)_getch() == '5')
             {
-                switch (_getch()) {
+                char c_key = (char)_getch();
+                switch (c_key) {
                     case ARROW_UP: //move up 1 cell latitude
                         break;
                     case ARROW_DOWN: //move down 1 cell latitude
