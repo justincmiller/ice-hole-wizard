@@ -143,14 +143,8 @@ void update()
                 else if (getState == DRAW) draw(key); //draw state operation function
                 break;
             case DEL: //both states: erase character at cursor position
-                //?
-                break;
             case PG_UP: //both states: save current layer, move up one layer.
-                //?
-                break;
             case PG_DN: //both states: save current layer,move down one layer by either creating a new layer or using an existing layer if available
-                //?
-                break;
             default: //if follows logically that if its non of these then its either a Ctrl key sequence or an invalid key
                 parseKey(key); //if input was not an arrow or movement key
                 break;
