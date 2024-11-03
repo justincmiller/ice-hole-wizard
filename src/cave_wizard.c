@@ -56,6 +56,14 @@ void init()
     //set the screen buffer size and window position for the console
     SetConsoleScreenBufferSize(console, buffer);
     SetConsoleWindowInfo(console, TRUE, &window);
+
+    /*
+    *  Credit is given to Dr. Larry Hughes for providing the reference code
+    *  that was used throughout this program specifically the DEC Line Drawing Mode
+    *  which uses much of Dr. Hughes' work.
+    *  Credit to Dr. Hughes for the following code: lines 28 - 65
+    */
+    //initialize cursor to center of the screen
 }
 
 //manages state data and viewport data
@@ -188,6 +196,7 @@ void move(const char key)
 //draw state operations
 void draw(const char key)
 {
+
     EDLDM; //enables DEC Line Drawing Mode
 
     switch (key)
