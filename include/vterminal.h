@@ -70,6 +70,7 @@ typedef struct Draw_Cursor
 
 extern void draw_cursor_init();
 extern void draw_cursor_move(char);
+extern void update();
 
 enum keyCodes
 {

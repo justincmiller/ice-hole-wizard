@@ -1,5 +1,6 @@
 #include "engine.h"
 #include "display.h"
+#include "vterminal.h"
 
 //initializes the console with screen buffer and window settings
 void init()
