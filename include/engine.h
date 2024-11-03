@@ -17,7 +17,7 @@ enum status
 };
 
 //actions to manipulate state and viewport settings
-enum actions
+enum wizardActions
 {
     GET_STATE, SET_STATE, GET_VIEW, SET_VIEW
 };

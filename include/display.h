@@ -21,6 +21,13 @@ typedef struct Display
     COORD cursor;
 }Display;
 
+enum displayActions
+{
+    GET_VP, SET_VP, GET_MAP, SET_MAP, GET_CUR, SET_CUR, GET_DISPLAY, SET_DISPLAY
+};
+
+void display(const int action, void* data);
+void getWindow(SMALL_RECT* vp);
 void render(); //renders the console
 char** newGrid();
 Node* newLayer();

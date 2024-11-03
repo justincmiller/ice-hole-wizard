@@ -80,12 +80,62 @@ void freeLayers(Node** map)
 
 void initDisplay()
 {
+    Display* dsp;
+    display(GET_DISPLAY, dsp);
+    addLayer(&(dsp->map));
+    getWindow(&(dsp->vp));
+}
 
+void getWindow(SMALL_RECT* rect)
+{
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (out == INVALID_HANDLE_VALUE)
+    {
+        printf("Error: could not fetch output handle\n");
+        return;
+    }
+
+    CONSOLE_SCREEN_BUFFER_INFO info;
+
+    if (!GetConsoleScreenBufferInfo(out, &info))
+    {
+        printf(">> Error: unable to get console screen buffer info.\n");
+        return;
+    }
+
+    *rect = info.srWindow;
 }
 
 //todo: setup display like wizard function
-void display(const int action, void*)
+void display(const int action, void* data)
 {
-    static Display;
+    static Display display;
 
+    switch (action)
+    {
+        case GET_VP:
+            *(SMALL_RECT*)data = display.vp;
+            break;
+        case SET_VP:
+            display.vp = *(SMALL_RECT*)data;
+            break;
+        case GET_MAP:
+            *(Node**)data = display.map;
+            break;
+        case SET_MAP:
+            display.map = *(Node**)data;
+            break;
+        case GET_CUR:
+            break;
+        case SET_CUR:
+            break;
+        case GET_DISPLAY:
+            *(Display*)data = display;
+            break;
+        case SET_DISPLAY:
+            display = *(Display*)data;
+            break;
+        default:
+            break;
+    }
 }
