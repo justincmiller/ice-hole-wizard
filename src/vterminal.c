@@ -17,14 +17,14 @@ enum symbol asc_dec[] = {
     'j', 'k', 'l', 'm', 'n', 'q', 't', 'u', 'v', 'w', 'x', ' ' };
 
 
-int draw_object(int col, int MIN_COL, int MAX_COL, int row, int MIN_ROW, int MAX_ROW, int symbol)
+int draw_object(int col, int row, int symbol)
 {
     /*
      - Attempts to draw symbol at position col, row
      - Returns -1 if illegal location, 0 otherwise
     */
-    if (col <= MIN_COL || row <= MIN_ROW ||
-        col >= MAX_COL || row >= MAX_ROW)
+    if (col <= /*min col value*/ || row <= /*min row value*/ ||
+        col >= /*max col value*/ || row >= /*max row value*/)
         /* Outside view screen - do not draw */
         return -1;
 
