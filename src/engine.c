@@ -206,13 +206,13 @@ void parseKey(const char key)
             {
                 char c_key = (char)_getch();
                 switch (c_key) {
-                    case ARROW_UP: //move up 1 cell latitude
+                    case ARROW_UP: //move map up 1 latitude in screen
                         break;
-                    case ARROW_DOWN: //move down 1 cell latitude
+                    case ARROW_DOWN: //move map down 1 latitude in screen
                         break;
-                    case ARROW_RIGHT: //move right 1 cell longitude
+                    case ARROW_RIGHT: //move map right 1 longitude in screen
                         break;
-                    case ARROW_LEFT: //move left 1 cell longitude
+                    case ARROW_LEFT: //move map left 1 longitude in screen
                         break;
                     default:
                         break;
