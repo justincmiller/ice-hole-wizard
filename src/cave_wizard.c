@@ -133,32 +133,32 @@ void update()
         switch (key)
         {
             case ARROW_UP:
-                if (getState() == MOVE);
-                else if (getState() == DRAW);
+                if (getState() == MOVE) move(key); //
+                else if (getState() == DRAW) draw(key); //
                 break;
             case ARROW_DOWN:
-                if (getState() == MOVE);
-                else if (getState() == DRAW);
+                if (getState() == MOVE) move(key);
+                else if (getState() == DRAW) draw(key);
                 break;
             case ARROW_RIGHT:
-                if (getState() == MOVE);
-                else if (getState() == DRAW);
+                if (getState() == MOVE) move(key);
+                else if (getState() == DRAW) draw(key);
                 break;
             case ARROW_LEFT:
-                if (getState() == MOVE);
-                else if (getState == DRAW);
+                if (getState() == MOVE) move(key);
+                else if (getState == DRAW) draw(key);
                 break;
             case HOME:
-                if (getState() == MOVE);
-                else if (getState() == DRAW);
+                if (getState() == MOVE) move(key); //move cursor to (1,1)
+                else if (getState() == DRAW) draw(key); //move to map layer 0
                 break;
             case END:
-                if (getState() == MOVE) move(key); //move cursor if in move state
-                else if (getState() == DRAW) draw(key); //draw if in draw state
+                if (getState() == MOVE) move(key); //exit the program
+                else if (getState() == DRAW) draw(key); //move to last map layer created
                 break;
             case INSERT:
-                if (getState() == MOVE);
-                else if (getState == DRAW);
+                if (getState() == MOVE) move(key); //change state to map drawing
+                else if (getState == DRAW) draw(key); //change state to cursor movement
                 break;
             case DEL: //both states: erase character at cursor position
                 //?
