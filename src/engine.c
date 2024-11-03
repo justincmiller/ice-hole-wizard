@@ -1,4 +1,5 @@
-#include "cave_wizard.h"
+#include "engine.h"
+#include "display.h"
 
 //initializes the console with screen buffer and window settings
 void init()
@@ -42,21 +43,6 @@ void reset()
     top = height / 2;
 
     CUP(left, top);
-    
-    //set the window size parameters starting from (0,0)
-    // window.Left = left;
-    // window.Top = top;
-    // window.Right = left + width - 1;
-    // window.Bottom = top + height - 1;
-
-    //sets the console window size
-    // if (!SetConsoleWindowInfo(out, TRUE, &window))
-    // {
-    //     //print error if it fails
-    //     printf(">> Error: unable to set console window size.\n");
-    //     setState(QUIT); //exits program
-    //     return;
-    // }
 }
 
 //manages state data and viewport data
@@ -90,14 +76,14 @@ void wizard(const int action, void* data)
 int getState()
 {
     int state = 0;
-    wizard(GET_STATE, &state); //called with get_state to retrieve current state
+    wizard(GET_STATE, (void*)&state); //called with get_state to retrieve current state
     return state;
 }
 
 //sets new state using the wizard function
 void setState(const int state)
 {
-    wizard(SET_STATE, &state); //called with set_state to update the state
+    wizard(SET_STATE, (void*)&state); //called with set_state to update the state
 }
 
 //toggles the current state between move and draw modes
@@ -126,7 +112,7 @@ void update()
     {
         //edit cell properties
     }
-    else if (key == ESC && (char)_getch() == '[') //check for escape sequence for special keys
+    else if (key == '\x1b' && (char)_getch() == '[') //check for escape sequence for special keys
     {
         //get the next character to feed into the switch case
         key = (char)_getch();
@@ -141,7 +127,7 @@ void update()
             case END:
             case INSERT:
                 if (getState() == MOVE) move(key); // go to move state operation function
-                else if (getState == DRAW) draw(key); // go to draw state operation function
+                else if (getState() == DRAW) draw(key); // go to draw state operation function
                 break;
             case DEL: //both states: erase character at cursor position
             case PG_UP: //both states: save current layer, move up one layer.
@@ -153,11 +139,6 @@ void update()
     }
 }
 
-/*void render()
-{
-
-}*/
-
 //move state operations
 void move(const char key)
 {
@@ -165,11 +146,9 @@ void move(const char key)
     {
         case ARROW_UP: //moves cursor up columns by 1 unit
             CUU(1);
-            _putch('U');
             break;
         case ARROW_DOWN: //moves cursor down columns by 1 unit
             CUD(1);
-            _putch('D');
             break;
         case ARROW_RIGHT: //moves cursor right in the row by 1 unit
             CUF(1);

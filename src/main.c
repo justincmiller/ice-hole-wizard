@@ -1,5 +1,5 @@
 //cave_wizard header includes program operation code
-#include <cave_wizard.h>
+#include "engine.h"
 
 int main(void)
 {
