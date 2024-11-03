@@ -49,8 +49,8 @@ int draw_object(int col, int row, int symbol)
 }
 
 void draw_cursor_init() {
-    draw_cur.x = ;
-    draw_cur.y = ;
+    draw_cur.x = /*screen center col*/;
+    draw_cur.y = /*screen center row*/;
     draw_cur.curr_dir = IDLE;
 
     printf(CSI "%dm" CSI "%dm", BGGREEN, FGBLACK);
