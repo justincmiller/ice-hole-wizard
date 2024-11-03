@@ -139,8 +139,8 @@ void update()
             case HOME:
             case END:
             case INSERT:
-                if (getState() == MOVE) move(key); //move state operation function
-                else if (getState == DRAW) draw(key); //draw state operation function
+                if (getState() == MOVE) move(key); // go to move state operation function
+                else if (getState == DRAW) draw(key); // go to draw state operation function
                 break;
             case DEL: //both states: erase character at cursor position
             case PG_UP: //both states: save current layer, move up one layer.
@@ -157,7 +157,7 @@ void render()
 
 }
 
-//handles cursor movement in move state
+//move state operations
 void move(const char key)
 {
     switch (key)
@@ -184,7 +184,7 @@ void move(const char key)
     }
 }
 
-//handles drawing operations in draw state
+//draw state operations
 void draw(const char key)
 {
     EDLDM; //enables DEC Line Drawing Mode
@@ -220,31 +220,39 @@ void draw(const char key)
     EAM; //enables ASCII Mode
 }
 
-//parses additional key inputs, used for control commands
+//used for Ctrl and both-state commands
 void parseKey(const char key)
 {
     switch (key)
     {
         case CTRL:
-            if (_getch() == ';' && _getch() == '5') //Ctrl + 5
+            if (_getch() == ';' && _getch() == '5')
             {
-                //pan window
+                switch (_getch()) {
+                    case ARROW_UP: //move up 1 cell latitude
+                        break;
+                    case ARROW_DOWN: //move down 1 cell latitude
+                        break;
+                    case ARROW_RIGHT: //move right 1 cell longitude
+                        break;
+                    case ARROW_LEFT: //move left 1 cell longitude
+                        break;
+                    default:
+                        break;
+                }
             }
             break;
         case INSERT:
-            if (_getch() == '~') toggleState(); //Insert + ~
+            if (_getch() == '~') toggleState(); //swaps states between map drawing mode and cursor movement mode
             break;
         case DEL:
-            if (_getch() == '~') //Delete + ~
-                //erase character
+            if (_getch() == '~') //erase character at curosr position
             break;
         case PG_UP:
-            if (_getch() == '~') //Page Up + ~
-                //save buffer and move up
+            if (_getch() == '~') //save current layer, move up one layer
             break;
         case PG_DN:
-            if (_getch() == '~') //Page Down + ~
-                //save buffer and move down
+            if (_getch() == '~') //save current layer, move down one layer by either creating a new layer or using an existing layer if available
             break;
         default:
             break;
