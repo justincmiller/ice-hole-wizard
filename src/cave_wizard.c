@@ -133,15 +133,43 @@ void update()
         switch (key)
         {
             case ARROW_UP:
+                if (getState() == MOVE);
+                else if (getState() == DRAW);
+                break;
             case ARROW_DOWN:
+                if (getState() == MOVE);
+                else if (getState() == DRAW);
+                break;
             case ARROW_RIGHT:
+                if (getState() == MOVE);
+                else if (getState() == DRAW);
+                break;
             case ARROW_LEFT:
+                if (getState() == MOVE);
+                else if (getState == DRAW);
+                break;
             case HOME:
+                if (getState() == MOVE);
+                else if (getState() == DRAW);
+                break;
             case END:
                 if (getState() == MOVE) move(key); //move cursor if in move state
                 else if (getState() == DRAW) draw(key); //draw if in draw state
                 break;
-            default:
+            case INSERT:
+                if (getState() == MOVE);
+                else if (getState == DRAW);
+                break;
+            case DEL: //both states: erase character at cursor position
+                //?
+                break;
+            case PG_UP: //both states: save current layer, move up one layer.
+                //?
+                break;
+            case PG_DN: //both states: save current layer,move down one layer by either creating a new layer or using an existing layer if available
+                //?
+                break;
+            default: //if follows logically that if its non of these then its either a Ctrl key sequence or an invalid key
                 parseKey(key); //if input was not an arrow or movement key
                 break;
         }
