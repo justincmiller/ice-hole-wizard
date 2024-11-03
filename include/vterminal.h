@@ -24,7 +24,7 @@
 #define CUB(n)      printf(CSI "%dD", (n)); //cursor backward (left) by n
 #define CUP(x,y)    printf(CSI "%d;%dH", (y), (x)); //move cursor to position
 
-//Credit to Dr. Hughes for the following code: lines 28 - 48
+//Credit to Dr. Hughes for the following code: lines 28 - 65
 /* Some commonly used VT-100 commands */
 #define EL(r)		printf(CSI "%d;1H" CSI "K", (r)); /* Erase in Line */
 #define CLRSCR		printf(CSI "2J");
@@ -46,6 +46,23 @@ enum VT100_COLOURS {
 
 /* DEC line drawing mode characters*/
 enum symbol { LR, UR, UL, LL, XX, HR, TR, TL, TU, TD, VR, EM };
+enum direction { NORTH, SOUTH, EAST, WEST, IDLE };
+
+/* Tunnel symbol to display [new dir][old dir] */
+char cell_sym[4][5] = {
+    /*	Old: NO  SO  ET  WT  IDL    New:*/
+            {VR, VR, LR, LL, VR}, /* NO */
+            {VR, VR, UR, UL, VR}, /* SO */
+            {UL, LL, HR, HR, HR}, /* ET */
+            {UR, LR, HR, HR, HR}  /* WT */
+};
+
+short del_y[] = { -1, 1, 0, 0 };
+short del_x[] = { 0, 0, 1, -1 };
+
+/* ASCII-to-DEC graphic characters */
+enum symbol asc_dec[] = {
+    'j', 'k', 'l', 'm', 'n', 'q', 't', 'u', 'v', 'w', 'x', ' ' };
 //End of credited material.
 
 enum keyCodes
