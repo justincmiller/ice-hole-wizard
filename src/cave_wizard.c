@@ -133,32 +133,14 @@ void update()
         switch (key)
         {
             case ARROW_UP:
-                if (getState() == MOVE) move(key); //move cursor up rows
-                else if (getState() == DRAW) draw(key); //draws map in positive latitude direction
-                break;
             case ARROW_DOWN:
-                if (getState() == MOVE) move(key); //moves cursor down rows
-                else if (getState() == DRAW) draw(key); //draws map in negative latitude direction
-                break;
             case ARROW_RIGHT:
-                if (getState() == MOVE) move(key); //moves cursor up columns
-                else if (getState() == DRAW) draw(key); //draws map in positive longitude direction
-                break;
             case ARROW_LEFT:
-                if (getState() == MOVE) move(key); //moves cursor down columns
-                else if (getState == DRAW) draw(key); //draws map in negative longitude direction
-                break;
             case HOME:
-                if (getState() == MOVE) move(key); //move cursor to (1,1)
-                else if (getState() == DRAW) draw(key); //move to map layer 0
-                break;
             case END:
-                if (getState() == MOVE) move(key); //exit the program
-                else if (getState() == DRAW) draw(key); //move to last map layer created
-                break;
             case INSERT:
-                if (getState() == MOVE) move(key); //change state to map drawing
-                else if (getState == DRAW) draw(key); //change state to cursor movement
+                if (getState() == MOVE) move(key); //move state operation function
+                else if (getState == DRAW) draw(key); //draw state operation function
                 break;
             case DEL: //both states: erase character at cursor position
                 //?
