@@ -1,3 +1,8 @@
+/*
+*  Credit is given to Dr. Larry Hughes for providing the reference code
+*  that was used throughout this program specifically the DEC Line Drawing Mode
+*  and virtual terminal code which uses much of Dr. Hughes' work.
+*/
 #ifndef VTERMINAL_H
 #define VTERMINAL_H
 
@@ -19,12 +24,6 @@
 #define CUB(n)      printf(CSI "%dD", (n)); //cursor backward (left) by n
 #define CUP(x,y)    printf(CSI "%d;%dH", (y), (x)); //move cursor to position
 
-/*
-*  Credit is given to Dr. Larry Hughes for providing the reference code
-*  that was used throughout this program specifically the DEC Line Drawing Mode
-*  which uses much of Dr. Hughes' work.
-*  Credit to Dr. Hughes for the following code: lines 28 - 86
-*/
 /* Some commonly used VT-100 commands */
 #define EL(r)		printf(CSI "%d;1H" CSI "K", (r)); /* Erase in Line */
 #define CLRSCR		printf(CSI "2J");
