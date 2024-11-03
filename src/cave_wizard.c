@@ -3,14 +3,27 @@
 //initializes the console with screen buffer and window settings
 void init()
 {
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE); //handle to the console's standard output
+    virtualOutput();
+    virtualInput();
+    
+    reset();
+    setState(MOVE);
+}
+
+void reset()
+{
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (out == INVALID_HANDLE_VALUE)
+    {
+        printf("Error: could not fetch output handle\n");
+        setState(QUIT);
+        return;
+    }
+
     CONSOLE_SCREEN_BUFFER_INFO info; //structure to hold information about the console screen buffer
-    COORD buffer = { 100, 100 }; //console screen buffer size
-    SMALL_RECT window; //defines area for console window
-    int width, height;
 
     //retrieve current console screen buffer information
-    if (!(GetConsoleScreenBufferInfo(output, &info)))
+    if (!GetConsoleScreenBufferInfo(out, &info))
     {
         //display error if it fails
         printf(">> Error: unable to get console screen buffer info.\n");
@@ -18,61 +31,32 @@ void init()
         return;
     }
 
-    //calculate the width and height of the console window
-    width = info.srWindow.Right - info.srWindow.Left + 1;
-    height = info.srWindow.Bottom - info.srWindow.Top + 1;
+    SMALL_RECT window = info.srWindow;
 
-    //adjust buffer if it is smaller than the current window dimensions
-    if (buffer.X < width || buffer.Y < height)
-    {
-        buffer.X = width;
-        buffer.Y = height;
-    }
+    //calculate the width and height of the console window, offset of 1 due to indexing
+    int width = window.Right - window.Left + 1;
+    int height = window.Bottom - window.Top + 1;
+    int left, top;
 
+    left = width / 2;
+    top = height / 2;
+
+    CUP(left, top);
+    
     //set the window size parameters starting from (0,0)
-    window.Left = 0;
-    window.Top = 0;
-    window.Right = width - 1;
-    window.Bottom = height - 1;
+    // window.Left = left;
+    // window.Top = top;
+    // window.Right = left + width - 1;
+    // window.Bottom = top + height - 1;
 
     //sets the console window size
-    if (!(SetConsoleWindowInfo(output, TRUE, &window)))
-    {
-        //print error if it fails
-        printf(">> Error: unable to set console window size. Error code: %lu\n", GetLastError());
-        setState(QUIT); //exits program
-        return;
-    }
-
-    //sets the console screen buffer size
-    if (!(SetConsoleScreenBufferSize(output, buffer)))
-    {
-        //print error if it fails
-        printf(">> Error: unable to set console buffer size. Error code: %lu\n", GetLastError());
-        setState(QUIT); //exits program
-        return;
-    }
-
-    //set the screen buffer size and window position for the console
-    SetConsoleScreenBufferSize(console, buffer);
-    SetConsoleWindowInfo(console, TRUE, &window);
-
-
-    /*
-    *  Credit is given to Dr. Larry Hughes for providing the reference code
-    *  that was used throughout this program specifically the DEC Line Drawing Mode
-    *  which uses much of Dr. Hughes' work.
-    *  Credit to Dr. Hughes for the following code: lines 28 - 65
-    */
-
-    //initialize cursor to center of the screen
-    int initial_x = width / 2;
-    int initial_y = height / 2;
-    int current_direction = IDLE;
-
-    printf(CSI "%dm" CSI "%dm", BGYELLOW, FGBLACK);
-
-    draw_object(initial_x, window.Bottom, window.Top, initial_y, window.Left, window.Right, START_SYM);
+    // if (!SetConsoleWindowInfo(out, TRUE, &window))
+    // {
+    //     //print error if it fails
+    //     printf(">> Error: unable to set console window size.\n");
+    //     setState(QUIT); //exits program
+    //     return;
+    // }
 }
 
 //manages state data and viewport data
@@ -169,10 +153,10 @@ void update()
     }
 }
 
-void render()
+/*void render()
 {
 
-}
+}*/
 
 //move state operations
 void move(const char key)
@@ -181,9 +165,11 @@ void move(const char key)
     {
         case ARROW_UP: //moves cursor up columns by 1 unit
             CUU(1);
+            _putch('U');
             break;
         case ARROW_DOWN: //moves cursor down columns by 1 unit
             CUD(1);
+            _putch('D');
             break;
         case ARROW_RIGHT: //moves cursor right in the row by 1 unit
             CUF(1);

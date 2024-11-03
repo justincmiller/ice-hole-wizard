@@ -24,6 +24,7 @@ enum actions
 
 //function declarations
 void init(); //initializes console setup
+void reset();
 void wizard(const int action, void* data); //manages state and viewport tasks
 int getState(); //gets current state
 void setState(const int state); //sets state

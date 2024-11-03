@@ -9,6 +9,6 @@ int main(void)
     {
         update(); //updates program based on keyboard input
     }
-
+    
     return EXIT_SUCCESS;
 }

@@ -101,4 +101,7 @@ enum keyCodes
     END = 'F'
 };
 
+bool virtualInput();
+bool virtualOutput();
+
 #endif
