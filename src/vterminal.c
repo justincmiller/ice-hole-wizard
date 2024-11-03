@@ -1,6 +1,16 @@
+/*
+*  Credit is given to Dr. Larry Hughes for providing the reference code
+*  that was used throughout this program specifically the DEC Line Drawing Mode
+*  and virtual terminal code which uses much of Dr. Hughes' work.
+*/
+
 #include "vterminal.h"
 #include "display.h"
+#include "engine.h"
 
+#define START_SYM '*'
+
+enum direction { NORTH, SOUTH, EAST, WEST, IDLE };
 /* Tunnel symbol to display [new dir][old dir] */
 char cell_sym[4][5] = {
     /*	Old: NO  SO  ET  WT  IDL    New:*/

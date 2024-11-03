@@ -3,6 +3,7 @@
 *  that was used throughout this program specifically the DEC Line Drawing Mode
 *  and virtual terminal code which uses much of Dr. Hughes' work.
 */
+
 #ifndef VTERMINAL_H
 #define VTERMINAL_H
 
@@ -46,10 +47,6 @@ enum VT100_COLOURS {
 /* DEC line drawing mode characters*/
 enum symbol { LR, UR, UL, LL, XX, HR, TR, TL, TU, TD, VR, EM };
 
-#define START_SYM '*'
-
-enum direction { NORTH, SOUTH, EAST, WEST, IDLE };
-
 /* Tunnel symbol to display [new dir][old dir] */
 extern char cell_sym[4][5];
 
@@ -60,6 +57,19 @@ extern short del_x[];
 extern enum symbol asc_dec[];
 
 int draw_object(int col, int row, int symbol); //Dr. Hughe's function
+
+typedef struct Draw_Cursor
+{
+    int x;
+    int y;
+    int curr_dir;
+    int old_x;
+    int old_y;
+    int old_dir;
+}Draw_Cursor;
+
+extern void draw_cursor_init();
+extern void draw_cursor_move(char);
 
 enum keyCodes
 {
