@@ -59,8 +59,7 @@ extern short del_x[];
 /* ASCII-to-DEC graphic characters */
 extern enum symbol asc_dec[];
 
-int draw_object(int col, int row, int symbol); //Dr. Hughe's function to draw symbols at position
-//End of credited material.
+int draw_object(int col, int row, int symbol); //Dr. Hughe's function
 
 enum keyCodes
 {
