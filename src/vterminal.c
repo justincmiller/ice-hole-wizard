@@ -1,7 +1,7 @@
 /*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
-*  that was used throughout this program specifically the DEC Line Drawing Mode
-*  and virtual terminal code which uses much of Dr. Hughes' work.
+*  that was used throughout this program. Specifically, the engine.h, vterminal.h, and vterminal.c files
+*  which uses much of Dr. Hughes' work.
 */
 
 #include "vterminal.h"
