@@ -1,4 +1,5 @@
 #include "vterminal.h"
+#include "display.h"
 
 /* Tunnel symbol to display [new dir][old dir] */
 char cell_sym[4][5] = {
