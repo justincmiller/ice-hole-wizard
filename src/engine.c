@@ -126,10 +126,10 @@ void update()
             case ARROW_LEFT:
             case HOME:
             case END:
-            case INSERT:
                 if (getState() == MOVE) move(key); // go to move state operation function
                 else if (getState() == DRAW) draw(key); // go to draw state operation function
                 break;
+            case INSERT:
             case DEL: //both states: erase character at cursor position
             case PG_UP: //both states: save current layer, move up one layer.
             case PG_DN: //both states: save current layer,move down one layer by either creating a new layer or using an existing layer if available
@@ -217,7 +217,7 @@ void parseKey(const char key)
             if (_getch() == '~') toggleState(); //swaps states between map drawing mode and cursor movement mode
             break;
         case DEL:
-            if (_getch() == '~') //erase character at curosr position
+            if (_getch() == '~') EL(1); //erase character at curosr position
             break;
         case PG_UP:
             if (_getch() == '~') //save current layer, move up one layer
