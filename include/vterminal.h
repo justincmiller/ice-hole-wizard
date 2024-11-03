@@ -19,8 +19,8 @@
 #define CUP(x,y)    printf(CSI "%d;%dH", (y), (x)); //move cursor to position
 
 //ANSI escape sequence for DEC Line Drawing Mode
-#define EDLDM()       printf(ESC "(0"); //starts DEC Line Drawing Mode
-#define EAM()         printf(ESC "(B"); //starts ASCII Mode
+#define EDLDM       printf(ESC "(0"); //starts DEC Line Drawing Mode
+#define EAM         printf(ESC "(B"); //starts ASCII Mode
 
 
 enum keyCodes

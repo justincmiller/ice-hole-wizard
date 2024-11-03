@@ -133,20 +133,20 @@ void update()
         switch (key)
         {
             case ARROW_UP:
-                if (getState() == MOVE) move(key); //
-                else if (getState() == DRAW) draw(key); //
+                if (getState() == MOVE) move(key); //move cursor up rows
+                else if (getState() == DRAW) draw(key); //draws map in positive latitude direction
                 break;
             case ARROW_DOWN:
-                if (getState() == MOVE) move(key);
-                else if (getState() == DRAW) draw(key);
+                if (getState() == MOVE) move(key); //moves cursor down rows
+                else if (getState() == DRAW) draw(key); //draws map in negative latitude direction
                 break;
             case ARROW_RIGHT:
-                if (getState() == MOVE) move(key);
-                else if (getState() == DRAW) draw(key);
+                if (getState() == MOVE) move(key); //moves cursor up columns
+                else if (getState() == DRAW) draw(key); //draws map in positive longitude direction
                 break;
             case ARROW_LEFT:
-                if (getState() == MOVE) move(key);
-                else if (getState == DRAW) draw(key);
+                if (getState() == MOVE) move(key); //moves cursor down columns
+                else if (getState == DRAW) draw(key); //draws map in negative longitude direction
                 break;
             case HOME:
                 if (getState() == MOVE) move(key); //move cursor to (1,1)
@@ -211,7 +211,7 @@ void move(const char key)
 //handles drawing operations in draw state
 void draw(const char key)
 {
-    EDLDM(); //enables DEC Line Drawing Mode
+    EDLDM; //enables DEC Line Drawing Mode
 
     switch (key)
     {
@@ -241,7 +241,7 @@ void draw(const char key)
             break;
     }
 
-    EAM(); //enables ASCII Mode
+    EAM; //enables ASCII Mode
 }
 
 //parses additional key inputs, used for control commands
