@@ -171,22 +171,13 @@ void move(const char key)
 //draw state operations
 void draw(const char key)
 {
-
-    EDLDM; //enables DEC Line Drawing Mode
-
     switch (key)
     {
         case ARROW_UP: //draws map in the positive latitude direction 1 unit
-            //
-            break;
         case ARROW_DOWN: //draws map in the negative latitude direction 1 unit
-            //
-            break;
         case ARROW_RIGHT: //draws map in the positive longitude direction 1 unit
-            //
-            break;
         case ARROW_LEFT: //draws map in the negaite longitude direction 1 unit
-            //
+            draw_cursor_move(key);
             break;
         case HOME: //moves to map layer 0
             //
@@ -197,8 +188,6 @@ void draw(const char key)
         default: //handles unforseen input
             break;
     }
-
-    EAM; //enables ASCII Mode
 }
 
 //used for Ctrl and both-state commands
