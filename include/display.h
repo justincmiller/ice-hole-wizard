@@ -36,6 +36,7 @@ enum displayActions
 
 void display(const int action, void* data);
 void getWindow(SMALL_RECT* vp);
+Node* getActiveLayer(Display* dsp);
 void render(); //renders the console
 char** newGrid();
 Node* newLayer();

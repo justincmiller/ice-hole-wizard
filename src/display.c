@@ -94,12 +94,12 @@ void initDisplay()
     dsp->width = dsp->vp.Right - dsp->vp.Left + 1;
     dsp->height = dsp->vp.Bottom - dsp->vp.Top + 1;
 
-    /*if width or height do not exceed grid dimensions, set margin offset to 
-    center viewport on the grid. Otherwise, align top left*/
-    dsp->margin.Left = (dsp->width <= MAP_COLS) ? (MAP_COLS - dsp->width) / 2 : 1;
-    dsp->margin.Top = (dsp->height <= MAP_ROWS) ? (MAP_ROWS - dsp->height) / 2 : 1;
-    dsp->margin.Right = dsp->margin.Left + dsp->width;
-    dsp->margin.Bottom = dsp->margin.Top + dsp->height;
+    /*max and min functions clamp margins to grid bounds (0, 99). if the window
+    exceeds the width of the grid, it will be aligned top left.*/
+    dsp->margin.Left = max((MAP_COLS - dsp->width) / 2, 0);
+    dsp->margin.Top = max((MAP_ROWS - dsp->height) / 2, 0);
+    dsp->margin.Right = min(dsp->margin.Left + dsp->width, MAP_COLS - 1);
+    dsp->margin.Bottom = min(dsp->margin.Top + dsp->height, MAP_ROWS - 1);
 
     dsp->cursor.X = dsp->width / 2;
     dsp->cursor.Y = dsp->height / 2;
@@ -111,14 +111,20 @@ void render()
 {
     Display* dsp;
     display(GET_DISPLAY, &dsp);
-    Node* map = dsp->map;
-    if (map == NULL) return;
+    char** grid = getActiveLayer(dsp)->grid;
 
-    for (int i = 0; i < dsp->layer; i++)
-    {
-        if (map->next != NULL) map = map->next;
-        else return;
-    }
+    if (grid == NULL) return;
+
+    /***** initialize buffer variables *****/
+
+    //buffer width increased to accomodate \r\n for printing
+    int width = dsp->width + 2;
+    int left = dsp->margin.Left;
+    int top = dsp->margin.Top;
+    int row = 0;
+
+    //clamp copy length to the end of the visible portion of the grid
+    int len = min(dsp->width, (MAP_COLS - 1) - left);
 
     char** buffer = malloc(dsp->height * sizeof(char*));
     if (buffer == NULL)
@@ -126,8 +132,8 @@ void render()
         printf(">> Error: memory failure.\n");
         return;
     }
-
-    buffer[0] = malloc(dsp->height * dsp->width * sizeof(char));
+    
+    buffer[0] = malloc(dsp->height * width* sizeof(char));
     if (buffer[0] == NULL)
     {
         printf(">> Error: memory failure.\n");
@@ -135,18 +141,36 @@ void render()
         return;
     }
 
-    int left = dsp->margin.Left;
-    int right = dsp->margin.Right;
-    int top = dsp->margin.Top;
-    int bottom = dsp->margin.Bottom;
-
     for (int i = 0; i < dsp->height; i++)
     {
-        buffer[i] = buffer[0] + i * dsp->width;
-        memcpy(buffer[i], &map->grid[i + top][left], dsp->width * sizeof(char));
+        //set row pointer
+        buffer[i] = buffer[0] + i * width;
+        //prevent grid overflow and copy from grid
+        row = min(i + top, MAP_ROWS - 1);
+        if (row < MAP_ROWS)
+        {
+            memcpy(buffer[i], &grid[row][left], len * sizeof(char));
+            //insert a carriage return and newline starting at len (last two characters)
+            buffer[i][len] = '\r';
+            buffer[i][len + 1] = '\n';
+        }
     }
 
     //todo: render window
+}
+
+Node* getActiveLayer(Display* dsp)
+{
+    if (dsp == NULL || dsp->map == NULL) return NULL;
+
+    Node* layer = dsp->map;
+    for (int i = 0; i < dsp->layer; i++)
+    {
+        if (layer->next != NULL) layer = layer->next;
+        else return NULL;
+    }
+
+    return layer;
 }
 
 void getWindow(SMALL_RECT* rect)
