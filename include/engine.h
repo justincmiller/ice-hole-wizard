@@ -1,3 +1,9 @@
+/*
+*  Credit is given to Dr. Larry Hughes for providing the reference code
+*  that was used throughout this program. Specifically, the engine.h, vterminal.h, and vterminal.c files
+*  which uses much of Dr. Hughes' work.
+*/
+
 #ifndef ENGINE_H
 #define ENGINE_H
 

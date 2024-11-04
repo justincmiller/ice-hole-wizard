@@ -1,5 +1,12 @@
+/*
+*  Credit is given to Dr. Larry Hughes for providing the reference code
+*  that was used throughout this program. Specifically, the engine.h, vterminal.h, and vterminal.c files
+*  which uses much of Dr. Hughes' work.
+*/
+
 #include "engine.h"
 #include "display.h"
+#include "vterminal.h"
 
 //initializes the console with screen buffer and window settings
 void init()
@@ -125,10 +132,10 @@ void update()
             case ARROW_LEFT:
             case HOME:
             case END:
-            case INSERT:
                 if (getState() == MOVE) move(key); // go to move state operation function
                 else if (getState() == DRAW) draw(key); // go to draw state operation function
                 break;
+            case INSERT:
             case DEL: //both states: erase character at cursor position
             case PG_UP: //both states: save current layer, move up one layer.
             case PG_DN: //both states: save current layer,move down one layer by either creating a new layer or using an existing layer if available
@@ -170,22 +177,13 @@ void move(const char key)
 //draw state operations
 void draw(const char key)
 {
-
-    EDLDM; //enables DEC Line Drawing Mode
-
     switch (key)
     {
         case ARROW_UP: //draws map in the positive latitude direction 1 unit
-            //
-            break;
         case ARROW_DOWN: //draws map in the negative latitude direction 1 unit
-            //
-            break;
         case ARROW_RIGHT: //draws map in the positive longitude direction 1 unit
-            //
-            break;
         case ARROW_LEFT: //draws map in the negaite longitude direction 1 unit
-            //
+            draw_cursor_move(key);
             break;
         case HOME: //moves to map layer 0
             //
@@ -196,8 +194,6 @@ void draw(const char key)
         default: //handles unforseen input
             break;
     }
-
-    EAM; //enables ASCII Mode
 }
 
 //used for Ctrl and both-state commands
@@ -210,13 +206,13 @@ void parseKey(const char key)
             {
                 char c_key = (char)_getch();
                 switch (c_key) {
-                    case ARROW_UP: //move up 1 cell latitude
+                    case ARROW_UP: //move map up 1 latitude in screen
                         break;
-                    case ARROW_DOWN: //move down 1 cell latitude
+                    case ARROW_DOWN: //move map down 1 latitude in screen
                         break;
-                    case ARROW_RIGHT: //move right 1 cell longitude
+                    case ARROW_RIGHT: //move map right 1 longitude in screen
                         break;
-                    case ARROW_LEFT: //move left 1 cell longitude
+                    case ARROW_LEFT: //move map left 1 longitude in screen
                         break;
                     default:
                         break;
@@ -227,7 +223,7 @@ void parseKey(const char key)
             if (_getch() == '~') toggleState(); //swaps states between map drawing mode and cursor movement mode
             break;
         case DEL:
-            if (_getch() == '~') //erase character at curosr position
+            if (_getch() == '~') EL(1); //erase character at curosr position
             break;
         case PG_UP:
             if (_getch() == '~') //save current layer, move up one layer
