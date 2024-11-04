@@ -32,14 +32,15 @@ enum symbol asc_dec[] = {
 
 int draw_object(int col, int row, int symbol)
 {
+    //our screen is going to follow the cursor so were not worried about it printing off screen
     /*
      - Attempts to draw symbol at position col, row
      - Returns -1 if illegal location, 0 otherwise
     */
-    if (col <= /*min col value*/ || row <= /*min row value*/ ||
-        col >= /*max col value*/ || row >= /*max row value*/)
+    //if (col <= /*min col value*/ || row <= /*min row value*/ ||
+        //col >= /*max col value*/ || row >= /*max row value*/)
         /* Outside view screen - do not draw */
-        return -1;
+        //return -1;
 
     CUP(col, row);
     _putch(symbol);
