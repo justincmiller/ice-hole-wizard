@@ -23,9 +23,10 @@ char** newGrid()
     NUL terminating the last row*/
     for (int i = 0; i < MAP_ROWS; i++)
     {
-        grid[i] = grid[0] + i * MAP_COLS;
-        grid[i][MAP_COLS - 1] = (i < MAP_ROWS - 1) ? '\n' : '\0';
+        grid[i] = grid[0] + i * (MAP_COLS);
     }
+
+    memset(grid[0], ' ', MAP_ROWS * MAP_COLS);
 
     return grid;
 }
@@ -81,9 +82,28 @@ void freeLayers(Node** map)
 void initDisplay()
 {
     Display* dsp;
-    display(GET_DISPLAY, dsp);
+    display(GET_DISPLAY, &dsp);
     addLayer(&(dsp->map));
     getWindow(&(dsp->vp));
+    dsp->width = dsp->vp.Right - dsp->vp.Left + 1;
+    dsp->height = dsp->vp.Bottom - dsp->vp.Top + 1;
+
+    /*if width or height do not exceed grid dimensions, set margin offset to 
+    center viewport on the grid. Otherwise, align top left*/
+    dsp->margin.Left = (dsp->width <= MAP_COLS) ? (MAP_COLS - dsp->width) / 2 : 0;
+    dsp->margin.Top = (dsp->height <= MAP_ROWS) ? (MAP_ROWS - dsp->height) / 2 : 0;
+    dsp->margin.Right = dsp->margin.Left + dsp->width;
+    dsp->margin.Bottom = dsp->margin.Top + dsp->height;
+
+    dsp->cursor.X = dsp->width / 2;
+    dsp->cursor.Y = dsp->height / 2;
+
+    CUP(dsp->cursor.X, dsp->cursor.Y);
+}
+
+void render()
+{
+    
 }
 
 void getWindow(SMALL_RECT* rect)
@@ -106,7 +126,6 @@ void getWindow(SMALL_RECT* rect)
     *rect = info.srWindow;
 }
 
-//todo: setup display like wizard function
 void display(const int action, void* data)
 {
     static Display display;
@@ -120,7 +139,7 @@ void display(const int action, void* data)
             display.vp = *(SMALL_RECT*)data;
             break;
         case GET_MAP:
-            *(Node**)data = display.map;
+            *(Node**)data = &display.map;
             break;
         case SET_MAP:
             display.map = *(Node**)data;
@@ -130,10 +149,7 @@ void display(const int action, void* data)
         case SET_CUR:
             break;
         case GET_DISPLAY:
-            *(Display*)data = display;
-            break;
-        case SET_DISPLAY:
-            display = *(Display*)data;
+            *(Display**)data = &display;
             break;
         default:
             break;
