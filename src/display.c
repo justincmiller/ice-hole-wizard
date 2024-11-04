@@ -96,8 +96,8 @@ void initDisplay()
 
     /*if width or height do not exceed grid dimensions, set margin offset to 
     center viewport on the grid. Otherwise, align top left*/
-    dsp->margin.Left = (dsp->width <= MAP_COLS) ? (MAP_COLS - dsp->width) / 2 : 0;
-    dsp->margin.Top = (dsp->height <= MAP_ROWS) ? (MAP_ROWS - dsp->height) / 2 : 0;
+    dsp->margin.Left = (dsp->width <= MAP_COLS) ? (MAP_COLS - dsp->width) / 2 : 1;
+    dsp->margin.Top = (dsp->height <= MAP_ROWS) ? (MAP_ROWS - dsp->height) / 2 : 1;
     dsp->margin.Right = dsp->margin.Left + dsp->width;
     dsp->margin.Bottom = dsp->margin.Top + dsp->height;
 
@@ -109,7 +109,44 @@ void initDisplay()
 
 void render()
 {
-    
+    Display* dsp;
+    display(GET_DISPLAY, &dsp);
+    Node* map = dsp->map;
+    if (map == NULL) return;
+
+    for (int i = 0; i < dsp->layer; i++)
+    {
+        if (map->next != NULL) map = map->next;
+        else return;
+    }
+
+    char** buffer = malloc(dsp->height * sizeof(char*));
+    if (buffer == NULL)
+    {
+        printf(">> Error: memory failure.\n");
+        return;
+    }
+
+    buffer[0] = malloc(dsp->height * dsp->width * sizeof(char));
+    if (buffer[0] == NULL)
+    {
+        printf(">> Error: memory failure.\n");
+        free(buffer);
+        return;
+    }
+
+    int left = dsp->margin.Left;
+    int right = dsp->margin.Right;
+    int top = dsp->margin.Top;
+    int bottom = dsp->margin.Bottom;
+
+    for (int i = 0; i < dsp->height; i++)
+    {
+        buffer[i] = buffer[0] + i * dsp->width;
+        memcpy(buffer[i], &map->grid[i + top][left], dsp->width * sizeof(char));
+    }
+
+    //todo: render window
 }
 
 void getWindow(SMALL_RECT* rect)

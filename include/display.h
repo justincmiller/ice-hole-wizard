@@ -21,7 +21,7 @@ typedef struct Node
 
 typedef struct Display
 {
-    int state;
+    int state, layer;
     SMALL_RECT vp;
     SMALL_RECT margin;
     int width, height;
