@@ -17,7 +17,6 @@ typedef struct Node
 char** newGrid();
 Node* newLayer();
 void addLayer(Node** map);
-Node* getActiveLayer(const Node* map, const int n);
 void freeLayers(Node** map);
 
 #endif

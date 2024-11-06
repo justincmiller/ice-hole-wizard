@@ -24,9 +24,11 @@ Display* getDisplay();
 SMALL_RECT getWindow();
 void resetMargins();
 void initDisplay();
+Node* getActiveLayer();
 void render(); //renders the console
 void pollWindow();
 void setCursor(const short x, const short y);
 void moveCursor(const int action);
+void freeDisplay();
 
 #endif

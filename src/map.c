@@ -62,20 +62,6 @@ void addLayer(Node** map)
     }
 }
 
-Node* getActiveLayer(const Node* map, const int n)
-{
-    if (map == NULL) return NULL;
-
-    Node* layer = map;
-    for (int i = 0; i < n; i++)
-    {
-        if (layer->next != NULL) layer = layer->next;
-        else return NULL;
-    }
-
-    return layer;
-}
-
 void freeLayers(Node** map)
 {
     if (map == NULL || *map == NULL) return;

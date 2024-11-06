@@ -57,23 +57,35 @@ void initDisplay()
     CUP(dsp.cursor.X, dsp.cursor.Y);
 }
 
+Node* getActiveLayer()
+{
+    if (dsp.map == NULL) return NULL;
+
+    Node* layer = dsp.map;
+    for (int i = 0; i < dsp.layer; i++)
+    {
+        if (layer->next != NULL) layer = layer->next;
+        else return NULL;
+    }
+
+    return layer;
+}
+
 void render()
 {
-    char** grid = getActiveLayer(dsp.map, dsp.layer)->grid;
+    char** grid = getActiveLayer()->grid;
 
     if (grid == NULL) return;
 
     /***** initialize buffer variables *****/
 
-    //buffer width increased to accomodate \r\n for printing
-    int width = dsp.width + 2;
     int left = dsp.margin.Left;
     int top = dsp.margin.Top;
-    int row = 0;
-    int bufsize = width * dsp.height;
+    int size = dsp.width * dsp.height;
 
-    //clamp copy length to the end of the visible portion of the grid
-    int len = min(dsp.width, (MAP_COLS - 1) - left);
+    /*clamp copy length to the end of the visible portion of the grid with
+    space for a newline for printing*/
+    int len = CLAMP_X(dsp.width - 1);
 
     char** buffer = malloc(dsp.height * sizeof(char*));
     if (buffer == NULL)
@@ -82,7 +94,7 @@ void render()
         return;
     }
     
-    buffer[0] = malloc(dsp.height * width* sizeof(char));
+    buffer[0] = malloc(dsp.height * dsp.width* sizeof(char));
     if (buffer[0] == NULL)
     {
         printf(">> Error: memory failure.\n");
@@ -90,18 +102,16 @@ void render()
         return;
     }
 
-    for (int i = 0; i < dsp.height; i++)
+    for (int i = 0; i < CLAMP_Y(dsp.height); i++)
     {
         //set row pointer
-        buffer[i] = buffer[0] + i * width;
+        buffer[i] = buffer[0] + i * dsp.width;
         //prevent grid overflow and copy from grid
-        row = min(i + top, MAP_ROWS - 1);
-        if (row < MAP_ROWS)
+        if (CLAMP_Y(i + top) < MAP_ROWS)
         {
-            memcpy(buffer[i], &grid[row][left], len * sizeof(char));
-            //insert a carriage return and newline starting at len (last two characters)
-            buffer[i][len] = '\r';
-            buffer[i][len + 1] = '\n';
+            memcpy(buffer[i], &grid[i + top][left], len * sizeof(char));
+            //insert a newline starting at len (last character)
+            buffer[i][len] = '\n';
         }
     }
 
@@ -109,7 +119,7 @@ void render()
     CUP(1,1);
     CLRSCR;
     
-    fwrite(buffer, sizeof(char), bufsize, stdout);
+    fwrite(buffer, sizeof(char), size, stdout);
     fflush(stdout);
 
     //return cursor to position on grid
@@ -142,7 +152,7 @@ void pollWindow()
     }
 }
 
-//absolute
+//move cursor using absolute parameters
 void setCursor(const short x, const short y)
 {
     dsp.cursor.X = x;
@@ -153,7 +163,7 @@ void setCursor(const short x, const short y)
     CUP(offsetX, offsetY);
 }
 
-//relative
+//move cursor using relative parameters
 void moveCursor(const int action)
 {
     switch(action)
