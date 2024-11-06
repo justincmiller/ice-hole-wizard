@@ -14,7 +14,7 @@ void init()
     virtualOutput();
     virtualInput();
     
-    reset();
+    displayInit();
     setState(MOVE);
 }
 
@@ -108,6 +108,8 @@ void toggleState()
 
 void update()
 {
+    pollWindow();
+
     //check if key has been pressed
     if (_kbhit() == 0) return;
     

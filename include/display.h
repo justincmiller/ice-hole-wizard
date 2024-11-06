@@ -36,11 +36,17 @@ enum displayActions
 
 void display(const int action, void* data);
 void getWindow(SMALL_RECT* vp);
-Node* getActiveLayer(Display* dsp);
+void initDisplay();
 void render(); //renders the console
+void pollWindow();
+
+/*layers/linked list functions*/
 char** newGrid();
 Node* newLayer();
 void addLayer(Node** map);
+Node* getActiveLayer(Display* dsp);
 void freeLayers(Node** map);
+
+
 
 #endif
