@@ -29,24 +29,17 @@ typedef struct Display
     COORD cursor;
 }Display;
 
-enum displayActions
-{
-    GET_VP, SET_VP, GET_MAP, SET_MAP, GET_CUR, SET_CUR, GET_DISPLAY
-};
-
-void display(const int action, void* data);
-void getWindow(SMALL_RECT* vp);
+SMALL_RECT getWindow();
+void setMargins();
 void initDisplay();
 void render(); //renders the console
 void pollWindow();
 
-/*layers/linked list functions*/
+/*linked list functions for map layers*/
 char** newGrid();
 Node* newLayer();
 void addLayer(Node** map);
-Node* getActiveLayer(Display* dsp);
+Node* getActiveLayer();
 void freeLayers(Node** map);
-
-
 
 #endif

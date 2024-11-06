@@ -6,37 +6,10 @@
 
 #include "display.h"
 
-void display(const int action, void* data)
-{
-    static Display display;
+//static global structure to limit scope
+static Display dsp;
 
-    switch (action)
-    {
-        case GET_VP:
-            *(SMALL_RECT*)data = display.vp;
-            break;
-        case SET_VP:
-            display.vp = *(SMALL_RECT*)data;
-            break;
-        case GET_MAP:
-            *(Node**)data = &display.map;
-            break;
-        case SET_MAP:
-            display.map = *(Node**)data;
-            break;
-        case GET_CUR:
-            break;
-        case SET_CUR:
-            break;
-        case GET_DISPLAY:
-            *(Display**)data = &display;
-            break;
-        default:
-            break;
-    }
-}
-
-void getWindow(SMALL_RECT* rect)
+SMALL_RECT getWindow()
 {
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     if (out == INVALID_HANDLE_VALUE)
@@ -53,35 +26,37 @@ void getWindow(SMALL_RECT* rect)
         return;
     }
 
-    *rect = info.srWindow;
+    return info.srWindow;
+}
+
+void setMargins()
+{
+    //calculate window dimensions
+    dsp.width = dsp.vp.Right - dsp.vp.Left + 1;
+    dsp.height = dsp.vp.Bottom - dsp.vp.Top + 1;
+
+    /*max and min functions clamp margins to grid bounds (0, 99). if the window
+    exceeds the width of the grid, it will be aligned top left.*/
+    dsp.margin.Left = max((MAP_COLS - dsp.width) / 2, 0);
+    dsp.margin.Top = max((MAP_ROWS - dsp.height) / 2, 0);
+    dsp.margin.Right = min(dsp.margin.Left + dsp.width, MAP_COLS - 1);
+    dsp.margin.Bottom = min(dsp.margin.Top + dsp.height, MAP_ROWS - 1);
 }
 
 void initDisplay()
 {
-    Display* dsp;
-    display(GET_DISPLAY, &dsp);
-    addLayer(&(dsp->map));
-    getWindow(&(dsp->vp));
-    dsp->width = dsp->vp.Right - dsp->vp.Left + 1;
-    dsp->height = dsp->vp.Bottom - dsp->vp.Top + 1;
+    addLayer(&(dsp.map));
+    setMargins();
 
-    /*max and min functions clamp margins to grid bounds (0, 99). if the window
-    exceeds the width of the grid, it will be aligned top left.*/
-    dsp->margin.Left = max((MAP_COLS - dsp->width) / 2, 0);
-    dsp->margin.Top = max((MAP_ROWS - dsp->height) / 2, 0);
-    dsp->margin.Right = min(dsp->margin.Left + dsp->width, MAP_COLS - 1);
-    dsp->margin.Bottom = min(dsp->margin.Top + dsp->height, MAP_ROWS - 1);
+    //center cursor on screen
+    dsp.cursor.X = dsp.width / 2;
+    dsp.cursor.Y = dsp.height / 2;
 
-    dsp->cursor.X = dsp->width / 2;
-    dsp->cursor.Y = dsp->height / 2;
-
-    CUP(dsp->cursor.X, dsp->cursor.Y);
+    CUP(dsp.cursor.X, dsp.cursor.Y);
 }
 
 void render()
 {
-    Display* dsp;
-    display(GET_DISPLAY, &dsp);
     char** grid = getActiveLayer(dsp)->grid;
 
     if (grid == NULL) return;
@@ -89,23 +64,23 @@ void render()
     /***** initialize buffer variables *****/
 
     //buffer width increased to accomodate \r\n for printing
-    int width = dsp->width + 2;
-    int left = dsp->margin.Left;
-    int top = dsp->margin.Top;
+    int width = dsp.width + 2;
+    int left = dsp.margin.Left;
+    int top = dsp.margin.Top;
     int row = 0;
-    int bufsize = width * dsp->height;
+    int bufsize = width * dsp.height;
 
     //clamp copy length to the end of the visible portion of the grid
-    int len = min(dsp->width, (MAP_COLS - 1) - left);
+    int len = min(dsp.width, (MAP_COLS - 1) - left);
 
-    char** buffer = malloc(dsp->height * sizeof(char*));
+    char** buffer = malloc(dsp.height * sizeof(char*));
     if (buffer == NULL)
     {
         printf(">> Error: memory failure.\n");
         return;
     }
     
-    buffer[0] = malloc(dsp->height * width* sizeof(char));
+    buffer[0] = malloc(dsp.height * width* sizeof(char));
     if (buffer[0] == NULL)
     {
         printf(">> Error: memory failure.\n");
@@ -113,7 +88,7 @@ void render()
         return;
     }
 
-    for (int i = 0; i < dsp->height; i++)
+    for (int i = 0; i < dsp.height; i++)
     {
         //set row pointer
         buffer[i] = buffer[0] + i * width;
@@ -136,7 +111,7 @@ void render()
     fflush(stdout);
 
     //return cursor to position on grid
-    CUP(dsp->cursor.X, dsp->cursor.Y);
+    CUP(dsp.cursor.X, dsp.cursor.Y);
 
     free(buffer[0]);
     free(buffer);
@@ -144,27 +119,17 @@ void render()
 
 void pollWindow()
 {
-    Display* dsp;
-    SMALL_RECT vp;
-    display(GET_DISPLAY, &dsp);
-    getWindow(&vp);
+    SMALL_RECT win = getWindow();
 
-    int width = vp.Right - vp.Left + 1;
-    int height = vp.Bottom - vp.Top + 1;
+    int dx = (dsp.vp.Right - dsp.vp.Left + 1) - (win.Right - win.Left + 1);
+    int dy = (dsp.vp.Bottom - dsp.vp.Top + 1) - (win.Bottom - win.Top + 1);
 
-    //check if current viewport matches the stored viewport
-    if (width != dsp->width || height != dsp->height)
+    //check if either dx or dy are nonzero
+    if (dx || dy)
     {
         //set new dimensions
-        dsp->width = width;
-        dsp->height = height;
-
-        //update margins using new dimensions
-        dsp->margin.Left = max((MAP_COLS - dsp->width) / 2, 0);
-        dsp->margin.Top = max((MAP_ROWS - dsp->height) / 2, 0);
-        dsp->margin.Right = min(dsp->margin.Left + dsp->width, MAP_COLS - 1);
-        dsp->margin.Bottom = min(dsp->margin.Top + dsp->height, MAP_ROWS - 1);
-
+        dsp.vp = win;
+        setMargins();
         //render with new dimensions
         render();
     }
@@ -232,12 +197,12 @@ void addLayer(Node** map)
     }
 }
 
-Node* getActiveLayer(Display* dsp)
+Node* getActiveLayer()
 {
-    if (dsp == NULL || dsp->map == NULL) return NULL;
+    if (dsp.map == NULL) return NULL;
 
-    Node* layer = dsp->map;
-    for (int i = 0; i < dsp->layer; i++)
+    Node* layer = dsp.map;
+    for (int i = 0; i < dsp.layer; i++)
     {
         if (layer->next != NULL) layer = layer->next;
         else return NULL;
