@@ -32,12 +32,15 @@ SMALL_RECT getWindow()
 
 void resetMargins()
 {
-    /*max and min functions clamp margins to grid bounds (0, 99). if the window
+    /*CLAMP macros use max and min functions clamp margins to grid bounds (0, 99). if the window
     exceeds the width of the grid, it will be aligned top left.*/
-    dsp.margin.Left = max(dsp.cursor.X - dsp.width / 2, 0);
-    dsp.margin.Top =  max(dsp.cursor.Y - dsp.height / 2, 0);
-    dsp.margin.Right = min(dsp.margin.Left + dsp.width, MAP_COLS - 1);
-    dsp.margin.Bottom = min(dsp.margin.Top + dsp.height, MAP_ROWS - 1);
+    dsp.margin.Left = CLAMP_X(dsp.cursor.X - dsp.width / 2);
+    dsp.margin.Top =  CLAMP_Y(dsp.cursor.Y - dsp.height / 2);
+    dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.width);
+    dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.height);
+
+    //render window with new margins
+    render();
 }
 
 void initDisplay()
@@ -56,7 +59,7 @@ void initDisplay()
 
 void render()
 {
-    char** grid = getActiveLayer(dsp)->grid;
+    char** grid = getActiveLayer(dsp.map, dsp.layer)->grid;
 
     if (grid == NULL) return;
 
@@ -139,106 +142,37 @@ void pollWindow()
     }
 }
 
-COORD getCursor()
-{
-    return dsp.cursor;
-}
-
-void setCursor(short x, short y)
+//absolute
+void setCursor(const short x, const short y)
 {
     dsp.cursor.X = x;
     dsp.cursor.Y = y;
+
+    int offsetX = CLAMP_X(dsp.cursor.X - dsp.margin.Left);
+    int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
+    CUP(offsetX, offsetY);
 }
 
-char** newGrid()
+//relative
+void moveCursor(const int action)
 {
-    //allocate row pointers
-    char** grid = malloc(MAP_ROWS * sizeof(char*));
-    if (grid == NULL)
+    switch(action)
     {
-        printf(">> Error: memory failure.\n");
-        return NULL;
-    }
-
-    //allocate contiguous 2D array of chars
-    grid[0] = malloc(MAP_COLS * MAP_ROWS * sizeof(char));
-    if (grid[0] == NULL)
-    {
-        printf(">> Error: memory failure.\n");
-        free(grid);
-        return NULL;
+        case UP:
+            dsp.cursor.Y = CLAMP_Y(dsp.cursor.Y - 1);
+            break;
+        case DOWN:
+            dsp.cursor.Y = CLAMP_Y(dsp.cursor.Y + 1);
+            break;
+        case LEFT:
+            dsp.cursor.X = CLAMP_X(dsp.cursor.X - 1);
+            break;
+        case RIGHT:
+            dsp.cursor.X = CLAMP_X(dsp.cursor.X + 1);
+            break;
     }
     
-    /*set row pointers and place a newline at the end of every row,
-    NUL terminating the last row*/
-    for (int i = 0; i < MAP_ROWS; i++)
-    {
-        grid[i] = grid[0] + i * (MAP_COLS);
-    }
-
-    memset(grid[0], ' ', MAP_ROWS * MAP_COLS);
-
-    return grid;
-}
-
-Node* newLayer()
-{
-    Node* layer = malloc(sizeof(Node));
-    layer->grid = newGrid();
-    layer->next = NULL;
-    layer->prev = NULL;
-    return layer;
-}
-
-void addLayer(Node** map)
-{
-    Node* layer = newLayer();
-    
-    //if map is empty, add layer to map
-    if (*map == NULL)
-    {
-        *map = layer;
-    }
-    else
-    {
-        //traverse to end of list and insert layer
-        Node* ptr = *map;
-        while (ptr->next != NULL)
-        {
-            ptr = ptr->next;
-        }
-        ptr->next = layer;
-        layer->prev = ptr;
-    }
-}
-
-Node* getActiveLayer()
-{
-    if (dsp.map == NULL) return NULL;
-
-    Node* layer = dsp.map;
-    for (int i = 0; i < dsp.layer; i++)
-    {
-        if (layer->next != NULL) layer = layer->next;
-        else return NULL;
-    }
-
-    return layer;
-}
-
-void freeLayers(Node** map)
-{
-    if (map == NULL || *map == NULL) return;
-
-    Node* ptr = *map;
-    while (ptr != NULL)
-    {
-        Node* next = ptr->next;
-        free(ptr->grid[0]);
-        free(ptr->grid);
-        free(ptr);
-        ptr = next;
-    }
-
-    *map == NULL;
+    int offsetX = CLAMP_X(dsp.cursor.X - dsp.margin.Left);
+    int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
+    CUP(offsetX, offsetY);
 }

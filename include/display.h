@@ -8,16 +8,7 @@
 #define DISPLAY_H
 
 #include "vterminal.h"
-
-#define MAP_ROWS 100
-#define MAP_COLS 100
-
-typedef struct Node
-{
-    char** grid;
-    struct Node* next;
-    struct Node* prev;
-}Node;
+#include "map.h"
 
 typedef struct Display
 {
@@ -30,18 +21,11 @@ typedef struct Display
 }Display;
 
 SMALL_RECT getWindow();
-void setMargins();
+void resetMargins();
 void initDisplay();
 void render(); //renders the console
 void pollWindow();
-COORD getCursor();
-void setCursor(short x, short y);
-
-/*linked list functions for map layers*/
-char** newGrid();
-Node* newLayer();
-void addLayer(Node** map);
-Node* getActiveLayer();
-void freeLayers(Node** map);
+void setCursor(const short x, const short y);
+void moveCursor(const int action);
 
 #endif

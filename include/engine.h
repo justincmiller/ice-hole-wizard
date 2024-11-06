@@ -16,10 +16,18 @@
 #define COL_X(x) ((x) + 50)
 #define ROW_Y(y) (50 - (y))
 
+#define CLAMP_X(x) (max(min((x), 99), 0))
+#define CLAMP_Y(y) (max(min((y), 99), 0))
+
 //three states: cursor movement, map drawing, quit program
 enum status
 {
     MOVE, DRAW, QUIT
+};
+
+enum directions
+{
+    UP, DOWN, LEFT, RIGHT
 };
 
 //function declarations

@@ -6,7 +6,6 @@
 
 #include "engine.h"
 #include "display.h"
-#include "vterminal.h"
 
 //statc global variable to limit scope
 static int state;
@@ -87,19 +86,20 @@ void move(const char key)
     switch (key)
     {
         case ARROW_UP: //moves cursor up columns by 1 unit
-            CUU(1);
+            moveCursor(UP);
             break;
         case ARROW_DOWN: //moves cursor down columns by 1 unit
-            CUD(1);
+            moveCursor(DOWN);
             break;
         case ARROW_RIGHT: //moves cursor right in the row by 1 unit
-            CUF(1);
+            moveCursor(RIGHT);
             break;
         case ARROW_LEFT: //moves cursor left in the row by 1 unit
-            CUB(1);
+            moveCursor(LEFT);
             break;
         case HOME: //moves cursor to screen position (1,1)
-            reset();
+            setCursor(X_COL(1), Y_ROW(1));
+            resetMargins();
             break;
         case END: //sets state to QUIT (exits the program)
             state = QUIT;
