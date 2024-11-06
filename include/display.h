@@ -29,6 +29,7 @@ void render(); //renders the console
 void pollWindow();
 void setCursor(const short x, const short y);
 void moveCursor(const int action);
+void panViewport(const int action);
 void freeDisplay();
 
 #endif

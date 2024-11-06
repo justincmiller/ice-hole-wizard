@@ -9,6 +9,7 @@
 
 //include the vterminal header for terminal control and key codes
 #include "vterminal.h"
+#include "display.h"
 
 //macros for converting between internal array and map
 #define X_COL(col) ((col) - 50)
@@ -33,9 +34,11 @@ enum directions
 //function declarations
 void init(); //initializes console setup
 int status(); //gets current state
+void pollInput();
 
 void draw(const char key); //handles draw state operations
 void move(const char key); //handles move state operations
 void parseKey(const char key); //handles non-movement keystrokes
 
+void purge();
 #endif

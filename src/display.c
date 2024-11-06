@@ -16,7 +16,6 @@ SMALL_RECT getWindow()
     if (out == INVALID_HANDLE_VALUE)
     {
         printf("Error: could not fetch output handle\n");
-        return;
     }
 
     CONSOLE_SCREEN_BUFFER_INFO info;
@@ -24,7 +23,6 @@ SMALL_RECT getWindow()
     if (!GetConsoleScreenBufferInfo(out, &info))
     {
         printf(">> Error: unable to get console screen buffer info.\n");
-        return;
     }
 
     return info.srWindow;
@@ -214,5 +212,5 @@ void panViewport(const int action)
 
 void freeDisplay()
 {
-    freeLayers(dsp.map);
+    freeLayers(&(dsp.map));
 }

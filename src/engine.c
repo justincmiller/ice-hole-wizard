@@ -5,7 +5,6 @@
 */
 
 #include "engine.h"
-#include "display.h"
 
 //statc global variable to limit scope
 static int state;
@@ -15,7 +14,7 @@ void init()
 {
     virtualOutput();
     virtualInput();
-    displayInit();
+    initDisplay();
     state = MOVE;
 }
 
