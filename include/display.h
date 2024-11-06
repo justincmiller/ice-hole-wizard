@@ -34,6 +34,8 @@ void setMargins();
 void initDisplay();
 void render(); //renders the console
 void pollWindow();
+COORD getCursor();
+void setCursor(short x, short y);
 
 /*linked list functions for map layers*/
 char** newGrid();

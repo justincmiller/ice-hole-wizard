@@ -5,6 +5,7 @@
 */
 
 #include "display.h"
+#include "engine.h"
 
 //static global structure to limit scope
 static Display dsp;
@@ -29,28 +30,26 @@ SMALL_RECT getWindow()
     return info.srWindow;
 }
 
-void setMargins()
+void resetMargins()
 {
-    //calculate window dimensions
-    dsp.width = dsp.vp.Right - dsp.vp.Left + 1;
-    dsp.height = dsp.vp.Bottom - dsp.vp.Top + 1;
-
     /*max and min functions clamp margins to grid bounds (0, 99). if the window
     exceeds the width of the grid, it will be aligned top left.*/
-    dsp.margin.Left = max((MAP_COLS - dsp.width) / 2, 0);
-    dsp.margin.Top = max((MAP_ROWS - dsp.height) / 2, 0);
+    dsp.margin.Left = max(dsp.cursor.X - dsp.width / 2, 0);
+    dsp.margin.Top =  max(dsp.cursor.Y - dsp.height / 2, 0);
     dsp.margin.Right = min(dsp.margin.Left + dsp.width, MAP_COLS - 1);
     dsp.margin.Bottom = min(dsp.margin.Top + dsp.height, MAP_ROWS - 1);
 }
 
 void initDisplay()
 {
-    addLayer(&(dsp.map));
-    setMargins();
+    dsp.vp = getWindow();
+    dsp.width = dsp.vp.Right - dsp.vp.Left + 1;
+    dsp.height = dsp.vp.Bottom - dsp.vp.Top + 1;
+    dsp.cursor.X = X_COL(1);
+    dsp.cursor.Y = Y_ROW(1);
+    resetMargins();
 
-    //center cursor on screen
-    dsp.cursor.X = dsp.width / 2;
-    dsp.cursor.Y = dsp.height / 2;
+    addLayer(&(dsp.map));
 
     CUP(dsp.cursor.X, dsp.cursor.Y);
 }
@@ -121,18 +120,34 @@ void pollWindow()
 {
     SMALL_RECT win = getWindow();
 
-    int dx = (dsp.vp.Right - dsp.vp.Left + 1) - (win.Right - win.Left + 1);
-    int dy = (dsp.vp.Bottom - dsp.vp.Top + 1) - (win.Bottom - win.Top + 1);
+    int width = win.Right - win.Left + 1;
+    int height = win.Bottom - win.Top + 1;
+
+    int dx = dsp.width - width;
+    int dy = dsp.height - height;
 
     //check if either dx or dy are nonzero
     if (dx || dy)
     {
         //set new dimensions
         dsp.vp = win;
-        setMargins();
+        dsp.width = width;
+        dsp.height = height;
+        resetMargins();
         //render with new dimensions
         render();
     }
+}
+
+COORD getCursor()
+{
+    return dsp.cursor;
+}
+
+void setCursor(short x, short y)
+{
+    dsp.cursor.X = x;
+    dsp.cursor.Y = y;
 }
 
 char** newGrid()

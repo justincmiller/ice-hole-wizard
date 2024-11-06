@@ -8,102 +8,35 @@
 #include "display.h"
 #include "vterminal.h"
 
+//statc global variable to limit scope
+static int state;
+
 //initializes the console with screen buffer and window settings
 void init()
 {
     virtualOutput();
     virtualInput();
-    
     displayInit();
-    setState(MOVE);
+    state = MOVE;
 }
 
+//function to move to grid origin (1,1)
 void reset()
 {
-    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (out == INVALID_HANDLE_VALUE)
-    {
-        printf("Error: could not fetch output handle\n");
-        setState(QUIT);
-        return;
-    }
-
-    CONSOLE_SCREEN_BUFFER_INFO info; //structure to hold information about the console screen buffer
-
-    //retrieve current console screen buffer information
-    if (!GetConsoleScreenBufferInfo(out, &info))
-    {
-        //display error if it fails
-        printf(">> Error: unable to get console screen buffer info.\n");
-        setState(QUIT); //exits program
-        return;
-    }
-
-    SMALL_RECT window = info.srWindow;
-
-    //calculate the width and height of the console window, offset of 1 due to indexing
-    int width = window.Right - window.Left + 1;
-    int height = window.Bottom - window.Top + 1;
-    int left, top;
-
-    left = width / 2;
-    top = height / 2;
-
-    CUP(left, top);
+    setCursor(X_COL(1), Y_ROW(1));
+    resetMargins();
+    render();
 }
 
-//manages state data and viewport data
-void wizard(const int action, void* data)
-{
-    //static variables to retain stat and viewport between function calls
-    static int state;
-    static SMALL_RECT viewport;
-
-    //determine action based on the input parameter
-    switch (action)
-    {
-        case GET_STATE: //retrieve current state
-            *(int*)data = state;
-            return;
-        case SET_STATE: //update state
-            state = *(int*)data;
-            return;
-        case GET_VIEW: //retrieve current viewport
-            *(SMALL_RECT*)data = viewport;
-            return;
-        case SET_VIEW: //update viewport
-            viewport = *(SMALL_RECT*)data;
-            return;
-        default: //incase of unexpected input
-            return;
-    }
-}
-
-//get current state using the wizard function
 int getState()
 {
-    int state = 0;
-    wizard(GET_STATE, (void*)&state); //called with get_state to retrieve current state
     return state;
-}
-
-//sets new state using the wizard function
-void setState(const int state)
-{
-    wizard(SET_STATE, (void*)&state); //called with set_state to update the state
 }
 
 //toggles the current state between move and draw modes
 void toggleState()
 {
-    if (getState() == MOVE)
-    {
-        setState(DRAW); //if in move state, set to draw
-    }
-    else if (getState() == DRAW)
-    {
-        setState(MOVE); //if in draw, set to move state
-    }
+    state = (state == MOVE) ? DRAW : MOVE;
 }
 
 void update()
@@ -134,8 +67,8 @@ void update()
             case ARROW_LEFT:
             case HOME:
             case END:
-                if (getState() == MOVE) move(key); // go to move state operation function
-                else if (getState() == DRAW) draw(key); // go to draw state operation function
+                if (state == MOVE) move(key); // go to move state operation function
+                else if (state == DRAW) draw(key); // go to draw state operation function
                 break;
             case INSERT:
             case DEL: //both states: erase character at cursor position
@@ -166,10 +99,10 @@ void move(const char key)
             CUB(1);
             break;
         case HOME: //moves cursor to screen position (1,1)
-            CUP(1, 1);
+            reset();
             break;
         case END: //sets state to QUIT (exits the program)
-            setState(QUIT);
+            state = QUIT;
             return;
         default:
             break;

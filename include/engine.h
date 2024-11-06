@@ -11,10 +11,10 @@
 #include "vterminal.h"
 
 //macros for converting between internal array and map
-#define GET_X(col) ((col) - 50)
-#define GET_Y(row) (50 - (row))
-#define GET_COL(x) ((x) + 50)
-#define GET_ROW(y) (50 - (y))
+#define X_COL(col) ((col) - 50)
+#define Y_ROW(row) (50 - (row))
+#define COL_X(x) ((x) + 50)
+#define ROW_Y(y) (50 - (y))
 
 //three states: cursor movement, map drawing, quit program
 enum status
@@ -22,18 +22,10 @@ enum status
     MOVE, DRAW, QUIT
 };
 
-//actions to manipulate state and viewport settings
-enum wizardActions
-{
-    GET_STATE, SET_STATE, GET_VIEW, SET_VIEW
-};
-
 //function declarations
 void init(); //initializes console setup
 void reset();
-void wizard(const int action, void* data); //manages state and viewport tasks
 int getState(); //gets current state
-void setState(const int state); //sets state
 void toggleState(); //toggles between move and draw states
 void update(); //update program based on keyboard input
 
