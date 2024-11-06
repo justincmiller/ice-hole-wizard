@@ -126,12 +126,16 @@ void parseKey(const char key)
                 char c_key = (char)_getch();
                 switch (c_key) {
                     case ARROW_UP: //move map up 1 latitude in screen
+                        panViewport(UP);
                         break;
                     case ARROW_DOWN: //move map down 1 latitude in screen
+                        panViewport(DOWN);
                         break;
                     case ARROW_RIGHT: //move map right 1 longitude in screen
+                        panViewport(RIGHT);
                         break;
                     case ARROW_LEFT: //move map left 1 longitude in screen
+                        panViewport(LEFT);
                         break;
                     default:
                         break;

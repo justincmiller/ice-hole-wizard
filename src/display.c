@@ -187,6 +187,31 @@ void moveCursor(const int action)
     CUP(offsetX, offsetY);
 }
 
+void panViewport(const int action)
+{
+    switch(action)
+    {
+        case UP:
+            dsp.margin.Top = CLAMP_Y(dsp.margin.Top - 1);
+            dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.height);
+            break;
+        case DOWN:
+            dsp.margin.Top = CLAMP_Y(dsp.margin.Top + 1);
+            dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.height);
+            break;
+        case LEFT:
+            dsp.margin.Left = CLAMP_X(dsp.margin.Left - 1);
+            dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.width);
+            break;
+        case RIGHT:
+            dsp.margin.Left = CLAMP_X(dsp.margin.Left + 1);
+            dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.width);
+            break;
+    }
+
+    render();
+}
+
 void freeDisplay()
 {
     freeLayers(dsp.map);
