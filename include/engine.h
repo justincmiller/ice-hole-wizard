@@ -16,8 +16,8 @@
 #define COL_X(x) ((x) + 50)
 #define ROW_Y(y) (50 - (y))
 
-#define CLAMP_X(x) (max(min((x), 99), 0))
-#define CLAMP_Y(y) (max(min((y), 99), 0))
+#define CLAMP_X(x) ((x) < 0 ? 0 : ((x) > 99 ? 99 : (x)))
+#define CLAMP_Y(y) ((y) < 0 ? 0 : ((y) > 99 ? 99 : (y)))
 
 //three states: cursor movement, map drawing, quit program
 enum status
@@ -32,10 +32,7 @@ enum directions
 
 //function declarations
 void init(); //initializes console setup
-void reset();
-int getState(); //gets current state
-void toggleState(); //toggles between move and draw states
-void update(); //update program based on keyboard input
+int status(); //gets current state
 
 void draw(const char key); //handles draw state operations
 void move(const char key); //handles move state operations

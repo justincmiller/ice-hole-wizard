@@ -176,3 +176,8 @@ void moveCursor(const int action)
     int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
     CUP(offsetX, offsetY);
 }
+
+void freeDisplay()
+{
+    freeLayers(dsp.map);
+}

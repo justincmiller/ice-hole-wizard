@@ -11,10 +11,13 @@ int main(void)
 {
     init(); //initializes the console setup
 
-    while (getState() != QUIT) //while the quit state is not triggered continuously call update
+    while (status() != QUIT) //while the quit state is not triggered continuously call update
     {
-        update(); //updates program based on keyboard input
+        pollWindow();
+        pollInput();
     }
     
+    purge();
+
     return EXIT_SUCCESS;
 }

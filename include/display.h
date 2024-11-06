@@ -20,6 +20,7 @@ typedef struct Display
     COORD cursor;
 }Display;
 
+Display* getDisplay();
 SMALL_RECT getWindow();
 void resetMargins();
 void initDisplay();

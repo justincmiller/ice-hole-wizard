@@ -19,29 +19,13 @@ void init()
     state = MOVE;
 }
 
-//function to move to grid origin (1,1)
-void reset()
-{
-    setCursor(X_COL(1), Y_ROW(1));
-    resetMargins();
-    render();
-}
-
-int getState()
+int status()
 {
     return state;
 }
 
-//toggles the current state between move and draw modes
-void toggleState()
+void pollInput()
 {
-    state = (state == MOVE) ? DRAW : MOVE;
-}
-
-void update()
-{
-    pollWindow();
-
     //check if key has been pressed
     if (_kbhit() == 0) return;
     
@@ -155,7 +139,11 @@ void parseKey(const char key)
             }
             break;
         case INSERT:
-            if (_getch() == '~') toggleState(); //swaps states between map drawing mode and cursor movement mode
+            if (_getch() == '~')
+            {
+                //toggle between map drawing or cursor movement state
+                state = (state == MOVE) ? DRAW : MOVE;
+            }
             break;
         case DEL:
             if (_getch() == '~') EL(1); //erase character at curosr position
@@ -169,4 +157,9 @@ void parseKey(const char key)
         default:
             break;
     }
+}
+
+void purge()
+{
+    freeDisplay();
 }

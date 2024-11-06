@@ -90,5 +90,5 @@ void freeLayers(Node** map)
         ptr = next;
     }
 
-    *map == NULL;
+    *map = NULL;
 }
