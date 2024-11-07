@@ -8,6 +8,8 @@
 #define DISPLAY_H
 
 #include "vterminal.h"
+#include "engine.h"
+#include "cursor.h"
 #include "map.h"
 
 typedef struct Display
@@ -27,9 +29,6 @@ void initDisplay();
 Node* getActiveLayer();
 void render(); //renders the console
 void pollWindow();
-void setCursor(const short x, const short y);
-void moveCursor(const int action);
-void panViewport(const int action);
 void freeDisplay();
 
 #endif

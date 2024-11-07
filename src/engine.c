@@ -98,10 +98,16 @@ void draw(const char key)
     switch (key)
     {
         case ARROW_UP: //draws map in the positive latitude direction 1 unit
+            drawCursor(UP);
+            break;
         case ARROW_DOWN: //draws map in the negative latitude direction 1 unit
+            drawCursor(DOWN);
+            break;
         case ARROW_RIGHT: //draws map in the positive longitude direction 1 unit
+            drawCursor(RIGHT);
+            break;
         case ARROW_LEFT: //draws map in the negaite longitude direction 1 unit
-            draw_cursor_move(key);
+            drawCursor(LEFT);
             break;
         case HOME: //moves to map layer 0
             //

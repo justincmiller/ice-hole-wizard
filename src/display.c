@@ -5,10 +5,14 @@
 */
 
 #include "display.h"
-#include "engine.h"
 
 //static global structure to limit scope
 static Display dsp;
+
+Display* getDisplay()
+{
+    return &dsp;
+}
 
 SMALL_RECT getWindow()
 {
@@ -43,6 +47,7 @@ void resetMargins()
 
 void initDisplay()
 {
+    initCursor();
     addLayer(&(dsp.map));
     dsp.vp = getWindow();
     dsp.width = dsp.vp.Right - dsp.vp.Left + 1;
@@ -50,10 +55,6 @@ void initDisplay()
     dsp.cursor.X = X_COL(1);
     dsp.cursor.Y = Y_ROW(1);
     resetMargins();
-
-    int offsetX = CLAMP_X(dsp.cursor.X - dsp.margin.Left);
-    int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
-    CUP(offsetX, offsetY);
 }
 
 Node* getActiveLayer()
@@ -110,21 +111,21 @@ void render()
         {
             memcpy(buffer[i], &grid[i + top][left], len * sizeof(char));
             //insert a newline starting at len (last character)
-            buffer[i][len-1] = '\n';
+            buffer[i][len] = '\n';
         }
     }
 
     //move cursor to 1,1 for printing
     CUP(1,1);
     CLRSCR;
+    EDLDM
     
     fwrite(buffer[0], sizeof(char), size, stdout);
     fflush(stdout);
+    EAM
 
     //return cursor to position on grid
-    int offsetX = CLAMP_X(dsp.cursor.X - dsp.margin.Left);
-    int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
-    CUP(offsetX, offsetY);
+    updateCursor();
 
     free(buffer[0]);
     free(buffer);
@@ -151,66 +152,6 @@ void pollWindow()
         //render with new dimensions
         render();
     }
-}
-
-//move cursor using absolute parameters
-void setCursor(const short x, const short y)
-{
-    dsp.cursor.X = x;
-    dsp.cursor.Y = y;
-
-    int offsetX = CLAMP_X(dsp.cursor.X - dsp.margin.Left);
-    int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
-    CUP(offsetX, offsetY);
-}
-
-//move cursor using relative parameters
-void moveCursor(const int action)
-{
-    switch(action)
-    {
-        case UP:
-            dsp.cursor.Y = CLAMP_Y(dsp.cursor.Y - 1);
-            break;
-        case DOWN:
-            dsp.cursor.Y = CLAMP_Y(dsp.cursor.Y + 1);
-            break;
-        case LEFT:
-            dsp.cursor.X = CLAMP_X(dsp.cursor.X - 1);
-            break;
-        case RIGHT:
-            dsp.cursor.X = CLAMP_X(dsp.cursor.X + 1);
-            break;
-    }
-    
-    int offsetX = CLAMP_X(dsp.cursor.X - dsp.margin.Left);
-    int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
-    CUP(offsetX, offsetY);
-}
-
-void panViewport(const int action)
-{
-    switch(action)
-    {
-        case UP:
-            dsp.margin.Top = CLAMP_Y(dsp.margin.Top - 1);
-            dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.height);
-            break;
-        case DOWN:
-            dsp.margin.Top = CLAMP_Y(dsp.margin.Top + 1);
-            dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.height);
-            break;
-        case LEFT:
-            dsp.margin.Left = CLAMP_X(dsp.margin.Left - 1);
-            dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.width);
-            break;
-        case RIGHT:
-            dsp.margin.Left = CLAMP_X(dsp.margin.Left + 1);
-            dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.width);
-            break;
-    }
-
-    render();
 }
 
 void freeDisplay()
