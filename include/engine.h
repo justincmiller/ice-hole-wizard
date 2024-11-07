@@ -12,10 +12,10 @@
 #include "display.h"
 
 //macros for converting between internal array and map
-#define X_COL(col) ((col) - 50)
-#define Y_ROW(row) (50 - (row))
-#define COL_X(x) ((x) + 50)
-#define ROW_Y(y) (50 - (y))
+#define COL_X(col) ((col) - 50)
+#define ROW_Y(row) (50 - (row))
+#define X_COL(x) ((x) + 50)
+#define Y_ROW(y) (50 - (y))
 
 #define CLAMP_X(x) ((x) < 0 ? 0 : ((x) > 99 ? 99 : (x)))
 #define CLAMP_Y(y) ((y) < 0 ? 0 : ((y) > 99 ? 99 : (y)))

@@ -43,6 +43,7 @@ void resetMargins()
 
 void initDisplay()
 {
+    addLayer(&(dsp.map));
     dsp.vp = getWindow();
     dsp.width = dsp.vp.Right - dsp.vp.Left + 1;
     dsp.height = dsp.vp.Bottom - dsp.vp.Top + 1;
@@ -50,9 +51,9 @@ void initDisplay()
     dsp.cursor.Y = Y_ROW(1);
     resetMargins();
 
-    addLayer(&(dsp.map));
-
-    CUP(dsp.cursor.X, dsp.cursor.Y);
+    int offsetX = CLAMP_X(dsp.cursor.X - dsp.margin.Left);
+    int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
+    CUP(offsetX, offsetY);
 }
 
 Node* getActiveLayer()
@@ -79,7 +80,7 @@ void render()
 
     int left = dsp.margin.Left;
     int top = dsp.margin.Top;
-    int size = dsp.width * dsp.height;
+    int size = (dsp.width - 1) * dsp.height;
 
     /*clamp copy length to the end of the visible portion of the grid with
     space for a newline for printing*/
@@ -109,7 +110,7 @@ void render()
         {
             memcpy(buffer[i], &grid[i + top][left], len * sizeof(char));
             //insert a newline starting at len (last character)
-            buffer[i][len] = '\n';
+            buffer[i][len-1] = '\n';
         }
     }
 
@@ -117,11 +118,13 @@ void render()
     CUP(1,1);
     CLRSCR;
     
-    fwrite(buffer, sizeof(char), size, stdout);
+    fwrite(buffer[0], sizeof(char), size, stdout);
     fflush(stdout);
 
     //return cursor to position on grid
-    CUP(dsp.cursor.X, dsp.cursor.Y);
+    int offsetX = CLAMP_X(dsp.cursor.X - dsp.margin.Left);
+    int offsetY = CLAMP_Y(dsp.cursor.Y - dsp.margin.Top);
+    CUP(offsetX, offsetY);
 
     free(buffer[0]);
     free(buffer);
