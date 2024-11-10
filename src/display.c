@@ -81,53 +81,42 @@ void render()
 
     int left = dsp.margin.Left;
     int top = dsp.margin.Top;
-    int size = (dsp.width - 1) * dsp.height;
+    int size = dsp.width * dsp.height;
+
+    char* buffer = malloc(size * sizeof(char));
+    ASSERT(buffer);
+
+    //initialize buffer with spaces
+    memset(buffer, ' ', size);
 
     /*clamp copy length to the end of the visible portion of the grid with
     space for a newline for printing*/
-    int len = CLAMP_X(dsp.width - 1);
+    int cols = CLAMP_X(dsp.width - 1);
+    int rows = CLAMP_Y(dsp.height);
+    char* index = buffer;
 
-    char** buffer = malloc(dsp.height * sizeof(char*));
-    if (buffer == NULL)
+    for (int i = 0; i < rows; i++)
     {
-        printf(">> Error: memory failure.\n");
-        return;
-    }
-    
-    buffer[0] = malloc(dsp.height * dsp.width* sizeof(char));
-    if (buffer[0] == NULL)
-    {
-        printf(">> Error: memory failure.\n");
-        free(buffer);
-        return;
-    }
-
-    for (int i = 0; i < CLAMP_Y(dsp.height); i++)
-    {
-        //set row pointer
-        buffer[i] = buffer[0] + i * dsp.width;
-        //prevent grid overflow and copy from grid
-        if (CLAMP_Y(i + top) < MAP_ROWS)
+        index = buffer + i * dsp.width;
+        if (i + top < MAP_ROWS)
         {
-            memcpy(buffer[i], &grid[i + top][left], len * sizeof(char));
-            //insert a newline starting at len (last character)
-            buffer[i][len] = '\n';
+            
         }
     }
 
     //move cursor to 1,1 for printing
-    CUP(1,1);
-    CLRSCR;
+    printf(CSI "H");
+    CLEAR_SCREEN
+    CLEAR_SCROLLBACK
     EDLDM
     
-    fwrite(buffer[0], sizeof(char), size, stdout);
+    fwrite(buffer, sizeof(char), size, stdout);
     fflush(stdout);
+
     EAM
 
     //return cursor to position on grid
     updateCursor();
-
-    free(buffer[0]);
     free(buffer);
 }
 

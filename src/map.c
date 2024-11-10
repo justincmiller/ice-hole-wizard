@@ -1,23 +1,15 @@
 #include "map.h"
+#include "utils.h"
 
 char** newGrid()
 {
     //allocate row pointers
     char** grid = malloc(MAP_ROWS * sizeof(char*));
-    if (grid == NULL)
-    {
-        printf(">> Error: memory failure.\n");
-        return NULL;
-    }
+    ASSERT(grid);
 
     //allocate contiguous 2D array of chars
     grid[0] = malloc(MAP_COLS * MAP_ROWS * sizeof(char));
-    if (grid[0] == NULL)
-    {
-        printf(">> Error: memory failure.\n");
-        free(grid);
-        return NULL;
-    }
+    ASSERT(grid[0]);
     
     /*set row pointers and place a newline at the end of every row,
     NUL terminating the last row*/
@@ -34,6 +26,7 @@ char** newGrid()
 Node* newLayer()
 {
     Node* layer = malloc(sizeof(Node));
+    ASSERT(layer);
     layer->grid = newGrid();
     layer->next = NULL;
     layer->prev = NULL;

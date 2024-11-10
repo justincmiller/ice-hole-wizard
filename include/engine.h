@@ -10,15 +10,12 @@
 //include the vterminal header for terminal control and key codes
 #include "vterminal.h"
 #include "display.h"
+#include "utils.h"
 
 //macros for converting between internal array and map
-#define COL_X(col) ((col) - 50)
-#define ROW_Y(row) (50 - (row))
-#define X_COL(x) ((x) + 50)
-#define Y_ROW(y) (50 - (y))
 
-#define CLAMP_X(x) ((x) < 0 ? 0 : ((x) > 99 ? 99 : (x)))
-#define CLAMP_Y(y) ((y) < 0 ? 0 : ((y) > 99 ? 99 : (y)))
+#define CLEAR_SCREEN        printf(CSI "2J");
+#define CLEAR_SCROLLBACK    printf(CSI "3J");
 
 //three states: cursor movement, map drawing, quit program
 enum status
