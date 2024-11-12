@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "engine.h"
+
 #define COL_X(col) ((col) - 50)
 #define ROW_Y(row) (50 - (row))
 #define X_COL(x) ((x) + 50)

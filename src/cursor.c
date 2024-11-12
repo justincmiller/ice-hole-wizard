@@ -133,4 +133,5 @@ void panViewport(const int action)
     }
 
     render();
+    updateCursor();
 }

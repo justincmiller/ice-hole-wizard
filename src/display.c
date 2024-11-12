@@ -93,21 +93,23 @@ void render()
     space for a newline for printing*/
     int cols = CLAMP_X(dsp.width - 1);
     int rows = CLAMP_Y(dsp.height);
+    int offset = top;
     char* index = buffer;
 
+    //start copying at top margin
     for (int i = 0; i < rows; i++)
     {
         index = buffer + i * dsp.width;
-        if (i + top < MAP_ROWS)
+        if (offset < MAP_ROWS)
         {
-            
+            memcpy(index, &grid[offset][left], cols);
         }
+        offset++;
     }
 
     //move cursor to 1,1 for printing
     printf(CSI "H");
-    CLEAR_SCREEN
-    CLEAR_SCROLLBACK
+    printf(CSI "2J" CSI "3J");
     EDLDM
     
     fwrite(buffer, sizeof(char), size, stdout);
