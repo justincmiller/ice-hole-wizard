@@ -10,7 +10,9 @@
 #include "vterminal.h"
 #include "engine.h"
 #include "cursor.h"
-#include "map.h"
+
+#define MAP_ROWS 100
+#define MAP_COLS 100
 
 typedef struct Display
 {
@@ -25,10 +27,11 @@ typedef struct Display
 Display* getDisplay();
 SMALL_RECT getWindow();
 void resetMargins();
+char** newGrid();
+void addLayer();
 void initDisplay();
 Node* getActiveLayer();
 void render(); //renders the console
 void pollWindow();
-void freeDisplay();
 
 #endif

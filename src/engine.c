@@ -167,8 +167,3 @@ void parseKey(const char key)
             break;
     }
 }
-
-void purge()
-{
-    freeDisplay();
-}

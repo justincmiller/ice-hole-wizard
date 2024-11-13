@@ -45,15 +45,63 @@ void resetMargins()
     render();
 }
 
+char** newGrid()
+{
+    //allocate row pointers
+    char** grid = malloc(MAP_ROWS * sizeof(char*));
+    ASSERT(grid);
+    track((void*)grid);
+
+    //allocate contiguous 2D array of chars
+    grid[0] = malloc(MAP_COLS * MAP_ROWS * sizeof(char));
+    ASSERT(grid[0]);
+    track((void*)grid[0]);
+    
+    for (int i = 0; i < MAP_ROWS; i++)
+    {
+        grid[i] = grid[0] + i * (MAP_COLS);
+    }
+
+    memset(grid[0], ' ', MAP_ROWS * MAP_COLS);
+
+    return grid;
+}
+
+void addLayer()
+{
+    Node* node = malloc(sizeof(Node));
+    ASSERT(node);
+    track(node);
+    node->data = (void*)newGrid();
+    node->next = NULL;
+    node->prev = NULL;
+    
+    //if list is empty, add node to list
+    if (dsp.map == NULL)
+    {
+        dsp.map = node;
+    }
+    else
+    {
+        //traverse to end of list and insert node
+        Node* ptr = dsp.map;
+        while (ptr->next != NULL)
+        {
+            ptr = ptr->next;
+        }
+        ptr->next = node;
+        node->prev = ptr;
+    }
+}
+
 void initDisplay()
 {
     initCursor();
-    addLayer(&(dsp.map));
+    addLayer();
     dsp.vp = getWindow();
     dsp.width = dsp.vp.Right - dsp.vp.Left + 1;
     dsp.height = dsp.vp.Bottom - dsp.vp.Top + 1;
-    dsp.cursor.X = X_COL(1);
-    dsp.cursor.Y = Y_ROW(1);
+    setCursor(X_COL(1), Y_ROW(1));
     resetMargins();
 }
 
@@ -73,48 +121,43 @@ Node* getActiveLayer()
 
 void render()
 {
-    char** grid = getActiveLayer()->grid;
+    char** grid = (char**)(getActiveLayer()->data);
 
     if (grid == NULL) return;
 
     /***** initialize buffer variables *****/
-
-    int left = dsp.margin.Left;
-    int top = dsp.margin.Top;
+    int offsetX = dsp.margin.Left + 1;
+    int offsetY = dsp.margin.Top + 1;
     int size = dsp.width * dsp.height;
+    char* row = NULL;
 
     char* buffer = malloc(size * sizeof(char));
     ASSERT(buffer);
 
-    //initialize buffer with spaces
+    //initialize buffer with spaces and newlines at end of row
     memset(buffer, ' ', size);
 
-    /*clamp copy length to the end of the visible portion of the grid with
-    space for a newline for printing*/
-    int cols = CLAMP_X(dsp.width - 1);
+    //clamp copy length to the end of the visible portion of the grid
+    int cols = CLAMP_X(dsp.width);
     int rows = CLAMP_Y(dsp.height);
-    int offset = top;
-    char* index = buffer;
 
     //start copying at top margin
     for (int i = 0; i < rows; i++)
     {
-        index = buffer + i * dsp.width;
-        if (offset < MAP_ROWS)
+        row = buffer + i * dsp.width;
+        if (offsetY + i < MAP_ROWS)
         {
-            memcpy(index, &grid[offset][left], cols);
+            memcpy(row, &grid[offsetY + i][offsetX], cols);
         }
-        offset++;
     }
 
     //move cursor to 1,1 for printing
     printf(CSI "H");
-    printf(CSI "2J" CSI "3J");
+    CLEAR
+
     EDLDM
-    
     fwrite(buffer, sizeof(char), size, stdout);
     fflush(stdout);
-
     EAM
 
     //return cursor to position on grid
@@ -143,9 +186,4 @@ void pollWindow()
         //render with new dimensions
         render();
     }
-}
-
-void freeDisplay()
-{
-    freeLayers(&(dsp.map));
 }

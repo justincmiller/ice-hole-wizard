@@ -5,6 +5,7 @@ static Display* dsp;
 void initCursor()
 {
     dsp = getDisplay();
+    printf(CSI "?25l");
 }
 
 void updateCursor()
@@ -52,14 +53,12 @@ void moveCursor(const int action)
 void drawCursor(const int action)
 {
 
-    char** grid = getActiveLayer()->grid;
+    char** grid = (char**)(getActiveLayer()->data);
 
     //variables for brevity
     int row = dsp->cursor.Y;
     int col = dsp->cursor.X;
     
-    EDLDM
-
     switch(action)
     {
         case UP:
@@ -92,7 +91,10 @@ void drawCursor(const int action)
             break;
     }
     
+    EDLDM
+    printf(CSI "43m");
     _putch(grid[row][col]);
+    printf(CSI "0m");
     EAM
 
     updateCursor();
