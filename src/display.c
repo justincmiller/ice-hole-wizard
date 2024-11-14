@@ -71,7 +71,7 @@ void addLayer()
 {
     Node* node = malloc(sizeof(Node));
     ASSERT(node);
-    track(node);
+    track((void*)node);
     node->data = (void*)newGrid();
     node->next = NULL;
     node->prev = NULL;
@@ -134,7 +134,7 @@ void render()
     char* buffer = malloc(size * sizeof(char));
     ASSERT(buffer);
 
-    //initialize buffer with spaces and newlines at end of row
+    //initialize buffer with spaces
     memset(buffer, ' ', size);
 
     //clamp copy length to the end of the visible portion of the grid
@@ -153,12 +153,24 @@ void render()
 
     //move cursor to 1,1 for printing
     printf(CSI "H");
-    CLEAR
 
-    EDLDM
-    fwrite(buffer, sizeof(char), size, stdout);
-    fflush(stdout);
-    EAM
+    int cursor = (dsp.cursor.Y - offsetY) * dsp.width + (dsp.cursor.X - offsetX);
+
+    for (int i = 0; i < size; i++)
+    {
+        if (i == cursor)
+        {
+            printf(ACTIVE_LINE, buffer[i]);
+        }
+        else if (buffer[i] != ' ')
+        {
+            printf(INACTIVE_LINE, buffer[i]);
+        }
+        else
+        {
+            _putch(buffer[i]);
+        }
+    }
 
     //return cursor to position on grid
     updateCursor();

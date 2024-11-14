@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include "vterminal.h"
+#include <string.h>
 
 #define COL_X(col) ((col) - 49)
 #define ROW_Y(row) (50 - (row))
@@ -11,7 +12,11 @@
 #define CLAMP_X(x) ((x) < 0 ? 0 : ((x) > 99 ? 99 : (x)))
 #define CLAMP_Y(y) ((y) < 0 ? 0 : ((y) > 99 ? 99 : (y)))
 
-#define CLEAR printf(CSI "2J" CSI "3J");
+#define CLEAR           printf(CSI "2J" CSI "3J")
+#define HIDE_CURSOR     printf(CSI "?25l")
+#define SHOW_CURSOR     printf(CSI "?25h")
+#define INACTIVE_LINE   "\x1b(0\x1b[30;43m%c\x1b[0m\x1b(B"
+#define ACTIVE_LINE     "\x1b(0\x1b[37;43m%c\x1b[0m\x1b(B"
 
 //do-while(0) ensures this macro expands consitently
 #define ASSERT(ptr) \

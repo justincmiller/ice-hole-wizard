@@ -20,7 +20,10 @@ enum status
 
 enum directions
 {
-    UP, DOWN, LEFT, RIGHT
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
 };
 
 //function declarations
