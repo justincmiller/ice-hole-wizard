@@ -1,10 +1,12 @@
 #include "cursor.h"
 
 static Display* dsp;
+static char** grid;
 
 void initCursor()
 {
     dsp = getDisplay();
+    grid = (char**)(getActiveLayer()->data);
 }
 
 void updateCursor()
@@ -29,19 +31,19 @@ void moveCursor(const int action)
     switch(action)
     {
         case UP:
-            if (dsp->cursor.Y > 0) 
+            if (dsp->cursor.Y > GRID_MIN) 
                 dsp->cursor.Y = CLAMP_Y(dsp->cursor.Y - 1);
             break;
         case DOWN:
-            if (dsp->cursor.Y < MAP_ROWS - 1) 
+            if (dsp->cursor.Y < GRID_MAX) 
                 dsp->cursor.Y = CLAMP_Y(dsp->cursor.Y + 1);
             break;
         case LEFT:
-            if (dsp->cursor.X > 0) 
+            if (dsp->cursor.X > GRID_MIN) 
                 dsp->cursor.X = CLAMP_X(dsp->cursor.X - 1);
             break;
         case RIGHT:
-            if (dsp->cursor.X < MAP_COLS - 1) 
+            if (dsp->cursor.X < GRID_MAX) 
                 dsp->cursor.X = CLAMP_X(dsp->cursor.X + 1);
             break;
     }
@@ -91,10 +93,10 @@ char lineType(char** grid, int row, int col)
 
     int type = 0;
 
-    bool up    = (row > 0)            ? connector(UP, grid[row-1][col])    : false;
-    bool down  = (row < MAP_ROWS - 1) ? connector(DOWN, grid[row+1][col])  : false;
-    bool left  = (col > 0)            ? connector(LEFT, grid[row][col-1])  : false;
-    bool right = (col < MAP_COLS - 1) ? connector(RIGHT, grid[row][col+1]) : false;
+    bool up    = (row > GRID_MIN) ? connector(UP, grid[row-1][col])    : false;
+    bool down  = (row < GRID_MAX) ? connector(DOWN, grid[row+1][col])  : false;
+    bool left  = (col > GRID_MIN) ? connector(LEFT, grid[row][col-1])  : false;
+    bool right = (col < GRID_MAX) ? connector(RIGHT, grid[row][col+1]) : false;
 
     type |= up    ? 1 << UP    : 0;
     type |= down  ? 1 << DOWN  : 0;
@@ -106,9 +108,6 @@ char lineType(char** grid, int row, int col)
 
 void drawCursor(const int action)
 {
-
-    char** grid = (char**)(getActiveLayer()->data);
-
     //variables for brevity
     int x = dsp->cursor.X;
     int y = dsp->cursor.Y;
@@ -119,7 +118,7 @@ void drawCursor(const int action)
     switch(action)
     {
         case UP:
-            if (y > 0)
+            if (y > GRID_MIN)
             {
                 dy = -1;
                 grid[y+dy][x] = 0x78;
@@ -127,7 +126,7 @@ void drawCursor(const int action)
             }
             break;
         case DOWN:
-            if (y < MAP_ROWS - 1)
+            if (y < GRID_MAX)
             {
                 dy = 1;
                 grid[y+dy][x] = 0x78;
@@ -135,7 +134,7 @@ void drawCursor(const int action)
             }
             break;
         case LEFT:
-            if (x > 0)
+            if (x > GRID_MIN)
             {
                 dx = -1;
                 grid[y][x+dx] = 0x71;
@@ -143,7 +142,7 @@ void drawCursor(const int action)
             }
             break;
         case RIGHT:
-            if (x < MAP_COLS - 1)
+            if (x < GRID_MAX)
             {
                 dx = 1;
                 grid[y][x+dx] = 0x71;
@@ -152,8 +151,16 @@ void drawCursor(const int action)
             break;
     }
 
-    render();
+    //setCursor(x, y);
+    printf(INACTIVE_LINE FIXED, grid[y][x]);
     setCursor(x+dx, y+dy);
+    printf(ACTIVE_LINE FIXED, grid[y+dy][x+dx]);
+}
+
+void deactivate()
+{
+    printf(INACTIVE_LINE FIXED, grid[dsp->cursor.Y][dsp->cursor.X]);
+    HIDE_CURSOR;
 }
 
 void panViewport(const int action)
@@ -161,37 +168,34 @@ void panViewport(const int action)
     switch(action)
     {
         case UP:
-            if (dsp->margin.Top > 0)
+            if (dsp->margin.Top > GRID_MIN)
             {
                 dsp->margin.Top = CLAMP_Y(dsp->margin.Top - 1);
-                dsp->margin.Bottom = CLAMP_Y(dsp->margin.Top + dsp->height);
+                dsp->margin.Bottom = CLAMP_Y(dsp->margin.Top + dsp->size.Y);
             }
             break;
         case DOWN:
-            if (dsp->margin.Bottom < MAP_ROWS - 1)
+            if (dsp->margin.Bottom < GRID_MAX)
             {
                 dsp->margin.Top = CLAMP_Y(dsp->margin.Top + 1);
-                dsp->margin.Bottom = CLAMP_Y(dsp->margin.Top + dsp->height);
+                dsp->margin.Bottom = CLAMP_Y(dsp->margin.Top + dsp->size.Y);
             }
             break;
         case LEFT:
-            if (dsp->margin.Left > 0)
+            if (dsp->margin.Left > GRID_MIN)
             {
                 dsp->margin.Left = CLAMP_X(dsp->margin.Left - 1);
-                dsp->margin.Right = CLAMP_X(dsp->margin.Left + dsp->width);
+                dsp->margin.Right = CLAMP_X(dsp->margin.Left + dsp->size.X);
             }
             break;
         case RIGHT:
-            if (dsp->margin.Right < MAP_COLS - 1)
+            if (dsp->margin.Right < GRID_MAX)
             {
                 dsp->margin.Left = CLAMP_X(dsp->margin.Left + 1);
-                dsp->margin.Right = CLAMP_X(dsp->margin.Left + dsp->width);
+                dsp->margin.Right = CLAMP_X(dsp->margin.Left + dsp->size.X);
             }
             break;
     }
 
-    //clear screen to remove old grid
-    CLEAR;
     render();
-    updateCursor();
 }

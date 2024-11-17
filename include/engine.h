@@ -8,23 +8,8 @@
 #define ENGINE_H
 
 //include the vterminal header for terminal control and key codes
-#include "vterminal.h"
 #include "utils.h"
 #include "display.h"
-
-//three states: cursor movement, map drawing, quit program
-enum status
-{
-    MOVE, DRAW, QUIT
-};
-
-enum directions
-{
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
-};
 
 //function declarations
 void init(); //initializes console setup

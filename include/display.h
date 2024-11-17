@@ -7,21 +7,17 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "vterminal.h"
 #include "engine.h"
 #include "cursor.h"
 
-#define MAP_ROWS 100
-#define MAP_COLS 100
-
 typedef struct Display
 {
-    int state, layer;
-    SMALL_RECT vp;
-    SMALL_RECT margin;
-    int width, height;
-    Node* map;
     COORD cursor;
+    COORD size;
+    SMALL_RECT margin;
+    Node* map;
+    int depth;
+    int layer;
 }Display;
 
 Display* getDisplay();

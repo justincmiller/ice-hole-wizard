@@ -152,12 +152,12 @@ void parseKey(const char key)
             {
                 //toggle between map drawing or cursor movement state
                 state = (state == MOVE) ? DRAW : MOVE;
-                if (state == DRAW) HIDE_CURSOR;
+                if (state == DRAW) deactivate();
                 else SHOW_CURSOR;
             }
             break;
         case DEL:
-            if (_getch() == '~') EL(1); //erase character at cursor position
+            if (_getch() == '~') //erase character at cursor position
             break;
         case PG_UP:
             if (_getch() == '~') //save current layer, move up one layer
