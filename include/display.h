@@ -9,24 +9,20 @@
 
 #include "engine.h"
 #include "cursor.h"
+#include "map.h"
 
 typedef struct Display
 {
     COORD cursor;
     COORD size;
     SMALL_RECT margin;
-    Node* map;
-    int depth;
-    int layer;
+    Map* map;
 }Display;
 
 Display* getDisplay();
 SMALL_RECT getWindow();
 void resetMargins();
-char** newGrid();
-void addLayer();
 void initDisplay();
-Node* getActiveLayer();
 void render(); //renders the console
 void pollWindow();
 

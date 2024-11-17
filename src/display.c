@@ -44,59 +44,10 @@ void resetMargins()
     render();
 }
 
-char** newGrid()
-{
-    //allocate row pointers
-    char** grid = malloc(MAP_ROWS * sizeof(char*));
-    ASSERT(grid);
-    track((void*)grid);
-
-    //allocate contiguous 2D array of chars
-    grid[0] = malloc(MAP_COLS * MAP_ROWS * sizeof(char));
-    ASSERT(grid[0]);
-    track((void*)grid[0]);
-    
-    for (int i = 0; i < MAP_ROWS; i++)
-    {
-        grid[i] = grid[0] + i * (MAP_COLS);
-    }
-
-    //initialize grid with spaces
-    memset(grid[0], SPACE, MAP_ROWS * MAP_COLS);
-
-    return grid;
-}
-
-void addLayer()
-{
-    Node* node = malloc(sizeof(Node));
-    ASSERT(node);
-    track((void*)node);
-    node->data = (void*)newGrid();
-    node->next = NULL;
-    node->prev = NULL;
-    
-    //if list is empty, add node to list
-    if (dsp.map == NULL)
-    {
-        dsp.map = node;
-    }
-    else
-    {
-        //traverse to end of list and insert node
-        Node* ptr = dsp.map;
-        while (ptr->next != NULL)
-        {
-            ptr = ptr->next;
-        }
-        ptr->next = node;
-        node->prev = ptr;
-    }
-}
-
 void initDisplay()
 {
-    addLayer();
+    initMap();
+    dsp.map = getMap();
     initCursor();
     SMALL_RECT dim = getWindow();
     dsp.size.X = dim.Right - dim.Left + 1;
@@ -105,23 +56,10 @@ void initDisplay()
     resetMargins();
 }
 
-Node* getActiveLayer()
-{
-    if (dsp.map == NULL) return NULL;
-
-    Node* layer = dsp.map;
-    for (int i = 0; i < dsp.layer; i++)
-    {
-        if (layer->next != NULL) layer = layer->next;
-        else return NULL;
-    }
-
-    return layer;
-}
-
 void render()
 {
-    char** grid = (char**)(getActiveLayer()->data);
+    //fetch grid from active layer
+    char** grid = dsp.map->layer->grid;
 
     if (grid == NULL) return;
 

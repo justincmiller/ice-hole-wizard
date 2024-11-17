@@ -152,8 +152,8 @@ void parseKey(const char key)
             {
                 //toggle between map drawing or cursor movement state
                 state = (state == MOVE) ? DRAW : MOVE;
-                if (state == DRAW) deactivate();
-                else SHOW_CURSOR;
+                if (state == DRAW) activate();
+                else deactivate();
             }
             break;
         case DEL:

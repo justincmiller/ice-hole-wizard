@@ -8,8 +8,9 @@ void updateCursor();
 void setCursor(const short x, const short y);
 void moveCursor(const int action);
 bool connector(int dir, char c);
-char lineType(char** grid, int row, int col);
+char lineType(int row, int col);
 void drawCursor(const int action);
+void activate();
 void deactivate();
 void panViewport(const int action);
 

@@ -6,7 +6,7 @@ static char** grid;
 void initCursor()
 {
     dsp = getDisplay();
-    grid = (char**)(getActiveLayer()->data);
+    grid = dsp->map->layer->grid;
 }
 
 void updateCursor()
@@ -69,7 +69,7 @@ bool connector(int dir, char c)
     return false;
 }
 
-char lineType(char** grid, int row, int col)
+char lineType(int row, int col)
 {
     const char line[] = 
     {
@@ -93,6 +93,7 @@ char lineType(char** grid, int row, int col)
 
     int type = 0;
 
+    //conditions to validate if connection can be made in each direction
     bool up    = (row > GRID_MIN) ? connector(UP, grid[row-1][col])    : false;
     bool down  = (row < GRID_MAX) ? connector(DOWN, grid[row+1][col])  : false;
     bool left  = (col > GRID_MIN) ? connector(LEFT, grid[row][col-1])  : false;
@@ -122,7 +123,7 @@ void drawCursor(const int action)
             {
                 dy = -1;
                 grid[y+dy][x] = 0x78;
-                grid[y][x] = lineType(grid, y, x);
+                grid[y][x] = lineType(y, x);
             }
             break;
         case DOWN:
@@ -130,7 +131,7 @@ void drawCursor(const int action)
             {
                 dy = 1;
                 grid[y+dy][x] = 0x78;
-                grid[y][x] = lineType(grid, y, x);
+                grid[y][x] = lineType(y, x);
             }
             break;
         case LEFT:
@@ -138,7 +139,7 @@ void drawCursor(const int action)
             {
                 dx = -1;
                 grid[y][x+dx] = 0x71;
-                grid[y][x] = lineType(grid, y, x);
+                grid[y][x] = lineType(y, x);
             }
             break;
         case RIGHT:
@@ -146,7 +147,7 @@ void drawCursor(const int action)
             {
                 dx = 1;
                 grid[y][x+dx] = 0x71;
-                grid[y][x] = lineType(grid, y, x);
+                grid[y][x] = lineType(y, x);
             }
             break;
     }
@@ -157,10 +158,18 @@ void drawCursor(const int action)
     printf(ACTIVE_LINE FIXED, grid[y+dy][x+dx]);
 }
 
+void activate()
+{
+    //update grid pointer
+    grid = dsp->map->layer->grid;
+    HIDE_CURSOR;
+}
+
 void deactivate()
 {
+    //print inactive character on cursor position
     printf(INACTIVE_LINE FIXED, grid[dsp->cursor.Y][dsp->cursor.X]);
-    HIDE_CURSOR;
+    SHOW_CURSOR;
 }
 
 void panViewport(const int action)
