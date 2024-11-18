@@ -18,6 +18,7 @@ void pollInput();
 
 void draw(const char key); //handles draw state operations
 void move(const char key); //handles move state operations
+void modify(const char key);
 void parseKey(const char key); //handles non-movement keystrokes
 
 #endif

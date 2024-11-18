@@ -13,5 +13,6 @@ void drawCursor(const int action);
 void activate();
 void deactivate();
 void panViewport(const int action);
+void menu(const int action);
 
 #endif

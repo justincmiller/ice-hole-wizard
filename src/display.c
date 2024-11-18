@@ -8,6 +8,7 @@
 
 //static global structure to limit scope
 static Display dsp;
+static int state;
 
 Display* getDisplay()
 {
@@ -46,6 +47,7 @@ void resetMargins()
 
 void initDisplay()
 {
+    state = status();
     initMap();
     dsp.map = getMap();
     initCursor();
@@ -58,62 +60,21 @@ void initDisplay()
 
 void render()
 {
-    //fetch grid from active layer
-    char** grid = dsp.map->layer->grid;
+    state = status();
+    HIDE_CURSOR;
 
-    if (grid == NULL) return;
-
-    /***** initialize buffer variables *****/
-    int offsetX = dsp.margin.Left;
-    int offsetY = dsp.margin.Top;
-    int size = dsp.size.X * dsp.size.Y;
-    char* row = NULL;
-
-    char* buffer = malloc(size * sizeof(char));
-    ASSERT(buffer);
-
-    //initialize buffer with spaces
-    memset(buffer, SPACE, size);
-
-    //clamp copy length to the end of the visible portion of the grid
-    int cols = CLAMP_X(dsp.size.X);
-    int rows = CLAMP_Y(dsp.size.Y);
-
-    //start copying at top margin
-    for (int i = 0; i < rows; i++)
+    if (state & MODIFY)
     {
-        row = buffer + i * dsp.size.X;
-        if (offsetY + i < MAP_ROWS)
-        {
-            memcpy(row, &grid[offsetY + i][offsetX], cols);
-        }
+        ALT_SCREEN;
+        overlay();
+    }
+    else
+    {
+        MAIN_SCREEN;
+        viewport();
     }
 
-    //move cursor to 1,1 for printing
-    CLEAR;
-    printf(CSI "H");
-
-    int cursor = (dsp.cursor.Y - offsetY) * dsp.size.X + (dsp.cursor.X - offsetX);
-
-    for (int i = 0; i < size; i++)
-    {
-        if (i == cursor && buffer[i] != SPACE)
-        {
-            printf(ACTIVE_LINE, buffer[i]);
-        }
-        else if (buffer[i] != SPACE)
-        {
-            printf(INACTIVE_LINE, buffer[i]);
-        }
-        else
-        {
-            _putch(buffer[i]);
-        }
-    }
-
-    //return cursor to position on grid
-    updateCursor();
-    free(buffer);
+    if (state & MOVE) SHOW_CURSOR;
 }
 
 void pollWindow()
@@ -135,4 +96,84 @@ void pollWindow()
         //recenter viewport on cursor
         resetMargins();
     }
+}
+
+void viewport()
+{
+    char** grid = dsp.map->layer->grid;
+
+    if (grid == NULL) return;
+
+    COORD offset = {dsp.margin.Left, dsp.margin.Top};
+    COORD cursor = dsp.cursor;
+
+    CLEAR;
+    RESET;
+
+    int rows = CLAMP_Y(dsp.size.Y + offset.Y);
+    int cols = CLAMP_X(dsp.size.X + offset.X);
+
+    for (int i = offset.Y; i < rows; i++)
+    {
+        for (int j = offset.X; j < cols; j++)
+        {
+            if (grid[i][j] != LATENT)
+            {
+                setCursor(j, i);
+                if (i == cursor.Y && j == cursor.X)
+                {
+                    printf(ACTIVE("%c"), grid[i][j]);
+                }
+                else
+                {
+                    printf(INACTIVE("%c"), grid[i][j]);
+                }
+            }
+        }
+    }
+
+    statusBar();
+    setCursor(cursor.X, cursor.Y);
+}
+
+void overlay()
+{
+    //render underlying grid
+    viewport();
+
+    /******** draw overlay container ********/
+    RESET;
+
+    //initialize string of horizontal lines
+    char border[BORDER_COLS] = {0};
+    memset(border, 0x71, sizeof(border)-1);
+
+    //print top border with corners
+    printf(LDM("%c%s%c\n"), 0x6c, border, 0x6b);
+
+    //print left and right borders
+    for (int i = 0; i < BORDER_ROWS; i++)
+    {
+        printf(LDM("%c%29c\n"), 0x78, 0x78);
+    }
+
+    //print bottom border with corners
+    printf(LDM("%c%s%c\n"), 0x6d, border, 0x6a);
+}
+
+void statusBar()
+{
+    state = status();
+    HIDE_CURSOR;
+
+    int x = COL_X(dsp.cursor.X) * 10;
+    int y = ROW_Y(dsp.cursor.Y) * 10;
+    int z = dsp.map->layer->depth;
+
+    CUP(PAD_LEFT, dsp.size.Y);
+    printf("x, y, z: (%d, %d, %d) (m) %12c", x, y, z, LATENT);
+
+    updateCursor();
+
+    if (state & MOVE) SHOW_CURSOR;
 }

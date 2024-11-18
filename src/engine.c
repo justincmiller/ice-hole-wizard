@@ -12,11 +12,11 @@ static int state;
 //initializes the console with screen buffer and window settings
 void init()
 {
+    state = MOVE;
     virtualOutput();
     virtualInput();
     initDisplay();
-    state = MOVE;
-}
+}  
 
 int status()
 {
@@ -34,6 +34,8 @@ void pollInput()
     //update as necessary for addtional alphanumeric entries
     if (key == 'p')
     {
+        state ^= MODIFY;
+        render();
         //edit cell properties
     }
     else if (key == '\x1b' && (char)_getch() == '[') //check for escape sequence for special keys
@@ -49,8 +51,9 @@ void pollInput()
             case ARROW_LEFT:
             case HOME:
             case END:
-                if (state == MOVE) move(key); // go to move state operation function
-                else if (state == DRAW) draw(key); // go to draw state operation function
+                if (state & MODIFY) modify(key);
+                else if (state & MOVE) move(key); // go to move state operation function
+                else if (state & DRAW) draw(key); // go to draw state operation function
                 break;
             case INSERT:
             case DEL: //both states: erase character at cursor position
@@ -90,6 +93,9 @@ void move(const char key)
         default:
             break;
     }
+
+    //update info bar
+    statusBar();
 }
 
 //draw state operations
@@ -116,6 +122,29 @@ void draw(const char key)
             //
             break;
         default: //handles unforseen input
+            break;
+    }
+    //update info bar
+    statusBar();
+}
+
+void modify(const char key)
+{
+    switch (key)
+    {
+        case ARROW_UP:
+            menu(UP);
+            break;
+        case ARROW_DOWN:
+            menu(DOWN);
+            break;
+        case ARROW_RIGHT:
+            menu(LEFT);
+            break;
+        case ARROW_LEFT:
+            menu(RIGHT);
+            break;
+        default:
             break;
     }
 }
@@ -151,8 +180,8 @@ void parseKey(const char key)
             if (_getch() == '~')
             {
                 //toggle between map drawing or cursor movement state
-                state = (state == MOVE) ? DRAW : MOVE;
-                if (state == DRAW) activate();
+                state ^= ( MOVE | DRAW);
+                if (state & DRAW) activate();
                 else deactivate();
             }
             break;

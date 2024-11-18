@@ -13,6 +13,9 @@ void updateCursor()
 {
     int offsetX = 1 + CLAMP_X(dsp->cursor.X - dsp->margin.Left);
     int offsetY = 1 + CLAMP_Y(dsp->cursor.Y - dsp->margin.Top);
+
+    offsetY = (offsetY >= dsp->size.Y) ? (dsp->size.Y - 1) : offsetY;
+
     CUP(offsetX, offsetY);
 }
 
@@ -153,9 +156,9 @@ void drawCursor(const int action)
     }
 
     //setCursor(x, y);
-    printf(INACTIVE_LINE FIXED, grid[y][x]);
+    printf(INACTIVE("%c") FIXED, grid[y][x]);
     setCursor(x+dx, y+dy);
-    printf(ACTIVE_LINE FIXED, grid[y+dy][x+dx]);
+    printf(ACTIVE("%c") FIXED, grid[y+dy][x+dx]);
 }
 
 void activate()
@@ -168,7 +171,7 @@ void activate()
 void deactivate()
 {
     //print inactive character on cursor position
-    printf(INACTIVE_LINE FIXED, grid[dsp->cursor.Y][dsp->cursor.X]);
+    printf(INACTIVE("%c") FIXED, grid[dsp->cursor.Y][dsp->cursor.X]);
     SHOW_CURSOR;
 }
 
@@ -207,4 +210,12 @@ void panViewport(const int action)
     }
 
     render();
+}
+
+void menu(const int action)
+{
+    // switch(action)
+    // {
+        
+    // }
 }

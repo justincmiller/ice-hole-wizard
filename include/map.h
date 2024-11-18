@@ -37,7 +37,7 @@ typedef struct Cell
 //todo: update with additional mineral types
 enum minerals
 {
-    RB, MINERAL2, MINERAL3
+    RB, M2, M3
 };
 
 void initMap();
@@ -45,7 +45,8 @@ Map* getMap();
 char** createGrid();
 Layer* createLayer();
 void addLayer();
-Cell* createCell(int x, int y);
-void modify();
+void saveLayer();
+Cell* createCell(int x, int y, int z);
+void modifyCell();
 
 #endif

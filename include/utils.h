@@ -30,26 +30,42 @@
 #define CSI "\x1b["
 
 #define CUP(x,y)        printf(CSI "%d;%dH", (y), (x)) //move cursor to position
+#define RESET           printf(CSI "H")
 #define CLEAR           printf(CSI "2J" CSI "3J")
 #define HIDE_CURSOR     printf(CSI "?25l")
 #define SHOW_CURSOR     printf(CSI "?25h")
+#define ALT_SCREEN      printf(CSI "?1049h")
+#define MAIN_SCREEN     printf(CSI "?1049l")
 
-#define SPACE 0x20
+//label latent character - ASCII space
+#define LATENT 0x20
+
+/* 
+* format string for line drawing mode
+* consists of two escape sequences:
+* \x1b(0  - enable line drawing mode
+* \x1b(B  - enable ASCII mode
+*/
+#define LDM(string) ESC "(0" string ESC "(B"
 
 /*
-* format strings for line drawing - consists of 4 escape sequences.
-* \x1b(0        - enable line drawing mode
-* \x1b[<n>;<n>m - set foreground and background colour respectively
-* \x1b[0m       - reset to default colours
-* \x1b(B        - enable ASCII mode
-* inactive colours: 30 (black), 43 (yellow)
-* active colours:   37 (white), 43 (yellow)
+* format string for inactive line
+* consists of two escape sequences:
+* \x1b[30;43m  - set foreground; background to 30 (black) and 43 (yellow)
+* \x1b[0m      - reset to default colours
 */
-#define INACTIVE_LINE   "\x1b(0\x1b[30;43m%c\x1b[0m\x1b(B"
-#define ACTIVE_LINE     "\x1b(0\x1b[37;43m%c\x1b[0m\x1b(B"
+#define INACTIVE(string) LDM(CSI "30;43m" string CSI "0m")
+
+/*
+* format string for active line
+* consists of two escape sequences:
+* \x1b[30;43m   - set foreground; background to 30 (black) and 47 (white)
+* \x1b[0m       - reset to default colours
+*/
+#define ACTIVE(string) LDM(CSI "30;47m" string CSI "0m")
 
 //format string to maintain cursor position when printing
-#define FIXED           "\x1b[D"
+#define FIXED CSI "D"
 
 //do-while(0) ensures this macro expands consitently
 #define ASSERT(ptr) \
@@ -63,7 +79,10 @@
 
 enum status
 {
-    MOVE, DRAW, QUIT
+    MOVE = (1 << 0), 
+    DRAW = (1 << 1), 
+    MODIFY = (1 << 2), 
+    QUIT = (1 << 3)
 };
 
 enum directions

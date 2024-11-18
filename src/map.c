@@ -38,8 +38,8 @@ char** createGrid()
         grid[i] = grid[0] + i * (MAP_COLS);
     }
 
-    //initialize grid with spaces
-    memset(grid[0], SPACE, MAP_ROWS * MAP_COLS);
+    //initialize empty grid (space characters)
+    memset(grid[0], LATENT, MAP_ROWS * MAP_COLS);
 
     return grid;
 }
@@ -87,6 +87,11 @@ void addLayer()
     }
 }
 
+void saveLayer()
+{
+
+}
+
 Cell* createCell(int x, int y, int z)
 {
     //allocate cell
@@ -103,17 +108,18 @@ Cell* createCell(int x, int y, int z)
     cell->pos.Y = y;
 
     //initialize cell data
-    cell->data->cf = 5; //default roughness
-    cell->data->rl = 0; //default radiation level
-    cell->data->el = z; //cell elevation
-    cell->data->ty = 0; //default cell type (rock)
+    cell->data->cn = y * MAP_COLS + x;  //cell number
+    cell->data->el = z;                 //cell elevation
+    cell->data->cf = 5;                 //default roughness
+    cell->data->ty = 0;                 //default cell type (rock)
+    cell->data->rl = 0;                 //default radiation level
     //default cell contents
     memset(cell->data->cc, 0, sizeof(cell->data->cc));
 
     return cell;
 }
 
-void modify()
+void modifyCell()
 {
-
+    Cell* cell = createCell(dsp->cursor.X, dsp->cursor.Y, map.layer->depth);
 }
