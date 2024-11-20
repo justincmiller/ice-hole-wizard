@@ -3,7 +3,7 @@
 static Display* dsp;
 
 void loadCursor(Display* ptr)
-{
+{//
     dsp = ptr;
 }
 
