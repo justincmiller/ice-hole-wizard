@@ -1,7 +1,10 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "utils.h"
+#include "display.h"
+#include "engine.h"
+
+struct Display;
 
 typedef struct Layer
 {
@@ -40,13 +43,12 @@ enum minerals
     RB, M2, M3
 };
 
-void initMap();
-Map* getMap();
+void loadMap(struct Display* ptr);
 char** createGrid();
 Layer* createLayer();
 void addLayer();
-void saveLayer();
-Cell* createCell(int x, int y, int z);
-void modifyCell();
+Cell* createCell();
+void addCell();
+Cell* editCell();
 
 #endif

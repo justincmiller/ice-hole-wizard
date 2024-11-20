@@ -1,18 +1,17 @@
 #ifndef CURSOR_H
 #define CURSOR_H
 
-#include "display.h"
+#include "engine.h"
 
-void initCursor();
+struct Display;
+
+void loadCursor(struct Display* ptr);
 void updateCursor();
 void setCursor(const short x, const short y);
-void moveCursor(const int action);
+void move(const int code);
+void draw(const int code);
 bool connector(int dir, char c);
-char lineType(int row, int col);
-void drawCursor(const int action);
-void activate();
-void deactivate();
-void panViewport(const int action);
-void menu(const int action);
+char lineType(char** grid, int row, int col);
+void panViewport(const int code);
 
 #endif

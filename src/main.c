@@ -14,7 +14,7 @@ int main(void)
     while (status() != QUIT) //while the quit state is not triggered continuously call update
     {
         pollWindow();
-        pollInput();
+        pollKbInput();
     }
     
     purge();

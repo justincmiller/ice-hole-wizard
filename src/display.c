@@ -8,12 +8,6 @@
 
 //static global structure to limit scope
 static Display dsp;
-static int state;
-
-Display* getDisplay()
-{
-    return &dsp;
-}
 
 SMALL_RECT getWindow()
 {
@@ -32,10 +26,21 @@ SMALL_RECT getWindow()
     return info.srWindow;
 }
 
+void setWindow()
+{
+    SMALL_RECT window = getWindow();
+
+    dsp.size.X = window.Right - window.Left + 1;
+    dsp.size.Y = window.Bottom - window.Top + 1;
+
+    resetMargins();
+}
+
 void resetMargins()
 {
-    /*CLAMP macros use max and min functions clamp margins to grid bounds (0, 99). if the window
-    exceeds the width of the grid, it will be aligned top left.*/
+    /*CLAMP macros use max and min functions clamp margins to grid 
+    bounds (0, 99). if the window exceeds the width of the grid, it 
+    will be aligned top left.*/
     dsp.margin.Left = CLAMP_X(dsp.cursor.X - dsp.size.X / 2);
     dsp.margin.Top =  CLAMP_Y(dsp.cursor.Y - dsp.size.Y / 2);
     dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.size.X);
@@ -45,25 +50,16 @@ void resetMargins()
     render();
 }
 
-void initDisplay()
+void loadDisplay(Display** ptr)
 {
-    state = status();
-    initMap();
-    dsp.map = getMap();
-    initCursor();
-    SMALL_RECT dim = getWindow();
-    dsp.size.X = dim.Right - dim.Left + 1;
-    dsp.size.Y = dim.Bottom - dim.Top + 1;
-    setCursor(X_COL(1), Y_ROW(1));
-    resetMargins();
+    *ptr = &dsp;
 }
 
 void render()
 {
-    state = status();
     HIDE_CURSOR;
 
-    if (state & MODIFY)
+    if (dsp.state & EDIT)
     {
         ALT_SCREEN;
         overlay();
@@ -74,7 +70,25 @@ void render()
         viewport();
     }
 
-    if (state & MOVE) SHOW_CURSOR;
+    if (dsp.state == MOVE) SHOW_CURSOR;
+}
+
+void refresh()
+{
+    if (dsp.state & EDIT)
+    {
+        HIDE_CURSOR;
+    }
+    else if (dsp.state & MOVE)
+    {
+        SHOW_CURSOR;
+    }
+    else if (dsp.state & DRAW)
+    {
+        HIDE_CURSOR;
+    }
+
+    render();
 }
 
 void pollWindow()
@@ -132,12 +146,13 @@ void viewport()
         }
     }
 
-    statusBar();
     setCursor(cursor.X, cursor.Y);
+    statusBar();
 }
 
 void overlay()
 {
+    Cell* cell = editCell();
     //render underlying grid
     viewport();
 
@@ -159,11 +174,13 @@ void overlay()
 
     //print bottom border with corners
     printf(LDM("%c%s%c\n"), 0x6d, border, 0x6a);
+
+    CUP(3, 3);
+    printf("Cell Number %d", cell->data->cn);
 }
 
 void statusBar()
 {
-    state = status();
     HIDE_CURSOR;
 
     int x = COL_X(dsp.cursor.X) * 10;
@@ -175,5 +192,5 @@ void statusBar()
 
     updateCursor();
 
-    if (state & MOVE) SHOW_CURSOR;
+    if (dsp.state == MOVE) SHOW_CURSOR;
 }

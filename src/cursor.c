@@ -1,12 +1,10 @@
 #include "cursor.h"
 
 static Display* dsp;
-static char** grid;
 
-void initCursor()
+void loadCursor(Display* ptr)
 {
-    dsp = getDisplay();
-    grid = dsp->map->layer->grid;
+    dsp = ptr;
 }
 
 void updateCursor()
@@ -14,6 +12,7 @@ void updateCursor()
     int offsetX = 1 + CLAMP_X(dsp->cursor.X - dsp->margin.Left);
     int offsetY = 1 + CLAMP_Y(dsp->cursor.Y - dsp->margin.Top);
 
+    //prevent cursor from entering status bar
     offsetY = (offsetY >= dsp->size.Y) ? (dsp->size.Y - 1) : offsetY;
 
     CUP(offsetX, offsetY);
@@ -29,29 +28,82 @@ void setCursor(const short x, const short y)
 }
 
 //move cursor using relative parameters
-void moveCursor(const int action)
+void move(const int code)
 {
-    switch(action)
+    switch(code)
     {
-        case UP:
+        case ARROW_UP:
             if (dsp->cursor.Y > GRID_MIN) 
                 dsp->cursor.Y = CLAMP_Y(dsp->cursor.Y - 1);
             break;
-        case DOWN:
+        case ARROW_DOWN:
             if (dsp->cursor.Y < GRID_MAX) 
                 dsp->cursor.Y = CLAMP_Y(dsp->cursor.Y + 1);
             break;
-        case LEFT:
+        case ARROW_LEFT:
             if (dsp->cursor.X > GRID_MIN) 
                 dsp->cursor.X = CLAMP_X(dsp->cursor.X - 1);
             break;
-        case RIGHT:
+        case ARROW_RIGHT:
             if (dsp->cursor.X < GRID_MAX) 
                 dsp->cursor.X = CLAMP_X(dsp->cursor.X + 1);
             break;
     }
     
     updateCursor();
+    statusBar();
+}
+
+void draw(const int code)
+{
+    //variables for brevity
+    char** grid = dsp->map->layer->grid;
+    int x = dsp->cursor.X;
+    int y = dsp->cursor.Y;
+    
+    int dx = 0;
+    int dy = 0;
+    
+    switch(code)
+    {
+        case ARROW_UP:
+            if (y > GRID_MIN)
+            {
+                dy = -1;
+                grid[y+dy][x] = 0x78;
+                grid[y][x] = lineType(grid, y, x);
+            }
+            break;
+        case ARROW_DOWN:
+            if (y < GRID_MAX)
+            {
+                dy = 1;
+                grid[y+dy][x] = 0x78;
+                grid[y][x] = lineType(grid, y, x);
+            }
+            break;
+        case ARROW_LEFT:
+            if (x > GRID_MIN)
+            {
+                dx = -1;
+                grid[y][x+dx] = 0x71;
+                grid[y][x] = lineType(grid, y, x);
+            }
+            break;
+        case ARROW_RIGHT:
+            if (x < GRID_MAX)
+            {
+                dx = 1;
+                grid[y][x+dx] = 0x71;
+                grid[y][x] = lineType(grid, y, x);
+            }
+            break;
+    }
+
+    printf(INACTIVE("%c") FIXED, grid[y][x]);
+    setCursor(x+dx, y+dy);
+    printf(ACTIVE("%c") FIXED, grid[y+dy][x+dx]);
+    statusBar();
 }
 
 bool connector(int dir, char c)
@@ -72,7 +124,7 @@ bool connector(int dir, char c)
     return false;
 }
 
-char lineType(int row, int col)
+char lineType(char** grid, int row, int col)
 {
     const char line[] = 
     {
@@ -110,97 +162,32 @@ char lineType(int row, int col)
     return line[type];
 }
 
-void drawCursor(const int action)
+void panViewport(const int code)
 {
-    //variables for brevity
-    int x = dsp->cursor.X;
-    int y = dsp->cursor.Y;
-    
-    int dx = 0;
-    int dy = 0;
-    
-    switch(action)
+    switch(code)
     {
-        case UP:
-            if (y > GRID_MIN)
-            {
-                dy = -1;
-                grid[y+dy][x] = 0x78;
-                grid[y][x] = lineType(y, x);
-            }
-            break;
-        case DOWN:
-            if (y < GRID_MAX)
-            {
-                dy = 1;
-                grid[y+dy][x] = 0x78;
-                grid[y][x] = lineType(y, x);
-            }
-            break;
-        case LEFT:
-            if (x > GRID_MIN)
-            {
-                dx = -1;
-                grid[y][x+dx] = 0x71;
-                grid[y][x] = lineType(y, x);
-            }
-            break;
-        case RIGHT:
-            if (x < GRID_MAX)
-            {
-                dx = 1;
-                grid[y][x+dx] = 0x71;
-                grid[y][x] = lineType(y, x);
-            }
-            break;
-    }
-
-    //setCursor(x, y);
-    printf(INACTIVE("%c") FIXED, grid[y][x]);
-    setCursor(x+dx, y+dy);
-    printf(ACTIVE("%c") FIXED, grid[y+dy][x+dx]);
-}
-
-void activate()
-{
-    //update grid pointer
-    grid = dsp->map->layer->grid;
-    HIDE_CURSOR;
-}
-
-void deactivate()
-{
-    //print inactive character on cursor position
-    printf(INACTIVE("%c") FIXED, grid[dsp->cursor.Y][dsp->cursor.X]);
-    SHOW_CURSOR;
-}
-
-void panViewport(const int action)
-{
-    switch(action)
-    {
-        case UP:
+        case CTRL_UP:
             if (dsp->margin.Top > GRID_MIN)
             {
                 dsp->margin.Top = CLAMP_Y(dsp->margin.Top - 1);
                 dsp->margin.Bottom = CLAMP_Y(dsp->margin.Top + dsp->size.Y);
             }
             break;
-        case DOWN:
+        case CTRL_DOWN:
             if (dsp->margin.Bottom < GRID_MAX)
             {
                 dsp->margin.Top = CLAMP_Y(dsp->margin.Top + 1);
                 dsp->margin.Bottom = CLAMP_Y(dsp->margin.Top + dsp->size.Y);
             }
             break;
-        case LEFT:
+        case CTRL_LEFT:
             if (dsp->margin.Left > GRID_MIN)
             {
                 dsp->margin.Left = CLAMP_X(dsp->margin.Left - 1);
                 dsp->margin.Right = CLAMP_X(dsp->margin.Left + dsp->size.X);
             }
             break;
-        case RIGHT:
+        case CTRL_RIGHT:
             if (dsp->margin.Right < GRID_MAX)
             {
                 dsp->margin.Left = CLAMP_X(dsp->margin.Left + 1);
@@ -210,12 +197,4 @@ void panViewport(const int action)
     }
 
     render();
-}
-
-void menu(const int action)
-{
-    // switch(action)
-    // {
-        
-    // }
 }

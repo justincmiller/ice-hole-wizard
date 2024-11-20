@@ -6,195 +6,200 @@
 
 #include "engine.h"
 
-//statc global variable to limit scope
-static int state;
+//static global variable to limit scope
+static Display* dsp;
 
 //initializes the console with screen buffer and window settings
 void init()
 {
-    state = MOVE;
+    //enable virtual terminal I/O
     virtualOutput();
     virtualInput();
-    initDisplay();
-}  
+
+    //load modules
+    loadDisplay(&dsp);
+    loadMap(dsp);
+    loadCursor(dsp);
+
+    //set cursor to origin and set window size and margins
+    setCursor(X_COL(1), Y_ROW(1));
+    setWindow();
+
+    //set initial state to movement
+    dsp->state = MOVE;
+}
 
 int status()
 {
-    return state;
+    return dsp->state;
 }
 
-void pollInput()
+void pollKbInput()
 {
-    //check if key has been pressed
-    if (_kbhit() == 0) return;
+    if (!_kbhit()) return;
     
-    //if a key was pressed, get key character
-    char key = (char)_getch();
+    char buffer[SQLEN] = {0};
+    int code = 0;
+    int n = 0;
 
-    //update as necessary for addtional alphanumeric entries
-    if (key == 'p')
+    const char* keys[] =
     {
-        state ^= MODIFY;
-        render();
-        //edit cell properties
+        "p",        //p key
+        "\r",       //enter
+        CSI "A",    //up arrow
+        CSI "B",    //down arrow
+        CSI "C",    //right arrow
+        CSI "D",    //left arrow
+        CSI "H",    //home
+        CSI "F",    //end
+        CSI "2~",   //insert
+        CSI "3~",   //delete
+        CSI "5~",   //page up
+        CSI "6~",   //page down
+        CSI "1;5A", //ctrl + up arrow
+        CSI "1;5B", //ctrl + down arrow
+        CSI "1;5C", //ctrl + right arrow
+        CSI "1;5D", //ctrl + left arrow
+        ESC         //escape
+    };
+
+    while (_kbhit() && n < SQLEN - 1)
+    {
+        buffer[n++] = (char)_getch();
     }
-    else if (key == '\x1b' && (char)_getch() == '[') //check for escape sequence for special keys
-    {
-        //get the next character to feed into the switch case
-        key = (char)_getch();
 
-        switch (key)
+    for (int i = 0; i < CONTROLS; i++)
+    {
+        if (strcmp(buffer, keys[i]) == 0)
         {
-            case ARROW_UP:
-            case ARROW_DOWN:
-            case ARROW_RIGHT:
-            case ARROW_LEFT:
-            case HOME:
-            case END:
-                if (state & MODIFY) modify(key);
-                else if (state & MOVE) move(key); // go to move state operation function
-                else if (state & DRAW) draw(key); // go to draw state operation function
-                break;
-            case INSERT:
-            case DEL: //both states: erase character at cursor position
-            case PG_UP: //both states: save current layer, move up one layer.
-            case PG_DN: //both states: save current layer,move down one layer by either creating a new layer or using an existing layer if available
-            default: //if follows logically that if its non of these then its either a Ctrl key sequence or an invalid key
-                parseKey(key); //if input was not an arrow or movement key
-                break;
+            code = i + 1;
+            break;
         }
     }
-}
 
-//move state operations
-void move(const char key)
-{
-    switch (key)
+    if (dsp->state & EDIT)
     {
-        case ARROW_UP: //moves cursor up columns by 1 unit
-            moveCursor(UP);
-            break;
-        case ARROW_DOWN: //moves cursor down columns by 1 unit
-            moveCursor(DOWN);
-            break;
-        case ARROW_RIGHT: //moves cursor right in the row by 1 unit
-            moveCursor(RIGHT);
-            break;
-        case ARROW_LEFT: //moves cursor left in the row by 1 unit
-            moveCursor(LEFT);
-            break;
-        case HOME: //moves cursor to screen position (1,1)
-            setCursor(X_COL(1), Y_ROW(1));
-            resetMargins();
-            break;
-        case END: //sets state to QUIT (exits the program)
-            state = QUIT;
-            return;
-        default:
-            break;
+        editControls(code);
+        return;
     }
-
-    //update info bar
-    statusBar();
-}
-
-//draw state operations
-void draw(const char key)
-{
-    switch (key)
+    else if (dsp->state & MOVE)
     {
-        case ARROW_UP: //draws map in the positive latitude direction 1 unit
-            drawCursor(UP);
-            break;
-        case ARROW_DOWN: //draws map in the negative latitude direction 1 unit
-            drawCursor(DOWN);
-            break;
-        case ARROW_RIGHT: //draws map in the positive longitude direction 1 unit
-            drawCursor(RIGHT);
-            break;
-        case ARROW_LEFT: //draws map in the negaite longitude direction 1 unit
-            drawCursor(LEFT);
-            break;
-        case HOME: //moves to map layer 0
-            //
-            break;
-        case END: //move to the last map layer created
-            //
-            break;
-        default: //handles unforseen input
-            break;
+        moveControls(code);
+        return;
     }
-    //update info bar
-    statusBar();
+    else if (dsp->state & DRAW)
+    {
+        drawControls(code);
+        return;
+    }
 }
 
-void modify(const char key)
+void moveControls(const int code)
 {
-    switch (key)
+    switch (code)
     {
         case ARROW_UP:
-            menu(UP);
-            break;
         case ARROW_DOWN:
-            menu(DOWN);
-            break;
         case ARROW_RIGHT:
-            menu(LEFT);
-            break;
         case ARROW_LEFT:
-            menu(RIGHT);
+            move(code);
+            return;
+        case HOME:
+            setCursor(X_COL(1), Y_ROW(1));
+            resetMargins();
+            return;
+        case END:
+            dsp->state = QUIT;
+            return;
+        case INSERT:
+            dsp->state ^= ( MOVE | DRAW);
+            refresh();
+            return;
+        case DEL:
+            ECH(1);
+            return;
+        case PG_UP:
+            return;
+        case PG_DN:
+            return;
+        case CTRL_UP:
+        case CTRL_DOWN:
+        case CTRL_RIGHT:
+        case CTRL_LEFT:
+            panViewport(code);
+            return;
+        case P:
+            dsp->state ^= EDIT;
+            refresh();
+            return;
+    }
+}
+
+void drawControls(const int code)
+{
+    switch (code)
+    {
+        case ARROW_UP:
+        case ARROW_DOWN:
+        case ARROW_RIGHT:
+        case ARROW_LEFT:
+            draw(code);
+            return;
+        case HOME:
             break;
-        default:
+        case END:
+            break;
+        case INSERT:
+            dsp->state ^= ( MOVE | DRAW);
+            refresh();
+            return;
+        case DEL:
+            ECH(1);
+            break;
+        case PG_UP:
+            break;
+        case PG_DN:
+            break;
+        case CTRL_UP:
+        case CTRL_DOWN:
+        case CTRL_RIGHT:
+        case CTRL_LEFT:
+            panViewport(code);
+            return;
+        case P:
+            dsp->state ^= EDIT;
+            refresh();
             break;
     }
 }
 
-//used for Ctrl and both-state commands
-void parseKey(const char key)
+void editControls(const int code)
 {
-    switch (key)
+    switch (code)
     {
-        case CTRL:
-            if ((char)_getch() == ';' && (char)_getch() == '5')
-            {
-                char c_key = (char)_getch();
-                switch (c_key) {
-                    case ARROW_UP: //move map up 1 latitude in screen
-                        panViewport(UP);
-                        break;
-                    case ARROW_DOWN: //move map down 1 latitude in screen
-                        panViewport(DOWN);
-                        break;
-                    case ARROW_RIGHT: //move map right 1 longitude in screen
-                        panViewport(RIGHT);
-                        break;
-                    case ARROW_LEFT: //move map left 1 longitude in screen
-                        panViewport(LEFT);
-                        break;
-                    default:
-                        break;
-                }
-            }
+        case ARROW_UP:
+            break;
+        case ARROW_DOWN:
+            break;
+        case ARROW_RIGHT:
+            break;
+        case ARROW_LEFT:
+            break;
+        case HOME:
+            break;
+        case END:
             break;
         case INSERT:
-            if (_getch() == '~')
-            {
-                //toggle between map drawing or cursor movement state
-                state ^= ( MOVE | DRAW);
-                if (state & DRAW) activate();
-                else deactivate();
-            }
             break;
         case DEL:
-            if (_getch() == '~') //erase character at cursor position
             break;
         case PG_UP:
-            if (_getch() == '~') //save current layer, move up one layer
             break;
         case PG_DN:
-            if (_getch() == '~') //save current layer, move down one layer by either creating a new layer or using an existing layer if available
             break;
-        default:
+        case P:
+            dsp->state ^= EDIT;
+            refresh();
             break;
     }
 }

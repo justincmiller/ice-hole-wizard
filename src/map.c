@@ -1,23 +1,15 @@
 #include "map.h"
-#include "display.h"
 
-static Map map;
 static Display* dsp;
+static Map map;
 
-void initMap()
+void loadMap(Display* ptr)
 {
-    //fetch display pointer
-    dsp = getDisplay();
-    //add initial layer
     addLayer();
-    //initialize layer pointers
     map.layer = map.matrix->data;
     map.last = map.layer;
-}
-
-Map* getMap()
-{
-    return &map;
+    dsp = ptr;
+    dsp->map = &map;
 }
 
 char** createGrid()
@@ -65,6 +57,7 @@ void addLayer()
     Node* node = malloc(sizeof(Node));
     ASSERT(node);
     track((void*)node);
+
     node->data = (void*)createLayer();
     node->next = NULL;
     node->prev = NULL;
@@ -87,12 +80,7 @@ void addLayer()
     }
 }
 
-void saveLayer()
-{
-
-}
-
-Cell* createCell(int x, int y, int z)
+Cell* createCell()
 {
     //allocate cell
     Cell* cell = malloc(sizeof(Cell));
@@ -104,22 +92,65 @@ Cell* createCell(int x, int y, int z)
     ASSERT(cell);
     track((void*)cell);
 
-    cell->pos.X = x;
-    cell->pos.Y = y;
+    //initialize position as 0,0
+    cell->pos.X = 0;
+    cell->pos.Y = 0;
 
     //initialize cell data
-    cell->data->cn = y * MAP_COLS + x;  //cell number
-    cell->data->el = z;                 //cell elevation
-    cell->data->cf = 5;                 //default roughness
-    cell->data->ty = 0;                 //default cell type (rock)
-    cell->data->rl = 0;                 //default radiation level
+    cell->data->cn = 0; //cell number
+    cell->data->el = 0; //cell elevation
+    cell->data->cf = 5; //default roughness
+    cell->data->ty = 0; //default cell type (rock)
+    cell->data->rl = 0; //default radiation level
     //default cell contents
     memset(cell->data->cc, 0, sizeof(cell->data->cc));
 
     return cell;
 }
 
-void modifyCell()
+void addCell()
 {
-    Cell* cell = createCell(dsp->cursor.X, dsp->cursor.Y, map.layer->depth);
+    Node* node = malloc(sizeof(Node));
+    ASSERT(node);
+    track((void*)node);
+
+    node->data = (void*)createCell();
+    node->next = NULL;
+    node->prev = NULL;
+    
+    //if list is empty, add node to list
+    if (map.layer->cells == NULL)
+    {
+        map.layer->cells = node;
+    }
+    else
+    {
+        //traverse to end of list and insert node
+        Node* ptr = map.layer->cells;
+        while (ptr->next != NULL)
+        {
+            ptr = ptr->next;
+        }
+        ptr->next = node;
+        node->prev = ptr;
+    }
+}
+
+Cell* editCell()
+{
+    static Cell* cell = NULL;
+
+    if (cell == NULL) cell = createCell();
+
+    int x = dsp->cursor.X;
+    int y = dsp->cursor.Y;
+    int z = map.layer->depth;
+
+    cell->pos.X = x;
+    cell->pos.Y = y;
+    
+    cell->data->cn = z * (MAP_ROWS) * (MAP_COLS) + y * MAP_COLS + x;
+    cell->data->el = z;
+
+    return cell;
 }

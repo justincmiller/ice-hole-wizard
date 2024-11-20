@@ -30,6 +30,7 @@
 #define CSI "\x1b["
 
 #define CUP(x,y)        printf(CSI "%d;%dH", (y), (x)) //move cursor to position
+#define ECH(n)          printf(CSI "%dX", (n))
 #define RESET           printf(CSI "H")
 #define CLEAR           printf(CSI "2J" CSI "3J")
 #define HIDE_CURSOR     printf(CSI "?25l")
@@ -39,6 +40,9 @@
 
 //label latent character - ASCII space
 #define LATENT 0x20
+
+#define SQLEN 7
+#define CONTROLS 17
 
 /* 
 * format string for line drawing mode
@@ -81,7 +85,7 @@ enum status
 {
     MOVE = (1 << 0), 
     DRAW = (1 << 1), 
-    MODIFY = (1 << 2), 
+    EDIT = (1 << 2),
     QUIT = (1 << 3)
 };
 
@@ -95,17 +99,23 @@ enum directions
 
 enum keyCodes
 {
-    CTRL = '1',
-    INSERT = '2',
-    DEL = '3',
-    PG_UP = '5',
-    PG_DN = '6',
-    ARROW_UP = 'A',
-    ARROW_DOWN = 'B',
-    ARROW_RIGHT = 'C',
-    ARROW_LEFT = 'D',
-    HOME = 'H',
-    END = 'F'
+    P = 1,
+    ENTER,
+    ARROW_UP,
+    ARROW_DOWN,
+    ARROW_RIGHT,
+    ARROW_LEFT,
+    HOME,
+    END,
+    INSERT,
+    DEL,
+    PG_UP,
+    PG_DN,
+    CTRL_UP,
+    CTRL_DOWN,
+    CTRL_RIGHT,
+    CTRL_LEFT,
+    ESCAPE
 };
 
 typedef struct Node

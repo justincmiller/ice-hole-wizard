@@ -8,8 +8,6 @@
 #define DISPLAY_H
 
 #include "engine.h"
-#include "cursor.h"
-#include "map.h"
 
 #define MENU_ROWS 20
 #define MENU_COLS 30
@@ -24,19 +22,23 @@
 
 #define PAD_LEFT 2
 
+struct Map;
+
 typedef struct Display
 {
     COORD cursor;
     COORD size;
     SMALL_RECT margin;
-    Map* map;
+    struct Map* map;
+    int state;
 }Display;
 
-Display* getDisplay();
 SMALL_RECT getWindow();
+void setWindow();
 void resetMargins();
-void initDisplay();
+void loadDisplay(Display** ptr);
 void render();
+void refresh();
 void pollWindow();
 void viewport();
 void overlay();

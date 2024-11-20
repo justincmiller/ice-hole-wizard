@@ -9,16 +9,17 @@
 
 //include the vterminal header for terminal control and key codes
 #include "utils.h"
+#include "map.h"
 #include "display.h"
+#include "cursor.h"
 
 //function declarations
 void init(); //initializes console setup
 int status(); //gets current state
-void pollInput();
+void pollKbInput();
 
-void draw(const char key); //handles draw state operations
-void move(const char key); //handles move state operations
-void modify(const char key);
-void parseKey(const char key); //handles non-movement keystrokes
+void drawControls(const int code); //handles draw state operations
+void moveControls(const int code); //handles move state operations
+void editControls(const int code);
 
 #endif
