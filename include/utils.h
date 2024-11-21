@@ -43,6 +43,11 @@
 
 #define SQLEN 7
 #define CONTROLS 17
+#define OPTIONS 4
+#define CONTENTS 3
+
+#define CONTAINER_X 3
+#define CONTAINER_Y 3
 
 /* 
 * format string for line drawing mode
@@ -67,6 +72,13 @@
 * \x1b[0m       - reset to default colours
 */
 #define ACTIVE(string) LDM(CSI "30;47m" string CSI "0m")
+
+#define SELECT(string) CSI "30;47m" string CSI "0m"
+
+/*
+* format string to move down two lines and move forward two columns
+*/
+#define MENU_OFFSET CSI "2E" CSI "2C"
 
 //format string to maintain cursor position when printing
 #define FIXED CSI "D"

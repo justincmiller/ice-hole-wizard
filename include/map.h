@@ -1,8 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "display.h"
-#include "engine.h"
+#include "utils.h"
 
 struct Display;
 
@@ -21,14 +20,20 @@ typedef struct Map
     short depth;    //layer count
 }Map;
 
+typedef struct Mineral
+{
+    int code;
+    int qty;
+}Mineral;
+
 typedef struct Data
 {
-    unsigned int cn;    // cell number
-    int el;             // elevation
-    unsigned int cf;    // friction
-    unsigned char ty;   // type
-    unsigned short rl;  // radiation level
-    int cc[3][2];       // cell contents
+    unsigned int cn;      // cell number
+    int el;               // elevation
+    unsigned int cf;      // friction
+    unsigned char ty;     // type
+    unsigned short rl;    // radiation level
+    Mineral cc[CONTENTS]; // cell contents
 }Data;
 
 typedef struct Cell
@@ -36,6 +41,8 @@ typedef struct Cell
     COORD pos;      //position
     Data* data;     //cell properties
 }Cell;
+
+
 
 //todo: update with additional mineral types
 enum minerals
@@ -49,6 +56,6 @@ Layer* createLayer();
 void addLayer();
 Cell* createCell();
 void addCell();
-Cell* editCell();
+void editCell();
 
 #endif

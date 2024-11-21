@@ -198,3 +198,18 @@ void panViewport(const int code)
 
     render();
 }
+
+void option(const int code)
+{
+    short* idx = &dsp->edit.index;
+
+    switch (code)
+    {
+        case ARROW_UP:
+            if (*idx < OPTIONS) *idx++;
+            break;
+        case ARROW_DOWN:
+            if (*idx > 0) *idx--;
+            break;
+    }
+}

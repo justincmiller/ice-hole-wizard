@@ -7,7 +7,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "engine.h"
+#include "map.h"
 
 #define MENU_ROWS 20
 #define MENU_COLS 30
@@ -22,15 +22,20 @@
 
 #define PAD_LEFT 2
 
-struct Map;
+typedef struct Menu
+{
+    short index;
+    Cell* cell;
+}Menu;
 
 typedef struct Display
 {
     COORD cursor;
     COORD size;
     SMALL_RECT margin;
-    struct Map* map;
+    Map* map;
     int state;
+    Menu edit;
 }Display;
 
 SMALL_RECT getWindow();
@@ -42,6 +47,7 @@ void refresh();
 void pollWindow();
 void viewport();
 void overlay();
+void container();
 void statusBar();
 
 #endif

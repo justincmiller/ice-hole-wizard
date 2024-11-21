@@ -3,8 +3,8 @@
 *  that was used throughout this program. Specifically, the engine.h, vterminal.h, and vterminal.c files
 *  which uses much of Dr. Hughes' work.
 */
-
 #include "display.h"
+#include "engine.h"
 
 //static global structure to limit scope
 static Display dsp;
@@ -152,7 +152,6 @@ void viewport()
 
 void overlay()
 {
-    Cell* cell = editCell();
     //render underlying grid
     viewport();
 
@@ -175,8 +174,37 @@ void overlay()
     //print bottom border with corners
     printf(LDM("%c%s%c\n"), 0x6d, border, 0x6a);
 
-    CUP(3, 3);
-    printf("Cell Number %d", cell->data->cn);
+    container();
+}
+
+void container()
+{
+    short idx = dsp.edit.index;
+    Data* data = dsp.edit.cell->data;
+
+    if (data == NULL) return;
+
+    const char* options[] =
+    {
+        "Friction", "Type", "Radiation", "Ritterbarium" 
+    };
+
+    int rb = 0;
+
+    for (int i = 0; i < CONTENTS; i++)
+    {
+        if (data->cc[i].code == RB)
+            rb = data->cc[i].qty;
+    }
+
+    CUP(CONTAINER_X, CONTAINER_Y);
+    printf("Cell Number:\t%u" MENU_OFFSET, data->cn);
+    printf("Elevation:\t%d" MENU_OFFSET, data->el);
+
+    printf("Friction:\t%u" MENU_OFFSET, data->cf);
+    printf("Type:\t\t%u" MENU_OFFSET, data->ty);
+    printf("Radiation:\t%hu" MENU_OFFSET, data->rl);
+    printf("Ritterbarium:\t%d", rb);
 }
 
 void statusBar()

@@ -1,4 +1,5 @@
 #include "map.h"
+#include "engine.h"
 
 static Display* dsp;
 static Map map;
@@ -88,22 +89,16 @@ Cell* createCell()
     track((void*)cell);
 
     //allocate cell data
-    cell->data = malloc(sizeof(Data));
-    ASSERT(cell);
-    track((void*)cell);
+    cell->data = calloc(1, sizeof(Data));
+    ASSERT(cell->data);
+    track((void*)cell->data);
 
     //initialize position as 0,0
     cell->pos.X = 0;
     cell->pos.Y = 0;
 
     //initialize cell data
-    cell->data->cn = 0; //cell number
-    cell->data->el = 0; //cell elevation
     cell->data->cf = 5; //default roughness
-    cell->data->ty = 0; //default cell type (rock)
-    cell->data->rl = 0; //default radiation level
-    //default cell contents
-    memset(cell->data->cc, 0, sizeof(cell->data->cc));
 
     return cell;
 }
@@ -136,11 +131,15 @@ void addCell()
     }
 }
 
-Cell* editCell()
+void editCell()
 {
-    static Cell* cell = NULL;
+    Cell* cell = dsp->edit.cell;
 
-    if (cell == NULL) cell = createCell();
+    if (cell == NULL)
+    {
+        cell = createCell();
+        dsp->edit.cell = cell;
+    }
 
     int x = dsp->cursor.X;
     int y = dsp->cursor.Y;
@@ -151,6 +150,4 @@ Cell* editCell()
     
     cell->data->cn = z * (MAP_ROWS) * (MAP_COLS) + y * MAP_COLS + x;
     cell->data->el = z;
-
-    return cell;
 }

@@ -20,13 +20,12 @@ void init()
     loadDisplay(&dsp);
     loadMap(dsp);
     loadCursor(dsp);
-
+    
+    //set initial state to movement
+    dsp->state = MOVE;
     //set cursor to origin and set window size and margins
     setCursor(X_COL(1), Y_ROW(1));
     setWindow();
-
-    //set initial state to movement
-    dsp->state = MOVE;
 }
 
 int status()
@@ -130,6 +129,7 @@ void moveControls(const int code)
             return;
         case P:
             dsp->state ^= EDIT;
+            editCell();
             refresh();
             return;
     }
@@ -168,6 +168,7 @@ void drawControls(const int code)
             return;
         case P:
             dsp->state ^= EDIT;
+            editCell();
             refresh();
             break;
     }
@@ -178,13 +179,11 @@ void editControls(const int code)
     switch (code)
     {
         case ARROW_UP:
-            break;
         case ARROW_DOWN:
+            option(code);
             break;
         case ARROW_RIGHT:
-            break;
         case ARROW_LEFT:
-            break;
         case HOME:
             break;
         case END:
@@ -199,6 +198,7 @@ void editControls(const int code)
             break;
         case P:
             dsp->state ^= EDIT;
+            editCell();
             refresh();
             break;
     }
