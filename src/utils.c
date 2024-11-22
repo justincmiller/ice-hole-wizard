@@ -5,8 +5,10 @@
 
 #include "utils.h"
 
+//head of a linked-list holding nodes to the pointers to malloc'd pointers
 static Node* heap;
 
+//VT100 Input ...
 bool virtualInput()
 {
     HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
@@ -85,17 +87,19 @@ void addNode(Node** head, void* data)
     }
 }
 
+//updates linked-list heap
 void track(void* ptr)
 {
-    addNode(&heap, ptr);
+    addNode(&heap, ptr); //adds a node to the heap
 }
 
+//free memory from malloc'd linked-lists
 void purge()
 {
-    if (heap == NULL) return;
+    if (heap == NULL) return; //if no memory is allocated
 
     Node* ptr = heap;
-    while (ptr != NULL)
+    while (ptr != NULL) //if memory is allocated
     {
         Node* next = ptr->next;
         free(ptr->data);
@@ -103,5 +107,5 @@ void purge()
         ptr = next;
     }
 
-    heap = NULL;
+    heap = NULL; //no memory left to purge
 }
