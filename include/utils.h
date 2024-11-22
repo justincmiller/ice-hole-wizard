@@ -26,15 +26,15 @@
 #define MAP_ROWS 100
 #define MAP_COLS 100
 
-//
+//viewport size
 #define GRID_MAX 99
 #define GRID_MIN 0
 
-//
+//cell size
 #define CELL_WIDTH  10
 #define CELL_HEIGHT 10
 
-//
+//boundries
 #define CLAMP_X(x) ((x) < 0 ? 0 : ((x) > 99 ? 99 : (x)))
 #define CLAMP_Y(y) ((y) < 0 ? 0 : ((y) > 99 ? 99 : (y)))
 
