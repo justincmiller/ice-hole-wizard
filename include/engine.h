@@ -7,7 +7,7 @@
 #define ENGINE_H
 
 //include headers
-#include "utils.h" //VT100 I/O & link-lists
+#include "utils.h" //VT100 I/O & linked-lists
 #include "style.h" //menu formatting
 #include "map.h" //layers, map, cells, etc.
 #include "display.h" //system information and menus
