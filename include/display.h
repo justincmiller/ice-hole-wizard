@@ -11,22 +11,24 @@
 #define INPUT 0x01
 #define OPTIONS 5
 
+//struct to hold all the cell properties
 typedef struct Menu
 {
     short index;
-    char** values;
-    char** options;
-    Cell* cell;
+    char** values; //cell properties and amounts
+    char** options; 
+    Cell* cell; 
 }Menu;
 
+//structure that holds all the system information
 typedef struct Display
 {
-    COORD cursor;
-    COORD size;
-    SMALL_RECT margin;
-    Map* map;
-    int state;
-    Menu edit;
+    COORD cursor; //cursor position
+    COORD size; //window size
+    SMALL_RECT margin; //window margins
+    Map* map; //pointer to map structure
+    int state; //system state: drawing, moving, quit
+    Menu edit; //cell content editing menu
 }Display;
 
 SMALL_RECT getWindow();
