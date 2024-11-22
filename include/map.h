@@ -6,12 +6,14 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "utils.h"
+#include "utils.h" //VT100 I/O & linked-lists
 
+//sysyem information struct
 struct Display;
 
 #define BUFF_LEN 8
 
+//structure to hold layer data
 typedef struct Layer
 {
     Node* cells;    //list to hold cells
@@ -19,6 +21,7 @@ typedef struct Layer
     short depth;    //current layer depth
 }Layer;
 
+//structure to hold map data
 typedef struct Map
 {
     Node* matrix;   //list to hold layers
@@ -27,12 +30,14 @@ typedef struct Map
     short depth;    //layer count
 }Map;
 
+//structure to hold cell mineral data
 typedef struct Mineral
 {
-    int code;
-    int qty;
+    int code; //type of mineral
+    int qty; //amount of mineral
 }Mineral;
 
+//structure to hold cell properties data
 typedef struct Data
 {
     unsigned int cn;      // cell number
@@ -43,6 +48,7 @@ typedef struct Data
     Mineral cc[CONTENTS]; // cell contents
 }Data;
 
+//structure to hold cell data
 typedef struct Cell
 {
     COORD pos;      //position
@@ -50,18 +56,21 @@ typedef struct Cell
 }Cell;
 
 //todo: update with additional mineral types
+//valid mineral types
 enum minerals
 {
     RB = 1, M2, M3
 };
 
+//valid data types for cell properties
 enum data
 {
     CN, EL, CF, TY, RL, CC
 };
 
-void loadMap(struct Display* ptr);
-char** createGrid();
+//functions
+void loadMap(struct Display* ptr); //layer operations and corresponding maps
+char** createGrid(); 
 Layer* createLayer();
 void addLayer();
 Cell* createCell();
