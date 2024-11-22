@@ -3,17 +3,17 @@
 *  that was used both as inspiration and used as is throughout this program.
 */
 
-//cave_wizard header includes program operation code
+//engine header includes program operation headers and functions
 #include "engine.h"
 
 int main(void)
 {
     init(); //initializes the console setup
 
-    while (status() != QUIT) //while the quit state is not triggered continuously call update
+    while (status() != QUIT) //while the quit state is not triggered
     {
-        pollWindow();
-        pollKbInput();
+        pollWindow(); //check if console was resized, update as required
+        pollKbInput(); //check if key was pressed
     }
     
     purge(); //free memory from malloc'd linked-lists
