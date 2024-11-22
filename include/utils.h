@@ -23,6 +23,9 @@
 #define GRID_MAX 99
 #define GRID_MIN 0
 
+#define CELL_WIDTH  10
+#define CELL_HEIGHT 10
+
 #define CLAMP_X(x) ((x) < 0 ? 0 : ((x) > 99 ? 99 : (x)))
 #define CLAMP_Y(y) ((y) < 0 ? 0 : ((y) > 99 ? 99 : (y)))
 
@@ -43,11 +46,7 @@
 
 #define SQLEN 7
 #define CONTROLS 17
-#define OPTIONS 4
 #define CONTENTS 3
-
-#define CONTAINER_X 3
-#define CONTAINER_Y 3
 
 /* 
 * format string for line drawing mode
@@ -73,13 +72,6 @@
 */
 #define ACTIVE(string) LDM(CSI "30;47m" string CSI "0m")
 
-#define SELECT(string) CSI "30;47m" string CSI "0m"
-
-/*
-* format string to move down two lines and move forward two columns
-*/
-#define MENU_OFFSET CSI "2E" CSI "2C"
-
 //format string to maintain cursor position when printing
 #define FIXED CSI "D"
 
@@ -92,6 +84,10 @@
             exit(EXIT_FAILURE); \
         } \
     } while (0)
+
+
+#define ARRAY_LEN(arr) (sizeof(arr) / sizeof((arr)[0]))
+
 
 enum status
 {

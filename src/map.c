@@ -148,6 +148,68 @@ void editCell()
     cell->pos.X = x;
     cell->pos.Y = y;
     
-    cell->data->cn = z * (MAP_ROWS) * (MAP_COLS) + y * MAP_COLS + x;
+    //calculate cell number from x, y and z
+    int cn = z * (MAP_ROWS) * (MAP_COLS) + y * MAP_COLS + x;
+
+    //skip initializing if the cn matches the current configuration
+    if (cell->data->cn == cn) return;
+
+    cell->data->cn = cn;
     cell->data->el = z;
+    cell->data->cf = 5;
+    cell->data->ty = 0;
+    cell->data->rl = 0;
+
+    for (int i = 0; i < 3; i++)
+    {
+        cell->data->cc[i].code = 0;
+        cell->data->cc[i].qty = 0;
+    }
+}
+
+int getRB(Data* data)
+{
+    int rb = 0;
+
+    for (int i = 0; i < CONTENTS; i++)
+    {
+        if (data->cc[i].code == RB)
+            rb = data->cc[i].qty;
+    }
+
+    return rb;
+}
+
+void editValue()
+{
+    int option = dsp->edit.index + 2;
+    int value = 0;
+
+    switch (option)
+    {
+        case CF:
+            CUP(EDIT_X, CF_Y);
+            scanf("%d", &value);
+            snprintf(dsp->edit.values[option], BUFF_LEN, "%d", value);
+            dsp->edit.cell->data->cf = (unsigned int)value;
+            break;
+        case TY:
+            CUP(EDIT_X, TY_Y);
+            scanf("%d", &value);
+            snprintf(dsp->edit.values[option], BUFF_LEN, "%d", value);
+            dsp->edit.cell->data->ty = (char)value;
+            break;
+        case RL:
+            CUP(EDIT_X, RL_Y);
+            scanf("%d", &value);
+            snprintf(dsp->edit.values[option], BUFF_LEN, "%d", value);
+            dsp->edit.cell->data->rl = (unsigned int)value;
+            break;
+        case CC:
+            CUP(EDIT_X, CC_Y);
+            scanf("%d", &value);
+            snprintf(dsp->edit.values[option], BUFF_LEN, "%d", value);
+            //dsp->edit.cell->data->cf = (char)value;
+            break;
+    }
 }

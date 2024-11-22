@@ -18,6 +18,7 @@ void init()
 
     //load modules
     loadDisplay(&dsp);
+    loadMenu();
     loadMap(dsp);
     loadCursor(dsp);
     
@@ -112,7 +113,7 @@ void moveControls(const int code)
             return;
         case INSERT:
             dsp->state ^= ( MOVE | DRAW);
-            refresh();
+            render();
             return;
         case DEL:
             ECH(1);
@@ -130,7 +131,7 @@ void moveControls(const int code)
         case P:
             dsp->state ^= EDIT;
             editCell();
-            refresh();
+            render();
             return;
     }
 }
@@ -151,7 +152,7 @@ void drawControls(const int code)
             break;
         case INSERT:
             dsp->state ^= ( MOVE | DRAW);
-            refresh();
+            render();
             return;
         case DEL:
             ECH(1);
@@ -169,7 +170,7 @@ void drawControls(const int code)
         case P:
             dsp->state ^= EDIT;
             editCell();
-            refresh();
+            render();
             break;
     }
 }
@@ -182,24 +183,13 @@ void editControls(const int code)
         case ARROW_DOWN:
             option(code);
             break;
-        case ARROW_RIGHT:
-        case ARROW_LEFT:
-        case HOME:
-            break;
-        case END:
-            break;
-        case INSERT:
-            break;
-        case DEL:
-            break;
-        case PG_UP:
-            break;
-        case PG_DN:
-            break;
         case P:
             dsp->state ^= EDIT;
             editCell();
-            refresh();
+            render();
+            break;
+        case ENTER:
+            editValue();
             break;
     }
 }

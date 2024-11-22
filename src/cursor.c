@@ -149,9 +149,9 @@ char lineType(char** grid, int row, int col)
     int type = 0;
 
     //conditions to validate if connection can be made in each direction
-    bool up    = (row > GRID_MIN) ? connector(UP, grid[row-1][col])    : false;
-    bool down  = (row < GRID_MAX) ? connector(DOWN, grid[row+1][col])  : false;
-    bool left  = (col > GRID_MIN) ? connector(LEFT, grid[row][col-1])  : false;
+    bool up    = (row > GRID_MIN) ? connector(UP,    grid[row-1][col]) : false;
+    bool down  = (row < GRID_MAX) ? connector(DOWN,  grid[row+1][col]) : false;
+    bool left  = (col > GRID_MIN) ? connector(LEFT,  grid[row][col-1]) : false;
     bool right = (col < GRID_MAX) ? connector(RIGHT, grid[row][col+1]) : false;
 
     type |= up    ? 1 << UP    : 0;
@@ -201,15 +201,38 @@ void panViewport(const int code)
 
 void option(const int code)
 {
-    short* idx = &dsp->edit.index;
+    short idx = dsp->edit.index;
+
+    short dy = 0;
 
     switch (code)
     {
         case ARROW_UP:
-            if (*idx < OPTIONS) *idx++;
+            if (idx > MENU_MIN) dy = -1;
             break;
         case ARROW_DOWN:
-            if (*idx > 0) *idx--;
+            if (idx < MENU_MAX) dy = 1;
             break;
+    }
+
+    dsp->edit.index = idx + dy;
+
+    updateMenu(dy);
+}
+
+void updateMenu(const short dy)
+{
+    if (!dy) return;
+
+    for (int i = 0; i < OPTIONS; i++)
+    {
+        if (i == dsp->edit.index)
+        {
+            CUP(EDIT_X, EDIT_Y + i);
+            printf(SELECT("%s") FIXED, dsp->edit.options[i]);
+
+            CUP(EDIT_X, EDIT_Y + i - dy);
+            printf("%s" FIXED, dsp->edit.options[i-dy]);
+        }
     }
 }

@@ -5,6 +5,8 @@
 
 struct Display;
 
+#define BUFF_LEN 8
+
 typedef struct Layer
 {
     Node* cells;    //list to hold cells
@@ -42,12 +44,15 @@ typedef struct Cell
     Data* data;     //cell properties
 }Cell;
 
-
-
 //todo: update with additional mineral types
 enum minerals
 {
-    RB, M2, M3
+    RB = 1, M2, M3
+};
+
+enum data
+{
+    CN, EL, CF, TY, RL, CC
 };
 
 void loadMap(struct Display* ptr);
@@ -57,5 +62,7 @@ void addLayer();
 Cell* createCell();
 void addCell();
 void editCell();
+void editValue();
+int getRB(Data* data);
 
 #endif

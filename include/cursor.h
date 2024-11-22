@@ -12,5 +12,6 @@ bool connector(int dir, char c);
 char lineType(char** grid, int row, int col);
 void panViewport(const int code);
 void option(const int code);
+void updateMenu(const short dy);
 
 #endif
