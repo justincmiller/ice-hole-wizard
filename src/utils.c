@@ -8,7 +8,7 @@
 //head of a linked-list holding nodes to the pointers to malloc'd pointers
 static Node* heap;
 
-//VT100 Input ...
+//VT100 Input initialization
 bool virtualInput()
 {
     HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
@@ -35,6 +35,7 @@ bool virtualInput()
     return true;
 }
 
+//VT100 Output initialization
 bool virtualOutput()
 {
     HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE); //handle to the console's standard output
@@ -61,6 +62,7 @@ bool virtualOutput()
     return true;
 }
 
+//function to add node to linked-list
 void addNode(Node** head, void* data)
 {
     Node* node = malloc(sizeof(Node));
@@ -69,14 +71,13 @@ void addNode(Node** head, void* data)
     node->next = NULL;
     node->prev = NULL;
     
-    //if list is empty, add node to list
-    if (*head == NULL)
+    if (*head == NULL) //if list is empty
     {
-        *head = node;
+        *head = node; //add node to list
     }
     else
     {
-        //traverse to end of list and insert node
+        //traverse to end of list and inserts node
         Node* ptr = *head;
         while (ptr->next != NULL)
         {
@@ -90,7 +91,7 @@ void addNode(Node** head, void* data)
 //updates linked-list heap
 void track(void* ptr)
 {
-    addNode(&heap, ptr); //adds a node to the heap
+    addNode(&heap, ptr); //adds a node to the "heap"
 }
 
 //free memory from malloc'd linked-lists
