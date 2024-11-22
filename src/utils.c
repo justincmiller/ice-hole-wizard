@@ -3,7 +3,7 @@
 *  that was used both as inspiration and used as is throughout this program.
 */
 
-#include "utils.h"
+#include "utils.h" //VT100 & linked-lists
 
 //head of a linked-list holding nodes to the pointers to malloc'd pointers
 static Node* heap;
