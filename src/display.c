@@ -1,8 +1,8 @@
 /*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
-*  that was used throughout this program. Specifically, the engine.h, vterminal.h, and vterminal.c files
-*  which uses much of Dr. Hughes' work.
+*  that was used both as inspiration and used as is throughout this program.
 */
+
 #include "display.h"
 #include "engine.h"
 
