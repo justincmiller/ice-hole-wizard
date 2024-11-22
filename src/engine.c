@@ -3,7 +3,7 @@
 *  that was used both as inspiration and used as is throughout this program.
 */
 
-#include "engine.h"
+#include "engine.h" //program operation headers & functions
 
 //static global variable for display (limited scope)
 static Display* dsp;
