@@ -6,7 +6,7 @@
 #include "display.h"
 #include "engine.h"
 
-//static global structure to limit scope
+//static global structure (limited scope)
 static Display dsp;
 
 void loadDisplay(Display** ptr)
