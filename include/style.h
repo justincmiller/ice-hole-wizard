@@ -6,10 +6,11 @@
 #ifndef STYLE_H
 #define STYLE_H
 
-#include "utils.h"
+#include "utils.h" //VT100 & linked-lists
 
 #define STATUS_BAR_POS(y) CUP(2, (y))
 
+//menu formatting
 #define MENU_ROWS 20
 #define MENU_COLS 30
 
@@ -33,6 +34,7 @@
 
 #define EDIT_ROWS 4
 
+//menu text formatting
 #define TEXT_POS    CUP(3,2)
 #define DATA_POS    CUP(20,4)
 
