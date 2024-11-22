@@ -18,7 +18,7 @@ void init()
     //load modules
     loadDisplay(&dsp); //loads structure that holds all the system information
     loadMenu(); //loads structure and data for the menu
-    loadMap(dsp); //creates layer 0
+    loadMap(dsp); //creates layer 0 and corresponding map
     loadCursor(dsp); //loads cursor onto map
     
     //set initial state to movement
