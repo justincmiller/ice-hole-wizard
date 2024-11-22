@@ -9,6 +9,7 @@
 //static global structure (limited scope)
 static Display dsp;
 
+//loads structure that holds all the system information
 void loadDisplay(Display** ptr)
 {
     *ptr = &dsp;
