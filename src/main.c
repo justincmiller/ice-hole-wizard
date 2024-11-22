@@ -16,7 +16,7 @@ int main(void)
         pollKbInput();
     }
     
-    purge();
+    purge(); //free memory from malloc'd linked-lists
 
     return EXIT_SUCCESS;
 }
