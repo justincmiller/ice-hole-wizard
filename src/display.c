@@ -14,34 +14,34 @@ void loadDisplay(Display** ptr)
     *ptr = &dsp;
 }
 
-void loadMenu()
-{
-    dsp.edit.values = malloc(DATA_ROWS * sizeof(char*));
-    ASSERT(dsp.edit.values);
-    track((void*)dsp.edit.values);
+// void loadMenu()
+// {
+//     dsp.edit.values = malloc(DATA_ROWS * sizeof(char*));
+//     ASSERT(dsp.edit.values);
+//     track((void*)dsp.edit.values);
 
-    dsp.edit.values[0] = calloc(DATA_ROWS * MENU_STR, sizeof(char));
-    ASSERT(dsp.edit.values[0]);
-    track((void*)dsp.edit.values[0]);
+//     dsp.edit.values[0] = calloc(DATA_ROWS * MENU_STR, sizeof(char));
+//     ASSERT(dsp.edit.values[0]);
+//     track((void*)dsp.edit.values[0]);
     
-    for (int i = 0; i < DATA_ROWS; i++)
-    {
-        dsp.edit.values[i] = dsp.edit.values[0] + i * MENU_STR;
-    }
+//     for (int i = 0; i < DATA_ROWS; i++)
+//     {
+//         dsp.edit.values[i] = dsp.edit.values[0] + i * MENU_STR;
+//     }
 
-    dsp.edit.options = malloc(OPTIONS * sizeof(char*));
-    ASSERT(dsp.edit.options);
-    track((void*)dsp.edit.options);
+//     dsp.edit.options = malloc(OPTIONS * sizeof(char*));
+//     ASSERT(dsp.edit.options);
+//     track((void*)dsp.edit.options);
 
-    dsp.edit.options[0] = calloc(OPTIONS * MENU_STR, sizeof(char));
-    ASSERT(dsp.edit.options[0]);
-    track((void*)dsp.edit.options);
+//     dsp.edit.options[0] = calloc(OPTIONS * MENU_STR, sizeof(char));
+//     ASSERT(dsp.edit.options[0]);
+//     track((void*)dsp.edit.options);
 
-    for (int i = 0; i < OPTIONS; i++)
-    {
-        dsp.edit.options[i] = dsp.edit.options[0] + i * MENU_STR;
-    }
-}
+//     for (int i = 0; i < OPTIONS; i++)
+//     {
+//         dsp.edit.options[i] = dsp.edit.options[0] + i * MENU_STR;
+//     }
+// }
 
 SMALL_RECT getWindow()
 {
@@ -75,8 +75,8 @@ void resetMargins()
     /*CLAMP macros use max and min functions clamp margins to grid 
     bounds (0, 99). if the window exceeds the width of the grid, it 
     will be aligned top left.*/
-    dsp.margin.Left = CLAMP_X(dsp.cursor.X - dsp.size.X / 2);
-    dsp.margin.Top =  CLAMP_Y(dsp.cursor.Y - dsp.size.Y / 2);
+    dsp.margin.Left = CLAMP_X(dsp.cursor->X - dsp.size.X / 2);
+    dsp.margin.Top =  CLAMP_Y(dsp.cursor->Y - dsp.size.Y / 2);
     dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.size.X);
     dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.size.Y);
 
@@ -128,7 +128,6 @@ void viewport()
     if (grid == NULL) return;
 
     COORD offset = {dsp.margin.Left, dsp.margin.Top};
-    COORD cursor = dsp.cursor;
 
     CLEAR;
     RESET;
@@ -143,7 +142,7 @@ void viewport()
             if (grid[i][j] != LATENT)
             {
                 setCursor(j, i);
-                if (i == cursor.Y && j == cursor.X)
+                if (i == dsp.cursor->Y && j == dsp.cursor->X)
                 {
                     printf(ACTIVE("%c"), grid[i][j]);
                 }
@@ -155,103 +154,103 @@ void viewport()
         }
     }
 
-    setCursor(cursor.X, cursor.Y);
+    setCursor(dsp.cursor->X, dsp.cursor->Y);
     statusBar();
 }
 
-void overlay()
-{
-    //render underlying grid
-    viewport();
+// void overlay()
+// {
+//     //render underlying grid
+//     viewport();
 
-    /******** draw overlay container ********/
-    RESET;
+//     /******** draw overlay container ********/
+//     RESET;
 
-    //initialize string of horizontal lines
-    char border[BORDER_COLS] = {0};
-    memset(border, 0x71, sizeof(border)-1);
+//     //initialize string of horizontal lines
+//     char border[BORDER_COLS] = {0};
+//     memset(border, 0x71, sizeof(border)-1);
 
-    //print top border with corners
-    printf(LDM("%c%s%c\n"), 0x6c, border, 0x6b);
+//     //print top border with corners
+//     printf(LDM("%c%s%c\n"), 0x6c, border, 0x6b);
 
-    //print left and right borders
-    for (int i = 0; i < BORDER_ROWS; i++)
-    {
-        printf(LDM("%c%29c\n"), 0x78, 0x78);
-    }
+//     //print left and right borders
+//     for (int i = 0; i < BORDER_ROWS; i++)
+//     {
+//         printf(LDM("%c%29c\n"), 0x78, 0x78);
+//     }
 
-    //print bottom border with corners
-    printf(LDM("%c%s%c\n"), 0x6d, border, 0x6a);
+//     //print bottom border with corners
+//     printf(LDM("%c%s%c\n"), 0x6d, border, 0x6a);
 
-    container();
-}
+//     container();
+// }
 
-void container()
-{
-    short idx = dsp.edit.index;
-    Data* data = dsp.edit.cell->data;
+// void container()
+// {
+//     short idx = dsp.edit.index;
+//     Data* data = dsp.edit.cell->data;
 
-    if (data == NULL) return;
+//     if (data == NULL) return;
 
-    const char* text[] =
-    {
-        FG_BY("Cell Properties"),
-        "Cell Number",
-        "Elevation",
-        "Friction",
-        "Type",
-        "Radiation",
-        "Ritterbarium"
-    };
+//     const char* text[] =
+//     {
+//         FG_BY("Cell Properties"),
+//         "Cell Number",
+//         "Elevation",
+//         "Friction",
+//         "Type",
+//         "Radiation",
+//         "Ritterbarium"
+//     };
 
-    const char* offsets[] =
-    {
-        DBL_LN TEXT_X, //header
-        SGL_LN TEXT_X, //cell number
-        DBL_LN TEXT_X, //elevation
-        SGL_LN TEXT_X, //friction
-        SGL_LN TEXT_X, //type
-        SGL_LN TEXT_X, //radiation
-        SGL_LN TEXT_X  //ritterbarium
-    };
+//     const char* offsets[] =
+//     {
+//         DBL_LN TEXT_X, //header
+//         SGL_LN TEXT_X, //cell number
+//         DBL_LN TEXT_X, //elevation
+//         SGL_LN TEXT_X, //friction
+//         SGL_LN TEXT_X, //type
+//         SGL_LN TEXT_X, //radiation
+//         SGL_LN TEXT_X  //ritterbarium
+//     };
 
-    TEXT_POS;
+//     TEXT_POS;
     
-    for (int i = 0; i < ARRAY_LEN(text); i++)
-    {
-        printf("%s%s", text[i], offsets[i]);
-    }
+//     for (int i = 0; i < ARRAY_LEN(text); i++)
+//     {
+//         printf("%s%s", text[i], offsets[i]);
+//     }
 
-    DATA_POS;
+//     DATA_POS;
 
-    snprintf(dsp.edit.values[CN], DATA_COLS, "%u"  SGL_LN DATA_X, data->cn);
-    snprintf(dsp.edit.values[EL], DATA_COLS, "%d"  DBL_LN DATA_X, data->el);
-    snprintf(dsp.edit.values[CF], DATA_COLS, "%u"  SGL_LN DATA_X, data->cf);
-    snprintf(dsp.edit.values[TY], DATA_COLS, "%d"  SGL_LN DATA_X, data->ty);
-    snprintf(dsp.edit.values[RL], DATA_COLS, "%hu" SGL_LN DATA_X, data->rl);
-    snprintf(dsp.edit.values[CC], DATA_COLS, "%u"  SGL_LN DATA_X, getRB(data));
+//     snprintf(dsp.edit.values[CN], DATA_COLS, "%u"  SGL_LN DATA_X, data->cn);
+//     snprintf(dsp.edit.values[EL], DATA_COLS, "%d"  DBL_LN DATA_X, data->el);
+//     snprintf(dsp.edit.values[CF], DATA_COLS, "%u"  SGL_LN DATA_X, data->cf);
+//     snprintf(dsp.edit.values[TY], DATA_COLS, "%d"  SGL_LN DATA_X, data->ty);
+//     snprintf(dsp.edit.values[RL], DATA_COLS, "%hu" SGL_LN DATA_X, data->rl);
+//     snprintf(dsp.edit.values[CC], DATA_COLS, "%u"  SGL_LN DATA_X, getRB(data));
 
-    printf("%s %s %s %s %s %s",
-            dsp.edit.values[CN],
-            dsp.edit.values[EL],
-            dsp.edit.values[CF],
-            dsp.edit.values[TY],
-            dsp.edit.values[RL],
-            dsp.edit.values[CC]);
-}
+//     printf("%s %s %s %s %s %s",
+//             dsp.edit.values[CN],
+//             dsp.edit.values[EL],
+//             dsp.edit.values[CF],
+//             dsp.edit.values[TY],
+//             dsp.edit.values[RL],
+//             dsp.edit.values[CC]);
+// }
 
-void statusBar()
-{
-    HIDE_CURSOR;
+// void statusBar()
+// {
+//     HIDE_CURSOR;
 
-    int x = COL_X(dsp.cursor.X) * CELL_WIDTH;
-    int y = ROW_Y(dsp.cursor.Y) * CELL_HEIGHT;
-    int z = dsp.map->layer->depth;
+//     int x = COL_X(dsp.cursor->X) * CELL_WIDTH;
+//     int y = ROW_Y(dsp.cursor->Y) * CELL_HEIGHT;
+//     int z = dsp.map->layer->depth;
 
-    STATUS_BAR_POS(dsp.size.Y);
-    printf("x, y, z: (%d, %d, %d) (m) %12c", x, y, z, LATENT);
+//     STATUS_BAR_POS(dsp.size.Y);
+//     printf("x, y, z: (%d, %d, %d) (m) %12c", x, y, z, LATENT);
 
-    updateCursor();
+//     updateCursor();
 
-    if (dsp.state == MOVE) SHOW_CURSOR;
-}
+//     if (dsp.state == MOVE) SHOW_CURSOR;
+// }

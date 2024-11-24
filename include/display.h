@@ -10,36 +10,36 @@
 #include "map.h"
 
 #define INPUT 0x01
-#define OPTIONS 5
 
-typedef struct Menu
-{
-    short index;
-    char** values;
-    char** options;
-    Cell* cell;
-}Menu;
+// typedef struct Menu
+// {
+//     short index;
+//     char** values;
+//     char** options;
+//     Cell* cell;
+// }Menu;
+struct Menu;
 
 typedef struct Display
 {
-    COORD cursor;
+    COORD* cursor;
     COORD size;
     SMALL_RECT margin;
     Map* map;
     int state;
-    Menu edit;
+    struct Menu* editor;
 }Display;
 
 SMALL_RECT getWindow();
 void setWindow();
 void resetMargins();
 void loadDisplay(Display** ptr);
-void loadMenu();
+//void loadMenu();
 void render();
 void pollWindow();
 void viewport();
-void overlay();
-void container();
-void statusBar();
+//void overlay();
+//void container();
+//void statusBar();
 
 #endif

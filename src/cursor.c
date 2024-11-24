@@ -3,14 +3,14 @@
 static Display* dsp;
 
 void loadCursor(Display* ptr)
-{//
+{
     dsp = ptr;
 }
 
 void updateCursor()
 {
-    int offsetX = 1 + CLAMP_X(dsp->cursor.X - dsp->margin.Left);
-    int offsetY = 1 + CLAMP_Y(dsp->cursor.Y - dsp->margin.Top);
+    int offsetX = 1 + CLAMP_X(dsp->cursor->X - dsp->margin.Left);
+    int offsetY = 1 + CLAMP_Y(dsp->cursor->Y - dsp->margin.Top);
 
     //prevent cursor from entering status bar
     offsetY = (offsetY >= dsp->size.Y) ? (dsp->size.Y - 1) : offsetY;
@@ -21,8 +21,8 @@ void updateCursor()
 //move cursor using absolute parameters
 void setCursor(const short x, const short y)
 {
-    dsp->cursor.X = x;
-    dsp->cursor.Y = y;
+    dsp->cursor->X = x;
+    dsp->cursor->Y = y;
 
     updateCursor();
 }
@@ -33,20 +33,20 @@ void move(const int code)
     switch(code)
     {
         case ARROW_UP:
-            if (dsp->cursor.Y > GRID_MIN) 
-                dsp->cursor.Y = CLAMP_Y(dsp->cursor.Y - 1);
+            if (dsp->cursor->Y > GRID_MIN) 
+                dsp->cursor->Y = CLAMP_Y(dsp->cursor->Y - 1);
             break;
         case ARROW_DOWN:
-            if (dsp->cursor.Y < GRID_MAX) 
-                dsp->cursor.Y = CLAMP_Y(dsp->cursor.Y + 1);
+            if (dsp->cursor->Y < GRID_MAX) 
+                dsp->cursor->Y = CLAMP_Y(dsp->cursor->Y + 1);
             break;
         case ARROW_LEFT:
-            if (dsp->cursor.X > GRID_MIN) 
-                dsp->cursor.X = CLAMP_X(dsp->cursor.X - 1);
+            if (dsp->cursor->X > GRID_MIN) 
+                dsp->cursor->X = CLAMP_X(dsp->cursor->X - 1);
             break;
         case ARROW_RIGHT:
-            if (dsp->cursor.X < GRID_MAX) 
-                dsp->cursor.X = CLAMP_X(dsp->cursor.X + 1);
+            if (dsp->cursor->X < GRID_MAX) 
+                dsp->cursor->X = CLAMP_X(dsp->cursor->X + 1);
             break;
     }
     
@@ -58,8 +58,8 @@ void draw(const int code)
 {
     //variables for brevity
     char** grid = dsp->map->layer->grid;
-    int x = dsp->cursor.X;
-    int y = dsp->cursor.Y;
+    int x = dsp->cursor->X;
+    int y = dsp->cursor->Y;
     
     int dx = 0;
     int dy = 0;
@@ -199,40 +199,40 @@ void panViewport(const int code)
     render();
 }
 
-void option(const int code)
-{
-    short idx = dsp->edit.index;
+// void option(const int code)
+// {
+//     short idx = dsp->edit.index;
 
-    short dy = 0;
+//     short dy = 0;
 
-    switch (code)
-    {
-        case ARROW_UP:
-            if (idx > MENU_MIN) dy = -1;
-            break;
-        case ARROW_DOWN:
-            if (idx < MENU_MAX) dy = 1;
-            break;
-    }
+//     switch (code)
+//     {
+//         case ARROW_UP:
+//             if (idx > MENU_MIN) dy = -1;
+//             break;
+//         case ARROW_DOWN:
+//             if (idx < MENU_MAX) dy = 1;
+//             break;
+//     }
 
-    dsp->edit.index = idx + dy;
+//     dsp->edit.index = idx + dy;
 
-    updateMenu(dy);
-}
+//     updateMenu(dy);
+// }
 
-void updateMenu(const short dy)
-{
-    if (!dy) return;
+// void updateMenu(const short dy)
+// {
+//     if (!dy) return;
 
-    for (int i = 0; i < OPTIONS; i++)
-    {
-        if (i == dsp->edit.index)
-        {
-            CUP(EDIT_X, EDIT_Y + i);
-            printf(SELECT("%s") FIXED, dsp->edit.options[i]);
+//     for (int i = 0; i < OPTIONS; i++)
+//     {
+//         if (i == dsp->edit.index)
+//         {
+//             CUP(EDIT_X, EDIT_Y + i);
+//             printf(SELECT("%s") FIXED, dsp->edit.options[i]);
 
-            CUP(EDIT_X, EDIT_Y + i - dy);
-            printf("%s" FIXED, dsp->edit.options[i-dy]);
-        }
-    }
-}
+//             CUP(EDIT_X, EDIT_Y + i - dy);
+//             printf("%s" FIXED, dsp->edit.options[i-dy]);
+//         }
+//     }
+// }

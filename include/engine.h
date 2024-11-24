@@ -9,10 +9,10 @@
 
 //include the vterminal header for terminal control and key codes
 #include "utils.h"
-#include "style.h"
 #include "map.h"
 #include "display.h"
 #include "cursor.h"
+#include "interface.h"
 
 //function declarations
 void init(); //initializes console setup

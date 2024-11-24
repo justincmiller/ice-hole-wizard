@@ -85,9 +85,10 @@
         } \
     } while (0)
 
-
 #define ARRAY_LEN(arr) (sizeof(arr) / sizeof((arr)[0]))
 
+#define APPEND 1
+#define NONE   0
 
 enum status
 {
@@ -137,6 +138,8 @@ bool virtualInput();
 bool virtualOutput();
 
 void addNode(Node** head, void* data);
+Node* getNode(Node* head, const unsigned int n);
+void assert(void* ptr, const short action);
 void track(void* ptr);
 void purge();
 

@@ -7,11 +7,14 @@ struct Display;
 
 #define BUFF_LEN 8
 
+#define CN(x,y,z) (x + y * MAP_COLS + z * MAP_ROWS * MAP_COLS)
+
 typedef struct Layer
 {
     Node* cells;    //list to hold cells
     char** grid;    //2d array to hold glyphs
-    short depth;    //current layer depth
+    unsigned short depth;    //current layer depth
+    COORD cursor;
 }Layer;
 
 typedef struct Map
@@ -19,7 +22,7 @@ typedef struct Map
     Node* matrix;   //list to hold layers
     Layer* layer;   //active layer
     Layer* last;    //previous layer
-    short depth;    //layer count
+    unsigned short depth;    //layer count
 }Map;
 
 typedef struct Mineral
@@ -40,7 +43,9 @@ typedef struct Data
 
 typedef struct Cell
 {
-    COORD pos;      //position
+    short x;
+    short y;
+    short z;
     Data* data;     //cell properties
 }Cell;
 
@@ -60,9 +65,13 @@ char** createGrid();
 Layer* createLayer();
 void addLayer();
 Cell* createCell();
-void addCell();
-void editCell();
-void editValue();
+Node* addCell();
+//void editCell();
+//void editValue();
+//void saveCell();
 int getRB(Data* data);
+void layerUp();
+void layerDown();
+void lastLayer();
 
 #endif

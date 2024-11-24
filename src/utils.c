@@ -80,6 +80,36 @@ void addNode(Node** head, void* data)
     }
 }
 
+Node* getNode(Node* head, const unsigned int n)
+{
+    Node* ptr = head;
+
+    if (head == NULL) return NULL;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (ptr->next == NULL) return NULL;
+        ptr = ptr->next;
+    }
+
+    return ptr;
+}
+
+void assert(void* ptr, const short action)
+{
+    if (ptr == NULL)
+    {
+        printf(">> Error: memory failure.\n");
+        purge();
+        exit(EXIT_FAILURE);
+    }
+
+    if (action == APPEND)
+    {
+        addNode(&heap, ptr);
+    }
+}
+
 void track(void* ptr)
 {
     addNode(&heap, ptr);

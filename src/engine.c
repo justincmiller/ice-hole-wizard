@@ -18,8 +18,8 @@ void init()
 
     //load modules
     loadDisplay(&dsp);
-    loadMenu();
     loadMap(dsp);
+    loadMenu(dsp);
     loadCursor(dsp);
     
     //set initial state to movement
@@ -119,8 +119,10 @@ void moveControls(const int code)
             ECH(1);
             return;
         case PG_UP:
+            layerUp();
             return;
         case PG_DN:
+            layerDown();
             return;
         case CTRL_UP:
         case CTRL_DOWN:
@@ -149,6 +151,7 @@ void drawControls(const int code)
         case HOME:
             break;
         case END:
+            lastLayer();
             break;
         case INSERT:
             dsp->state ^= ( MOVE | DRAW);
@@ -158,8 +161,10 @@ void drawControls(const int code)
             ECH(1);
             break;
         case PG_UP:
+            layerUp();
             break;
         case PG_DN:
+            layerDown();
             break;
         case CTRL_UP:
         case CTRL_DOWN:
