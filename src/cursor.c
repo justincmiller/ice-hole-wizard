@@ -11,7 +11,6 @@ static Display* dsp;
 //loads cursor onto map
 void loadCursor(Display* ptr)
 {
-{
     dsp = ptr;
 }
 
@@ -238,7 +237,7 @@ void option(const int code)
 // }
 
 // //highlights menu selection in alt-screen
-void updateMenu(const short dy)
+//void updateMenu(const short dy)
 // {
 //     if (!dy) return;
 

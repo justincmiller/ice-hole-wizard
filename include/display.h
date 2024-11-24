@@ -11,7 +11,7 @@
 #define INPUT 0x01
 
 // //struct to hold all the cell properties
-typedef struct Menu
+//typedef struct Menu
 // {
 //     short index;
 //     char** values; //cell properties and amounts
