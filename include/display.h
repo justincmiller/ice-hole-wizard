@@ -1,7 +1,6 @@
 /*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
-*  that was used throughout this program. Specifically, the engine.h, vterminal.h, and vterminal.c files
-*  which uses much of Dr. Hughes' work.
+*  that was used both as inspiration and used as is throughout this program.
 */
 
 #ifndef DISPLAY_H
@@ -11,23 +10,25 @@
 
 #define INPUT 0x01
 
-// typedef struct Menu
+// //struct to hold all the cell properties
+typedef struct Menu
 // {
 //     short index;
-//     char** values;
-//     char** options;
-//     Cell* cell;
+//     char** values; //cell properties and amounts
+//     char** options; 
+//     Cell* cell; 
 // }Menu;
 struct Menu;
 
+//structure that holds all the system information
 typedef struct Display
 {
-    COORD* cursor;
-    COORD size;
-    SMALL_RECT margin;
-    Map* map;
-    int state;
-    struct Menu* editor;
+    COORD* cursor; //cursor position
+    COORD size; //window size
+    SMALL_RECT margin; //window margins
+    Map* map; //pointer to map structure
+    int state; //system state: drawing, moving, quit
+    struct Menu* editor; //cell content editing menu
 }Display;
 
 SMALL_RECT getWindow();

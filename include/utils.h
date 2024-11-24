@@ -1,3 +1,8 @@
+/*
+*  Credit is given to Dr. Larry Hughes for providing the reference code
+*  that was used both as inspiration and used as is throughout this program.
+*/
+
 #ifndef UTILS_H
 #define UTILS_H
 
@@ -17,22 +22,26 @@
 #define X_COL(x) ((x) + 49)
 #define Y_ROW(y) (50 - (y))
 
+//map size
 #define MAP_ROWS 100
 #define MAP_COLS 100
 
+//viewport size
 #define GRID_MAX 99
 #define GRID_MIN 0
 
+//cell size
 #define CELL_WIDTH  10
 #define CELL_HEIGHT 10
 
+//boundries
 #define CLAMP_X(x) ((x) < 0 ? 0 : ((x) > 99 ? 99 : (x)))
 #define CLAMP_Y(y) ((y) < 0 ? 0 : ((y) > 99 ? 99 : (y)))
 
+//VT100 definitions
 #define ESC "\x1b"
 #define CSI "\x1b["
-
-#define CUP(x,y)        printf(CSI "%d;%dH", (y), (x)) //move cursor to position
+#define CUP(x,y)        printf(CSI "%d;%dH", (y), (x))
 #define ECH(n)          printf(CSI "%dX", (n))
 #define RESET           printf(CSI "H")
 #define CLEAR           printf(CSI "2J" CSI "3J")
@@ -41,10 +50,11 @@
 #define ALT_SCREEN      printf(CSI "?1049h")
 #define MAIN_SCREEN     printf(CSI "?1049l")
 
-//label latent character - ASCII space
+//Latent Character - ASCII Space
 #define LATENT 0x20
 
-#define SQLEN 7
+//Keyboard Input values for pollKbInput function
+#define SQLEN 7 
 #define CONTROLS 17
 #define CONTENTS 3
 
@@ -87,6 +97,7 @@
 
 #define ARRAY_LEN(arr) (sizeof(arr) / sizeof((arr)[0]))
 
+//system state options
 #define APPEND 1
 #define NONE   0
 
@@ -98,6 +109,7 @@ enum status
     QUIT = (1 << 3)
 };
 
+//movement directions
 enum directions
 {
     UP,
@@ -106,6 +118,7 @@ enum directions
     RIGHT
 };
 
+//possible valid key press options
 enum keyCodes
 {
     P = 1,
@@ -127,6 +140,7 @@ enum keyCodes
     ESCAPE
 };
 
+//struct for link-list node
 typedef struct Node
 {
     void* data;
@@ -134,6 +148,12 @@ typedef struct Node
     struct Node* prev;
 }Node;
 
+//functions
+bool virtualInput(); //initializes VT100 Input
+bool virtualOutput(); //initializes VT100 Output
+void addNode(Node** head, void* data); //handles adding to linked-lists
+void track(void* ptr); //handles updating linked-list "heap"
+void purge(); //frees memory from malloc'd linked-lists
 bool virtualInput();
 bool virtualOutput();
 

@@ -1,12 +1,21 @@
-#include "cursor.h"
+/*
+*  Credit is given to Dr. Larry Hughes for providing the reference code
+*  that was used both as inspiration and used as is throughout this program.
+*/
 
+#include "cursor.h" //cursor movement
+
+//static global variable for display (limited scope)
 static Display* dsp;
 
+//loads cursor onto map
 void loadCursor(Display* ptr)
+{
 {
     dsp = ptr;
 }
 
+//update cursor position
 void updateCursor()
 {
     int offsetX = 1 + CLAMP_X(dsp->cursor->X - dsp->margin.Left);
@@ -54,6 +63,7 @@ void move(const int code)
     statusBar();
 }
 
+//map drawing operations
 void draw(const int code)
 {
     //variables for brevity
@@ -64,7 +74,7 @@ void draw(const int code)
     int dx = 0;
     int dy = 0;
     
-    switch(code)
+    switch(code) //from pollKbInput
     {
         case ARROW_UP:
             if (y > GRID_MIN)
@@ -100,14 +110,17 @@ void draw(const int code)
             break;
     }
 
+    //update cursor after drawing
     printf(INACTIVE("%c") FIXED, grid[y][x]);
     setCursor(x+dx, y+dy);
     printf(ACTIVE("%c") FIXED, grid[y+dy][x+dx]);
     statusBar();
 }
 
+//handles intersection drawing
 bool connector(int dir, char c)
 {
+    //table of connection options
     const char connections[4][8] =
     {
         {0x5F, 0x6b, 0x6c, 0x6e, 0x74, 0x75, 0x77, 0x78},
@@ -124,8 +137,10 @@ bool connector(int dir, char c)
     return false;
 }
 
+//handles what sytle of line to draw on map
 char lineType(char** grid, int row, int col)
 {
+    //line types
     const char line[] = 
     {
         0x5F, // 0000 - none
@@ -162,9 +177,10 @@ char lineType(char** grid, int row, int col)
     return line[type];
 }
 
+//handles moving the viewport in any state
 void panViewport(const int code)
 {
-    switch(code)
+    switch(code) //from pollKbInput
     {
         case CTRL_UP:
             if (dsp->margin.Top > GRID_MIN)
@@ -196,10 +212,11 @@ void panViewport(const int code)
             break;
     }
 
-    render();
+    render(); //forces update to map corresponding to the viewport update
 }
 
-// void option(const int code)
+// //moves menu selections in alt-screen
+void option(const int code)
 // {
 //     short idx = dsp->edit.index;
 
@@ -220,7 +237,8 @@ void panViewport(const int code)
 //     updateMenu(dy);
 // }
 
-// void updateMenu(const short dy)
+// //highlights menu selection in alt-screen
+void updateMenu(const short dy)
 // {
 //     if (!dy) return;
 
