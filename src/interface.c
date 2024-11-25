@@ -52,7 +52,6 @@ void loadMenu(Display* ptr)
 {
     dsp = ptr;
     dsp->editor = &editor;
-
     editor.index = 0;
 
     short y = 2;
@@ -72,17 +71,20 @@ void loadMenu(Display* ptr)
     for (int i = 0; i < MENU_DATA; i++)
     {
         //add space following the constant values (cell number and elevation)
-        if (i == 2) y++;
+        if (i == MENU_FIXED) y++;
         editor.text[i] = createTk(TEXT_X, y);
         editor.data[i] = createTk(DATA_X, y++);
-        if (i > 1)
-            editor.options[i-2] = editor.data[i];
     }
-    
+
+    for (int i = 0; i < MENU_VARS; i++)
+    {
+        editor.options[i] = editor.data[i + MENU_FIXED];
+    }   
+
     y += 2; //add space following menu body
 
-    editor.options[SAVE] = createTk(TEXT_X, y++);
-    editor.options[CELL_RESET] = createTk(TEXT_X, y);
+    editor.options[SAVE_CELL] = createTk(TEXT_X, y++);
+    editor.options[RESET_CELL] = createTk(TEXT_X, y);
 
     snprintf(editor.header->string, TOKEN, "Cell Properties");
     formatTk(editor.header, BRIGHT_YELLOW, DEFAULT);
@@ -94,8 +96,10 @@ void loadMenu(Display* ptr)
     snprintf(editor.text[RL]->string, TOKEN, "Radiation (Bq)");
     snprintf(editor.text[CC]->string, TOKEN, "Ritterbarium (%%)");
 
-    snprintf(editor.options[SAVE]->string, TOKEN, "Save");
-    snprintf(editor.options[CELL_RESET]->string, TOKEN, "Reset");
+    snprintf(editor.options[SAVE_CELL]->string, TOKEN, "Save");
+    snprintf(editor.options[RESET_CELL]->string, TOKEN, "Reset");
+
+    formatTk(editor.options[editor.index], BLACK, WHITE);
 }
 
 Token* createTk(const short x, const short y)
@@ -145,13 +149,20 @@ void printTk(Token* tk)
 
 void formatTk(Token* tk, const unsigned short fg, const unsigned short bg)
 {
-    if (fg != DEFAULT) tk->fmt |= FMT_FG;
-    else tk->fmt &= ~FMT_FG;
 
-    if (bg != DEFAULT) tk->fmt |= FMT_BG;
-    else tk->fmt &= ~FMT_BG;
+    tk->fmt = 0;
 
-    tk->fmt |= (background[bg] << BG) | foreground[fg];
+    if (fg != DEFAULT)
+    {
+        tk->fmt |= FMT_FG;
+        tk->fmt |= foreground[fg]; 
+    }
+
+    if (bg != DEFAULT)
+    {
+        tk->fmt |= FMT_BG;
+        tk->fmt |= (background[bg] << BG);
+    }
 }
 
 void overlay()
@@ -195,6 +206,8 @@ void container()
     snprintf(editor.data[RL]->string, TOKEN, "%hu", data->rl);
     snprintf(editor.data[CC]->string, TOKEN, "%u",  getRB(data));
 
+    formatTk(editor.options[editor.index], BLACK, WHITE);
+
     printTk(editor.header);
 
     for (int i = 0; i < MENU_DATA; i++)
@@ -203,8 +216,8 @@ void container()
         printTk(editor.data[i]);
     }
 
-    printTk(editor.options[SAVE]);
-    printTk(editor.options[CELL_RESET]);
+    printTk(editor.options[SAVE_CELL]);
+    printTk(editor.options[RESET_CELL]);
 }
 
 void statusBar()
@@ -237,17 +250,15 @@ void option(const int code)
             break;
     }
 
+    if (!dy) return;
+
+    formatTk(editor.options[editor.index], DEFAULT, DEFAULT);
+    printTk(editor.options[editor.index]);
+
     editor.index += dy;
 
-    if (dy != 0) updateMenu(dy);
-}
-
-void updateMenu(const short dy)
-{
-    formatTk(editor.options[editor.index], BLACK, WHITE);
-    formatTk(editor.options[editor.index-dy], DEFAULT, DEFAULT);
+    formatTk(editor.options[editor.index], BLACK, WHITE); 
     printTk(editor.options[editor.index]);
-    printTk(editor.options[editor.index-dy]);
 }
 
 void editCell()
@@ -268,30 +279,43 @@ void editCell()
 void editValue()
 {
     int value = 0;
+    Token* option = editor.options[editor.index];
+
+    CUP(option->x, option->y);
+    printf("%-8s", "");
+    CUP(option->x, option->y);
 
     switch (editor.index)
     {
-        case CF:
+        case FRICTION:
             scanf("%d", &value);
-            snprintf(editor.data[editor.index]->string, TOKEN, "%d", value);
+            snprintf(option->string, TOKEN, "%u", value);
             editor.cell->data->cf = (unsigned int)value;
             break;
-        case TY:
+        case TYPE:
             scanf("%d", &value);
-            snprintf(editor.data[editor.index]->string, TOKEN, "%d", value);
+            snprintf(option->string, TOKEN, "%d", value);
             editor.cell->data->ty = (char)value;
             break;
-        case RL:
+        case RADIATION:
             scanf("%d", &value);
-            snprintf(editor.data[editor.index]->string, TOKEN, "%d", value);
+            snprintf(option->string, TOKEN, "%u", value);
             editor.cell->data->rl = (unsigned int)value;
             break;
-        case CC:
+        case RITTERBARIUM:
             scanf("%d", &value);
-            snprintf(editor.data[editor.index]->string, TOKEN, "%d", value);
+            snprintf(option->string, TOKEN, "%d", value);
             //editor.cell->data->cf = (char)value;
             break;
+        case SAVE_CELL:
+            break;
+        case RESET_CELL:
+            break;        
     }
+
+    while (getchar() != '\n');
+
+    container();
 }
 
 void saveCell()

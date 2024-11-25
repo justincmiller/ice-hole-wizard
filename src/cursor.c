@@ -215,7 +215,7 @@ void panViewport(const int code)
 }
 
 // //moves menu selections in alt-screen
-void option(const int code)
+//void option(const int code)
 // {
 //     short idx = dsp->edit.index;
 

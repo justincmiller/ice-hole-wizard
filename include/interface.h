@@ -19,16 +19,17 @@
 #define BG     7
 #define TOKEN  32
 
-#define MENU_MAX 6
+#define MENU_MAX 5
 #define MENU_MIN 0
 
+#define MENU_FIXED 2
+#define MENU_VARS  4
+
 #define MENU_DATA 6
-#define TEXT_X 3
-#define DATA_X 20
+#define TEXT_X    3
+#define DATA_X    20
 
 #define OPTIONS    6
-#define SAVE       4
-#define CELL_RESET 5
 
 struct Display;
 
@@ -42,15 +43,13 @@ typedef struct Token
 
 typedef struct Menu
 {
-    unsigned short index;
+    short index;
     Token* header;
     Token** text;
     Token** data;
     Token** options;
     Cell* cell;
 }Menu;
-
-
 
 enum colours
 {
@@ -81,6 +80,11 @@ enum lines
     UDR = 0x74, UDL, ULR, DLR, UD
 };
 
+enum options
+{
+    FRICTION, TYPE, RADIATION, RITTERBARIUM, SAVE_CELL, RESET_CELL
+};
+
 void loadMenu(struct Display* ptr);
 Token* createTk(const short x, const short y);
 void printTk(Token* tk);
@@ -89,7 +93,6 @@ void overlay();
 void container();
 void statusBar();
 void option(const int code);
-void updateMenu(const short dy);
 void editCell();
 void editValue();
 void saveCell();
