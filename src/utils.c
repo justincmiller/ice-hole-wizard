@@ -66,7 +66,12 @@ bool virtualOutput()
 void addNode(Node** head, void* data)
 {
     Node* node = malloc(sizeof(Node));
-    ASSERT(node);
+    if (node == NULL) 
+    { 
+            printf(">> Error: memory failure.\n");
+            purge();
+            exit(EXIT_FAILURE);
+    }
     node->data = data;
     node->next = NULL;
     node->prev = NULL;
@@ -85,6 +90,24 @@ void addNode(Node** head, void* data)
         }
         ptr->next = node;
         node->prev = ptr;
+    }
+}
+
+void removeNode(Node** head, Node* node)
+{
+    if (*head == NULL || node == NULL) return;
+
+    if (node == *head)
+    {
+        *head = node->next;
+        if (*head)
+            (*head)->prev = NULL;
+    }
+    else
+    {
+        node->prev->next = node->next;
+        if (node->next)
+            node->next->prev = node->prev;
     }
 }
 
@@ -118,6 +141,23 @@ void assert(void* ptr, const short action)
     }
 }
 
+void forget(void* ptr)
+{
+    Node* node = heap;
+
+    while (node != NULL)
+    {
+        if (node->data == ptr)
+        {
+            removeNode(&heap, node);
+            free(node->data);
+            free(node);
+            return;
+        }
+        node = node->next;
+    }
+}
+
 void track(void* ptr)
 {
     addNode(&heap, ptr); //adds a node to the "heap"
@@ -129,12 +169,15 @@ void purge()
     if (heap == NULL) return; //if no memory is allocated
 
     Node* ptr = heap;
+    Node* next = ptr->next;
+
     while (ptr != NULL) //if memory is allocated
     {
-        Node* next = ptr->next;
         free(ptr->data);
         free(ptr);
+
         ptr = next;
+        next = ptr->next;
     }
 
     heap = NULL; //no memory left to purge

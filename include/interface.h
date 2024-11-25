@@ -48,6 +48,7 @@ typedef struct Menu
     Token** text;
     Token** data;
     Token** options;
+    Token* selection;
     Cell* cell;
 }Menu;
 
@@ -93,8 +94,12 @@ void overlay();
 void container();
 void statusBar();
 void option(const int code);
-void editCell();
-void editValue();
+void editor();
+void edit();
+void editCF();
+void editTY();
+void editRL();
+void editRB();
 void saveCell();
 void clearData();
 

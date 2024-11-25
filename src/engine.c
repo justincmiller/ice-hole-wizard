@@ -123,7 +123,7 @@ void moveControls(const int code)
             render(); //hides cursor in draw state
             return;
         case DEL:
-            ECH(1);
+            remCell();
             return;
         case PG_UP:
             layerUp();
@@ -139,8 +139,7 @@ void moveControls(const int code)
             return;
         case P:
             dsp->state ^= EDIT; //set state to edit
-            editCell(); //call function to edit cell properties
-            render(); //hides cursor and pulls up the alt-screen
+            editor(); //call function to edit cell properties
             return;
     }
 }
@@ -157,6 +156,7 @@ void drawControls(const int code)
             draw(code); //move and draw map
             return;
         case HOME:
+            topLayer();
             break;
         case END:
             lastLayer();
@@ -166,7 +166,7 @@ void drawControls(const int code)
             render(); //enable cursor for move state
             return;
         case DEL:
-            ECH(1);
+            remCell();
             break;
         case PG_UP:
             layerUp();
@@ -182,8 +182,7 @@ void drawControls(const int code)
             return;
         case P:
             dsp->state ^= EDIT; //set state to edit
-            editCell(); //call function to edit cell properties
-            render(); //pulls up the alt-screen
+            editor(); //call function to edit cell properties
             break;
     }
 }
@@ -199,11 +198,10 @@ void editControls(const int code)
             break;
         case P:
             dsp->state ^= EDIT; //set state to edit
-            editCell(); //call function to edit cell properties
-            render(); //pulls up the alt-screen, hides cursor if in move state
+            render();
             break;
         case ENTER:
-            editValue(); //select option to edit and update as necessary
+            edit(); //select option to edit and update as necessary
             break;
     }
 }

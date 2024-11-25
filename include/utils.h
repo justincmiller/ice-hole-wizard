@@ -47,11 +47,18 @@
 #define CLEAR           printf(CSI "2J" CSI "3J")
 #define HIDE_CURSOR     printf(CSI "?25l")
 #define SHOW_CURSOR     printf(CSI "?25h")
+#define SAVE_CURSOR     printf(CSI "7")
+#define RESTORE_CURSOR  printf(CSI "8")
+#define BLOCK_CURSOR    printf(CSI "2 q")
+#define SHOW_BLOCK      printf(CSI "?25h" CSI "2 q")
 #define ALT_SCREEN      printf(CSI "?1049h")
 #define MAIN_SCREEN     printf(CSI "?1049l")
 
-//Latent Character - ASCII Space
-#define LATENT 0x20
+//Special ASCII characters
+#define LATENT    0x20
+#define PLUS      0x2B
+#define MINUS     0x2D
+#define NONE      0x5F
 
 //Keyboard Input values for pollKbInput function
 #define SQLEN 7 
@@ -72,7 +79,12 @@
 * \x1b[30;43m  - set foreground; background to 30 (black) and 43 (yellow)
 * \x1b[0m      - reset to default colours
 */
-#define INACTIVE(string) LDM(CSI "30;43m" string CSI "0m")
+#define PATH(string)    LDM(CSI "30;43m" string CSI "0m")
+
+#define PORT_DN(string) LDM(CSI "37;42m" string CSI "0m")
+#define PORT_UP(string) LDM(CSI "37;41m" string CSI "0m")
+
+#define GLYPH(a, b) (a) = ((a) == PLUS || (a) == MINUS) ? (a) : (b)
 
 /*
 * format string for active line
@@ -85,21 +97,10 @@
 //format string to maintain cursor position when printing
 #define FIXED CSI "D"
 
-//do-while(0) ensures this macro expands consitently
-#define ASSERT(ptr) \
-    do { \
-        if (ptr == NULL) { \
-            printf(">> Error: memory failure.\n"); \
-            purge(); \
-            exit(EXIT_FAILURE); \
-        } \
-    } while (0)
-
 #define ARRAY_LEN(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 //system state options
 #define APPEND 1
-#define NONE   0
 
 enum status
 {
@@ -152,15 +153,11 @@ typedef struct Node
 bool virtualInput(); //initializes VT100 Input
 bool virtualOutput(); //initializes VT100 Output
 void addNode(Node** head, void* data); //handles adding to linked-lists
-void track(void* ptr); //handles updating linked-list "heap"
-void purge(); //frees memory from malloc'd linked-lists
-bool virtualInput();
-bool virtualOutput();
-
-void addNode(Node** head, void* data);
+void removeNode(Node** head, Node* node);
 Node* getNode(Node* head, const unsigned int n);
+void track(void* ptr); //handles updating linked-list "heap"
 void assert(void* ptr, const short action);
-void track(void* ptr);
-void purge();
+void forget(void* ptr);
+void purge(); //frees memory from malloc'd linked-lists
 
 #endif

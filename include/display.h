@@ -10,14 +10,6 @@
 
 #define INPUT 0x01
 
-// //struct to hold all the cell properties
-//typedef struct Menu
-// {
-//     short index;
-//     char** values; //cell properties and amounts
-//     char** options; 
-//     Cell* cell; 
-// }Menu;
 struct Menu;
 
 //structure that holds all the system information
@@ -28,19 +20,15 @@ typedef struct Display
     SMALL_RECT margin; //window margins
     Map* map; //pointer to map structure
     int state; //system state: drawing, moving, quit
-    struct Menu* editor; //cell content editing menu
+    struct Menu* menu; //cell content editing menu
 }Display;
 
+void loadDisplay(Display** ptr);
 SMALL_RECT getWindow();
 void setWindow();
 void resetMargins();
-void loadDisplay(Display** ptr);
-//void loadMenu();
 void render();
 void pollWindow();
 void viewport();
-//void overlay();
-//void container();
-//void statusBar();
 
 #endif

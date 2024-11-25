@@ -11,11 +11,6 @@
 #include "map.h" //layers, map, cells, etc.
 #include "display.h" //system information and menus
 #include "cursor.h" //cursor movement
-//include the vterminal header for terminal control and key codes
-#include "utils.h"
-#include "map.h"
-#include "display.h"
-#include "cursor.h"
 #include "interface.h"
 
 //function declarations

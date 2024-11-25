@@ -79,12 +79,12 @@ Layer* createLayer();
 void addLayer();
 Cell* createCell();
 Node* addCell();
-//void editCell();
-//void editValue();
-//void saveCell();
+void remCell();
+Node* searchCN(const unsigned int cn);
 int getRB(Data* data);
 void layerUp();
 void layerDown();
 void lastLayer();
+void topLayer();
 
 #endif

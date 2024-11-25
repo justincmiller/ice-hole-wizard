@@ -23,13 +23,11 @@ char** createGrid()
 {
     //allocate row pointers
     char** grid = malloc(MAP_ROWS * sizeof(char*));
-    ASSERT(grid);
-    track((void*)grid);
+    assert((void*)grid, APPEND);
 
     //allocate contiguous 2D array of chars
     grid[0] = malloc(MAP_COLS * MAP_ROWS * sizeof(char));
-    ASSERT(grid[0]);
-    track((void*)grid[0]);
+    assert((void*)grid[0], APPEND);
     
     //initialize row pointers
     for (int i = 0; i < MAP_ROWS; i++)
@@ -47,11 +45,13 @@ Layer* createLayer()
 {
     //allocate layer
     Layer* layer = malloc(sizeof(Layer));
-    ASSERT(layer);
-    track((void*)layer);
+    assert((void*)layer, APPEND);
 
     //initialize grid
     layer->grid = createGrid();
+    layer->cells = NULL;
+    layer->cursor.X = X_COL(1);
+    layer->cursor.Y = Y_ROW(1);
 
     //increment depth
     layer->depth = map.depth;
@@ -62,8 +62,7 @@ Layer* createLayer()
 void addLayer()
 {
     Node* node = malloc(sizeof(Node));
-    ASSERT(node);
-    track((void*)node);
+    assert((void*)node, APPEND);
 
     node->data = (void*)createLayer();
     node->next = NULL;
@@ -110,8 +109,7 @@ Cell* createCell()
 Node* addCell()
 {
     Node* node = malloc(sizeof(Node));
-    ASSERT(node);
-    track((void*)node);
+    assert((void*)node, APPEND);
 
     node->data = (void*)createCell();
     node->next = NULL;
@@ -137,97 +135,44 @@ Node* addCell()
     return node;
 }
 
-// void editCell()
-// {
-//     Cell* cell = dsp->edit.cell;
+void remCell()
+{
+    short x = dsp->cursor->X;
+    short y = dsp->cursor->Y;
+    unsigned int cn = CN(x, y, map.layer->depth);
 
-//     if (cell == NULL)
-//     {
-//         cell = createCell();
-//         dsp->edit.cell = cell;
-//     }
+    ECH(1);
+    map.layer->grid[y][x] = LATENT;
 
-//     int x = dsp->cursor->X;
-//     int y = dsp->cursor->Y;
-//     int z = map.layer->depth;
+    Node* ptr = searchCN(cn);
+    if (ptr == NULL) return;
 
-//     cell->pos.X = x;
-//     cell->pos.Y = y;
+    Cell* cell = (Cell*)ptr->data;
     
-//     //calculate cell number from x, y and z
-//     int cn = z * (MAP_ROWS) * (MAP_COLS) + y * MAP_COLS + x;
+    removeNode(&map.layer->cells, ptr);
+    forget(cell->data); //remove and free allocated cell data
+    forget(cell);       //remove and free allocated cell
+    forget(ptr);        //remove and free allocated node
+}
 
-//     //skip initializing if the cn matches the current configuration
-//     if (cell->data->cn == cn) return;
+Node* searchCN(const unsigned int cn)
+{
+    if (map.layer == NULL || map.layer->cells == NULL) return NULL;
 
-//     cell->data->cn = cn;
-//     cell->data->el = z;
-//     cell->data->cf = 5;
-//     cell->data->ty = 0;
-//     cell->data->rl = 0;
+    Node* ptr = map.layer->cells;
+    Cell* cell = NULL;
 
-//     for (int i = 0; i < 3; i++)
-//     {
-//         cell->data->cc[i].code = 0;
-//         cell->data->cc[i].qty = 0;
-//     }
-// }
+    while (ptr != NULL)
+    {
+        cell = (Cell*)ptr->data;
+        if (cell && cell->data->cn == cn)
+            return ptr;
 
-// void editValue()
-// {
-//     int option = dsp->edit.index + 2;
-//     int value = 0;
+        ptr = ptr->next;
+    }
 
-//     switch (option)
-//     {
-//         case CF:
-//             CUP(EDIT_X, CF_Y);
-//             scanf("%d", &value);
-//             snprintf(dsp->edit.values[option], BUFF_LEN, "%d", value);
-//             dsp->edit.cell->data->cf = (unsigned int)value;
-//             break;
-//         case TY:
-//             CUP(EDIT_X, TY_Y);
-//             scanf("%d", &value);
-//             snprintf(dsp->edit.values[option], BUFF_LEN, "%d", value);
-//             dsp->edit.cell->data->ty = (char)value;
-//             break;
-//         case RL:
-//             CUP(EDIT_X, RL_Y);
-//             scanf("%d", &value);
-//             snprintf(dsp->edit.values[option], BUFF_LEN, "%d", value);
-//             dsp->edit.cell->data->rl = (unsigned int)value;
-//             break;
-//         case CC:
-//             CUP(EDIT_X, CC_Y);
-//             scanf("%d", &value);
-//             snprintf(dsp->edit.values[option], BUFF_LEN, "%d", value);
-//             //dsp->edit.cell->data->cf = (char)value;
-//             break;
-//     }
-// }
-
-// void saveCell()
-// {
-//     Cell* cell = (Cell*)addCell()->data;
-//     Cell* edited = dsp->edit.cell;
-
-//     //copy cell contents from edited cell
-//     cell->pos.X = edited->pos.X;
-//     cell->pos.Y = edited->pos.Y;
-
-//     cell->data->cn = edited->data->cn;
-//     cell->data->el = edited->data->el;
-//     cell->data->cf = edited->data->cf;
-//     cell->data->ty = edited->data->ty;
-//     cell->data->rl = edited->data->rl;
-    
-//     for (int i = 0; i < 3; i++)
-//     {
-//         cell->data->cc[i].code = edited->data->cc[i].code;
-//         cell->data->cc[i].code = edited->data->cc[i].qty;
-//     }
-// }
+    return NULL;
+}
 
 int getRB(Data* data)
 {
@@ -262,6 +207,18 @@ void layerDown()
     map.layer = ptr->next->data;
     map.last = ptr->data;
 
+    map.layer->cursor = map.last->cursor;
+
+    if (dsp->state == DRAW)
+    {
+        int x = dsp->cursor->X;
+        int y = dsp->cursor->Y;
+        dsp->map->last->grid[y][x] = MINUS;
+        printf(PORT_DN("%c") FIXED, dsp->map->last->grid[y][x]);
+        dsp->map->layer->grid[y][x] = PLUS;
+        printf(PORT_UP("%c") FIXED, dsp->map->layer->grid[y][x]);
+    }
+
     //update cursor pointer
     dsp->cursor = &map.layer->cursor;
 
@@ -279,6 +236,18 @@ void layerUp()
     map.layer = ptr->prev->data;
     map.last = ptr->data;
 
+    map.layer->cursor = map.last->cursor;
+
+    if (dsp->state == DRAW)
+    {
+        int x = dsp->cursor->X;
+        int y = dsp->cursor->Y;
+        dsp->map->last->grid[y][x] = PLUS;
+        printf(PORT_UP("%c") FIXED, dsp->map->last->grid[y][x]);
+        dsp->map->layer->grid[y][x] = MINUS;
+        printf(PORT_DN("%c") FIXED, dsp->map->layer->grid[y][x]);
+    }
+
     dsp->cursor = &map.layer->cursor;
 
     render();
@@ -286,9 +255,24 @@ void layerUp()
 
 void lastLayer()
 {
-    Layer* ptr = map.layer;
+    Layer* last = map.layer;
     map.layer = dsp->map->last;
-    map.last = ptr;
+    map.last = last;
+
+    dsp->cursor = &map.layer->cursor;
+
+    render();
+}
+
+void topLayer()
+{
+    Layer* last = map.layer;
+    
+    //fetch head of matrix, representing first layer
+    Node* ptr = dsp->map->matrix;
+
+    map.layer = (Layer*)ptr->data;
+    map.last = last;
 
     dsp->cursor = &map.layer->cursor;
 

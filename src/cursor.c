@@ -35,6 +35,13 @@ void setCursor(const short x, const short y)
     updateCursor();
 }
 
+void relCursor(const short x, const short y)
+{
+    int offsetX = 1 + CLAMP_X(x - dsp->margin.Left);
+    int offsetY = 1 + CLAMP_Y(y - dsp->margin.Top);
+    CUP(offsetX, offsetY);
+}
+
 //move cursor using relative parameters
 void move(const int code)
 {
@@ -79,40 +86,42 @@ void draw(const int code)
             if (y > GRID_MIN)
             {
                 dy = -1;
-                grid[y+dy][x] = 0x78;
-                grid[y][x] = lineType(grid, y, x);
+                GLYPH(grid[y+dy][x], UD);
             }
             break;
         case ARROW_DOWN:
             if (y < GRID_MAX)
             {
                 dy = 1;
-                grid[y+dy][x] = 0x78;
-                grid[y][x] = lineType(grid, y, x);
+                GLYPH(grid[y+dy][x], UD);
             }
             break;
         case ARROW_LEFT:
             if (x > GRID_MIN)
             {
                 dx = -1;
-                grid[y][x+dx] = 0x71;
-                grid[y][x] = lineType(grid, y, x);
+                GLYPH(grid[y][x+dx], LR);
             }
             break;
         case ARROW_RIGHT:
             if (x < GRID_MAX)
             {
                 dx = 1;
-                grid[y][x+dx] = 0x71;
-                grid[y][x] = lineType(grid, y, x);
+                GLYPH(grid[y][x+dx], LR);
             }
             break;
     }
 
+    GLYPH(grid[y][x], lineType(grid, y, x));
+
     //update cursor after drawing
-    printf(INACTIVE("%c") FIXED, grid[y][x]);
+    if (grid[y][x] != PLUS && grid[y][x] != MINUS)
+        printf(PATH("%c") FIXED, grid[y][x]);
+
     setCursor(x+dx, y+dy);
-    printf(ACTIVE("%c") FIXED, grid[y+dy][x+dx]);
+    if (grid[y+dy][x+dx] != PLUS && grid[y+dy][x+dx] != MINUS)
+        printf(PATH("%c") FIXED, grid[y+dy][x+dx]);
+
     statusBar();
 }
 
@@ -120,12 +129,12 @@ void draw(const int code)
 bool connector(int dir, char c)
 {
     //table of connection options
-    const char connections[4][8] =
+    const char connections[4][10] =
     {
-        {0x5F, 0x6b, 0x6c, 0x6e, 0x74, 0x75, 0x77, 0x78},
-        {0x5F, 0x6a, 0x6d, 0x6e, 0x74, 0x75, 0x76, 0x78},
-        {0x5F, 0x6c, 0x6d, 0x6e, 0x71, 0x74, 0x76, 0x77},
-        {0x5F, 0x6a, 0x6b, 0x6e, 0x71, 0x75, 0x76, 0x77}
+        {0x5F, 0x6b, 0x6c, 0x6e, 0x74, 0x75, 0x77, 0x78, PLUS, MINUS},
+        {0x5F, 0x6a, 0x6d, 0x6e, 0x74, 0x75, 0x76, 0x78, PLUS, MINUS},
+        {0x5F, 0x6c, 0x6d, 0x6e, 0x71, 0x74, 0x76, 0x77, PLUS, MINUS},
+        {0x5F, 0x6a, 0x6b, 0x6e, 0x71, 0x75, 0x76, 0x77, PLUS, MINUS}
     };
 
     for (int i = 0; i < 8; i++)
@@ -143,21 +152,21 @@ char lineType(char** grid, int row, int col)
     const char line[] = 
     {
         0x5F, // 0000 - none
-        0x78, // 0001 - up
-        0x78, // 0010 - down
-        0x78, // 0011 - up | down
-        0x71, // 0100 - left
-        0x6a, // 0101 - left | up
-        0x6b, // 0110 - left | down
-        0x75, // 0111 - left | down | up
-        0x71, // 1000 - right
-        0x6d, // 1001 - right | up
-        0x6c, // 1010 - right | down
-        0x74, // 1011 - right | down | up
-        0x71, // 1100 - right | left
-        0x76, // 1101 - right | left | up
-        0x77, // 1110 - right | left | down
-        0x6e  // 1111 - right | left | up | down
+        UD,  // 0001 - up
+        UD,  // 0010 - down
+        UD,  // 0011 - up | down
+        LR,  // 0100 - left
+        UL,  // 0101 - left | up
+        DL,  // 0110 - left | down
+        UDL, // 0111 - left | down | up
+        LR,  // 1000 - right
+        UR,  // 1001 - right | up
+        DR,  // 1010 - right | down
+        UDR, // 1011 - right | down | up
+        LR,  // 1100 - right | left
+        ULR, // 1101 - right | left | up
+        DLR, // 1110 - right | left | down
+        UDLR // 1111 - right | left | up | down
     };
 
     int type = 0;
@@ -213,43 +222,3 @@ void panViewport(const int code)
 
     render(); //forces update to map corresponding to the viewport update
 }
-
-// //moves menu selections in alt-screen
-//void option(const int code)
-// {
-//     short idx = dsp->edit.index;
-
-//     short dy = 0;
-
-//     switch (code)
-//     {
-//         case ARROW_UP:
-//             if (idx > MENU_MIN) dy = -1;
-//             break;
-//         case ARROW_DOWN:
-//             if (idx < MENU_MAX) dy = 1;
-//             break;
-//     }
-
-//     dsp->edit.index = idx + dy;
-
-//     updateMenu(dy);
-// }
-
-// //highlights menu selection in alt-screen
-//void updateMenu(const short dy)
-// {
-//     if (!dy) return;
-
-//     for (int i = 0; i < OPTIONS; i++)
-//     {
-//         if (i == dsp->edit.index)
-//         {
-//             CUP(EDIT_X, EDIT_Y + i);
-//             printf(SELECT("%s") FIXED, dsp->edit.options[i]);
-
-//             CUP(EDIT_X, EDIT_Y + i - dy);
-//             printf("%s" FIXED, dsp->edit.options[i-dy]);
-//         }
-//     }
-// }

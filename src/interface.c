@@ -2,7 +2,7 @@
 #include "engine.h"
 
 static Display* dsp;
-static Menu editor;
+static Menu menu;
 
 const short foreground[] = 
 {
@@ -51,61 +51,62 @@ const short background[] =
 void loadMenu(Display* ptr)
 {
     dsp = ptr;
-    dsp->editor = &editor;
-    editor.index = 0;
+    dsp->menu = &menu;
+    menu.index = 0;
 
     short y = 2;
 
-    editor.header = createTk(TEXT_X, y);
+    menu.header = createTk(TEXT_X, y);
     y += 2; //add space following the header
 
-    editor.text = malloc(MENU_DATA * sizeof(Token*));
-    assert((void*)editor.text, APPEND);
+    menu.text = malloc(MENU_DATA * sizeof(Token*));
+    assert((void*)menu.text, APPEND);
 
-    editor.data = malloc(MENU_DATA * sizeof(Token*));
-    assert((void*)editor.data, APPEND);
+    menu.data = malloc(MENU_DATA * sizeof(Token*));
+    assert((void*)menu.data, APPEND);
 
-    editor.options = malloc(OPTIONS * sizeof(Token*));
-    assert((void*)editor.options, APPEND);
+    menu.options = malloc(OPTIONS * sizeof(Token*));
+    assert((void*)menu.options, APPEND);
 
     for (int i = 0; i < MENU_DATA; i++)
     {
         //add space following the constant values (cell number and elevation)
         if (i == MENU_FIXED) y++;
-        editor.text[i] = createTk(TEXT_X, y);
-        editor.data[i] = createTk(DATA_X, y++);
+        menu.text[i] = createTk(TEXT_X, y);
+        menu.data[i] = createTk(DATA_X, y++);
     }
 
     for (int i = 0; i < MENU_VARS; i++)
     {
-        editor.options[i] = editor.data[i + MENU_FIXED];
+        menu.options[i] = menu.data[i + MENU_FIXED];
     }   
 
     y += 2; //add space following menu body
 
-    editor.options[SAVE_CELL] = createTk(TEXT_X, y++);
-    editor.options[RESET_CELL] = createTk(TEXT_X, y);
+    menu.options[SAVE_CELL] = createTk(TEXT_X, y++);
+    menu.options[RESET_CELL] = createTk(TEXT_X, y);
 
-    snprintf(editor.header->string, TOKEN, "Cell Properties");
-    formatTk(editor.header, BRIGHT_YELLOW, DEFAULT);
+    snprintf(menu.header->string, TOKEN, "Cell Properties");
+    formatTk(menu.header, BRIGHT_YELLOW, DEFAULT);
 
-    snprintf(editor.text[CN]->string, TOKEN, "Cell Number");
-    snprintf(editor.text[EL]->string, TOKEN, "Elevation (m)");
-    snprintf(editor.text[CF]->string, TOKEN, "Friction");
-    snprintf(editor.text[TY]->string, TOKEN, "Type");
-    snprintf(editor.text[RL]->string, TOKEN, "Radiation (Bq)");
-    snprintf(editor.text[CC]->string, TOKEN, "Ritterbarium (%%)");
+    snprintf(menu.text[CN]->string, TOKEN, "Cell Number");
+    snprintf(menu.text[EL]->string, TOKEN, "Elevation (m)");
+    snprintf(menu.text[CF]->string, TOKEN, "Friction");
+    snprintf(menu.text[TY]->string, TOKEN, "Type");
+    snprintf(menu.text[RL]->string, TOKEN, "Radiation (Bq)");
+    snprintf(menu.text[CC]->string, TOKEN, "Ritterbarium (%%)");
 
-    snprintf(editor.options[SAVE_CELL]->string, TOKEN, "Save");
-    snprintf(editor.options[RESET_CELL]->string, TOKEN, "Reset");
+    snprintf(menu.options[SAVE_CELL]->string, TOKEN, "Save");
+    snprintf(menu.options[RESET_CELL]->string, TOKEN, "Reset");
 
-    formatTk(editor.options[editor.index], BLACK, WHITE);
+    menu.selection = menu.options[menu.index];
+    formatTk(menu.selection, BLACK, WHITE);
 }
 
 Token* createTk(const short x, const short y)
 {
     Token* tk = malloc(sizeof(Token));
-    assert((void*)tk->string, APPEND);
+    assert((void*)tk, APPEND);
 
     tk->string = calloc(TOKEN, sizeof(char));
     assert((void*)tk->string, APPEND);
@@ -122,7 +123,7 @@ void printTk(Token* tk)
     short fg;
     short bg;
 
-    if (tk->fmt & (FMT_BG | FMT_FG))
+    if (tk->fmt & FMT_BG && tk->fmt & FMT_FG)
     {
         fg = tk->fmt & COLOUR;
         bg = (tk->fmt >> BG) & COLOUR;
@@ -149,7 +150,6 @@ void printTk(Token* tk)
 
 void formatTk(Token* tk, const unsigned short fg, const unsigned short bg)
 {
-
     tk->fmt = 0;
 
     if (fg != DEFAULT)
@@ -163,6 +163,12 @@ void formatTk(Token* tk, const unsigned short fg, const unsigned short bg)
         tk->fmt |= FMT_BG;
         tk->fmt |= (background[bg] << BG);
     }
+}
+
+void moveToken(Token* tk, const short x, const short y)
+{
+    tk->x = x;
+    tk->y = y;
 }
 
 void overlay()
@@ -194,30 +200,31 @@ void overlay()
 
 void container()
 {
-    short idx = editor.index;
-    Data* data = editor.cell->data;
+    Data* data = menu.cell->data;
 
     if (data == NULL) return;
 
-    snprintf(editor.data[CN]->string, TOKEN, "%u",  data->cn);
-    snprintf(editor.data[EL]->string, TOKEN, "%d",  data->el);
-    snprintf(editor.data[CF]->string, TOKEN, "%u",  data->cf);
-    snprintf(editor.data[TY]->string, TOKEN, "%d",  data->ty);
-    snprintf(editor.data[RL]->string, TOKEN, "%hu", data->rl);
-    snprintf(editor.data[CC]->string, TOKEN, "%u",  getRB(data));
+    snprintf(menu.data[CN]->string, TOKEN, "%u",  data->cn);
+    snprintf(menu.data[EL]->string, TOKEN, "%d",  data->el);
+    snprintf(menu.data[CF]->string, TOKEN, "%u",  data->cf);
+    snprintf(menu.data[TY]->string, TOKEN, "%d",  data->ty);
+    snprintf(menu.data[RL]->string, TOKEN, "%hu", data->rl);
+    snprintf(menu.data[CC]->string, TOKEN, "%u",  getRB(data));
 
-    formatTk(editor.options[editor.index], BLACK, WHITE);
+    formatTk(menu.selection, BLACK, WHITE);
 
-    printTk(editor.header);
+    printTk(menu.header);
 
     for (int i = 0; i < MENU_DATA; i++)
     {
-        printTk(editor.text[i]);
-        printTk(editor.data[i]);
+        printTk(menu.text[i]);
+        printTk(menu.data[i]);
     }
 
-    printTk(editor.options[SAVE_CELL]);
-    printTk(editor.options[RESET_CELL]);
+    printTk(menu.options[SAVE_CELL]);
+    printTk(menu.options[RESET_CELL]);
+
+    setCursor(dsp->cursor->X, dsp->cursor->Y);
 }
 
 void statusBar()
@@ -233,7 +240,8 @@ void statusBar()
 
     updateCursor();
 
-    if (dsp->state == MOVE) SHOW_CURSOR;
+    //if (dsp->state == MOVE) SHOW_CURSOR;
+    if (dsp->state != EDIT) SHOW_BLOCK;
 }
 
 void option(const int code)
@@ -243,96 +251,178 @@ void option(const int code)
     switch (code)
     {
         case ARROW_UP:
-            if (editor.index > MENU_MIN) dy = -1;
+            if (menu.index > MENU_MIN) dy = -1;
             break;
         case ARROW_DOWN:
-            if (editor.index < MENU_MAX) dy = 1;
+            if (menu.index < MENU_MAX) dy = 1;
             break;
     }
 
     if (!dy) return;
 
-    formatTk(editor.options[editor.index], DEFAULT, DEFAULT);
-    printTk(editor.options[editor.index]);
+    //reformat current selection to default and print
+    formatTk(menu.selection, DEFAULT, DEFAULT);
+    printTk(menu.selection);
 
-    editor.index += dy;
+    //update selection
+    menu.index += dy;
+    menu.selection = menu.options[menu.index];
 
-    formatTk(editor.options[editor.index], BLACK, WHITE); 
-    printTk(editor.options[editor.index]);
+    //format new selection and print
+    formatTk(menu.selection, BLACK, WHITE); 
+    printTk(menu.selection);
 }
 
-void editCell()
+void editor()
 {
-    if (editor.cell == NULL)
-        editor.cell = createCell();
+    if (menu.cell == NULL)
+        menu.cell = createCell();
 
-    editor.cell->x = dsp->cursor->X;
-    editor.cell->y = dsp->cursor->Y;
-    editor.cell->z = dsp->map->layer->depth;
+    unsigned int cn = CN(dsp->cursor->X, dsp->cursor->Y, dsp->map->layer->depth);
+
+    //check for pre-exisiting cell
+    Node* ptr = searchCN(cn);
+    if (ptr != NULL && ptr->data != NULL)
+    {
+        //copy cell data for editing
+        Cell* cell = ptr->data;
+        memcpy(menu.cell->data, cell->data, sizeof(Data));
+        menu.cell->x = cell->x;
+        menu.cell->y = cell->y;
+        menu.cell->z = cell->z;
+
+        render();
+        return;
+    }
+
+    menu.cell->x = dsp->cursor->X;
+    menu.cell->y = dsp->cursor->Y;
+    menu.cell->z = dsp->map->layer->depth;
 
     //skip initializing if the cn matches the current configuration
-    if (editor.cell->data->cn == CN(editor.cell->x, editor.cell->y, editor.cell->z)) return;
+    if (menu.cell->data->cn == CN(menu.cell->x, menu.cell->y, menu.cell->z)) return;
 
     clearData();
+    render();
 }
 
-void editValue()
+void edit()
 {
-    int value = 0;
-    Token* option = editor.options[editor.index];
+    Token* option = menu.options[menu.index];
 
     CUP(option->x, option->y);
-    printf("%-8s", "");
-    CUP(option->x, option->y);
 
-    switch (editor.index)
+    switch (menu.index)
     {
         case FRICTION:
-            scanf("%d", &value);
-            snprintf(option->string, TOKEN, "%u", value);
-            editor.cell->data->cf = (unsigned int)value;
+            editCF();
             break;
         case TYPE:
-            scanf("%d", &value);
-            snprintf(option->string, TOKEN, "%d", value);
-            editor.cell->data->ty = (char)value;
+            editTY();
             break;
         case RADIATION:
-            scanf("%d", &value);
-            snprintf(option->string, TOKEN, "%u", value);
-            editor.cell->data->rl = (unsigned int)value;
+            editRL();
             break;
         case RITTERBARIUM:
-            scanf("%d", &value);
-            snprintf(option->string, TOKEN, "%d", value);
-            //editor.cell->data->cf = (char)value;
+            editRB();
             break;
         case SAVE_CELL:
+            saveCell();
             break;
         case RESET_CELL:
+            clearData();
             break;        
     }
 
-    while (getchar() != '\n');
+    overlay();
+}
 
-    container();
+void editCF()
+{
+    unsigned int cf = 0;
+
+    if (scanf("%u", &cf))
+    {
+        cf = (cf > 10) ? 10 : (cf < 0) ? 0 : cf;
+        menu.cell->data->cf = cf;
+        snprintf(menu.selection->string, TOKEN, "%u", cf);
+    }
+}
+
+void editTY()
+{
+    unsigned char ty = 0;
+
+    if (scanf("%hhu", &ty))
+    {
+        ty = (ty > 100) ? 100 : (ty < 10) ? 0 : ty;
+        menu.cell->data->ty = ty;
+        snprintf(menu.selection->string, TOKEN, "%hhu", ty);
+    }
+}
+
+void editRL()
+{
+    unsigned short rl = 0;
+
+    if (scanf("%hu", &rl))
+    {
+        menu.cell->data->rl = rl;
+        snprintf(menu.selection->string, TOKEN, "%hu", rl);
+    }
+}
+
+void editRB()
+{
+    int rb = 0;
+
+    if (scanf("%d", &rb))
+    {
+        rb = (rb > 100) ? 100 : (rb < 0) ? 0 : rb;
+
+        for (int i = 0; i < CONTENTS; i++)
+        {
+            if (menu.cell->data->cc[i].code == RB)
+                menu.cell->data->cc[i].qty = rb;
+        }
+    }
 }
 
 void saveCell()
 {
-    Cell* cell = (Cell*)addCell()->data;
+    if (menu.cell == NULL || menu.cell->data == NULL) return;
+
+    Cell* cell = NULL;
+    Node* ptr = searchCN(menu.cell->data->cn);
+
+    if (ptr != NULL)
+    {
+        cell = (Cell*)ptr->data;
+        memcpy(cell->data, menu.cell->data, sizeof(Data));
+        cell->x = menu.cell->x;
+        cell->y = menu.cell->y;
+        cell->z = menu.cell->z;
+        return;
+    }
+
+    cell = (Cell*)addCell()->data;
 
     //copy cell contents from edited cell
-    memcpy(cell, editor.cell, sizeof(Cell));
+    memcpy(cell->data, menu.cell->data, sizeof(Data));
+    cell->x = menu.cell->x;
+    cell->y = menu.cell->y;
+    cell->z = menu.cell->z;
 }
 
 void clearData()
 {
+    if (menu.cell == NULL || menu.cell->data == NULL) return;
+
     //clear cell data
-    memset(editor.cell->data, 0, sizeof(Data));
+    memset(menu.cell->data, 0, sizeof(Data));
 
     //set nonzero default values
-    editor.cell->data->cn = CN(editor.cell->x, editor.cell->y, editor.cell->z);
-    editor.cell->data->el = editor.cell->z;
-    editor.cell->data->cf = 5;
+    menu.cell->data->cn = CN(menu.cell->x, menu.cell->y, menu.cell->z);
+    menu.cell->data->el = menu.cell->z;
+    menu.cell->data->cf = 5;
 }
