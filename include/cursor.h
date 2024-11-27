@@ -14,6 +14,9 @@
 
 #include "engine.h" //program operations
 
+#define connection_branches 4 //number of connection routes
+#define connection_types 10 //types of connections available on each route
+
 void loadCursor(struct Display* ptr); //loads cursor onto map
 void updateCursor(); //updates cursor position
 void setCursor(const short x, const short y); //move cursor using absolute parameters
