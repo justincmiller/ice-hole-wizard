@@ -137,7 +137,7 @@ bool connector(int dir, char c)
         {0x5F, 0x6a, 0x6b, 0x6e, 0x71, 0x75, 0x76, 0x77, PLUS, MINUS}
     };
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 10; i++)
     {
         if (connections[dir][i] == c) return true;
     }
