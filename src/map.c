@@ -70,9 +70,7 @@ void addLayer()
     
     //if list is empty, add node to list
     if (map.matrix == NULL)
-    {
         map.matrix = node;
-    }
     else
     {
         //traverse to end of list and insert node
@@ -84,118 +82,6 @@ void addLayer()
         ptr->next = node;
         node->prev = ptr;
     }
-}
-
-Cell* createCell()
-{
-    //allocate cell
-    Cell* cell = malloc(sizeof(Cell));
-    assert((void*)cell, APPEND);
-
-    //allocate cell data
-    cell->data = calloc(1, sizeof(Data));
-    assert((void*)cell->data, APPEND);
-
-    //initialize position as 0,0
-    cell->x = 0;
-    cell->y = 0;
-
-    //initialize cell data
-    cell->data->cf = DEF_CF; //default roughness
-    
-    for (int i = 0; i < CONTENTS; i++)
-    {
-        cell->data->cc[i].code = LATENT_CC;
-    }
-
-    return cell;
-}
-
-Node* addCell()
-{
-    Node* node = malloc(sizeof(Node));
-    assert((void*)node, APPEND);
-
-    node->data = (void*)createCell();
-    node->next = NULL;
-    node->prev = NULL;
-    
-    //if list is empty, add node to list
-    if (map.layer->cells == NULL)
-    {
-        map.layer->cells = node;
-    }
-    else
-    {
-        //traverse to end of list and insert node
-        Node* ptr = map.layer->cells;
-        while (ptr->next != NULL)
-        {
-            ptr = ptr->next;
-        }
-        ptr->next = node;
-        node->prev = ptr;
-    }
-
-    return node;
-}
-
-void remCell()
-{
-    short x = dsp->cursor->X;
-    short y = dsp->cursor->Y;
-    unsigned int cn = CN(x, y, map.layer->depth);
-
-    ECH(1);
-    map.layer->grid[y][x] = LATENT;
-
-    Node* ptr = searchCN(cn);
-    if (ptr == NULL) return;
-
-    Cell* cell = (Cell*)ptr->data;
-    
-    removeNode(&map.layer->cells, ptr);
-    forget(cell->data); //remove and free allocated cell data
-    forget(cell);       //remove and free allocated cell
-    forget(ptr);        //remove and free allocated node
-}
-
-Node* searchCN(const unsigned int cn)
-{
-    if (map.layer == NULL || map.layer->cells == NULL) return NULL;
-
-    Node* ptr = map.layer->cells;
-    Cell* cell = NULL;
-
-    while (ptr != NULL)
-    {
-        cell = (Cell*)ptr->data;
-        if (cell && cell->data->cn == cn)
-            return ptr;
-
-        ptr = ptr->next;
-    }
-
-    return NULL;
-}
-
-int getRB(Data* data)
-{
-    int rb = 0;
-    int n = 0;
-
-    //loop until end of list indicated by LATENT_CC
-    while (data->cc[n].code != LATENT_CC && n < CONTENTS)
-    {
-        if (data->cc[n].code == RB)
-        {
-            rb = data->cc[n].qty;
-            break;
-        }
-        n++;
-    }
-
-    return rb;
 }
 
 void layerDown()
@@ -286,4 +172,113 @@ void topLayer()
     dsp->cursor = &map.layer->cursor;
 
     render();
+}
+
+Cell* createCell()
+{
+    //allocate cell
+    Cell* cell = malloc(sizeof(Cell));
+    assert((void*)cell, APPEND);
+
+    //allocate cell data
+    cell->data = calloc(1, sizeof(Data));
+    assert((void*)cell->data, APPEND);
+
+    //initialize position as 0,0
+    cell->x = 0;
+    cell->y = 0;
+
+    //initialize cell data
+    cell->data->cf = DEF_CF; //default roughness
+    
+    for (int i = 0; i < CONTENTS; i++)
+    {
+        cell->data->cc[i].code = LATENT_CC;
+    }
+
+    return cell;
+}
+
+Node* addCell()
+{
+    Node* node = malloc(sizeof(Node));
+    assert((void*)node, APPEND);
+
+    node->data = (void*)createCell();
+    node->next = NULL;
+    node->prev = NULL;
+    
+    //if list is empty, add node to list
+    if (map.layer->cells == NULL)
+        map.layer->cells = node;
+    else
+    {
+        //traverse to end of list and insert node
+        Node* ptr = map.layer->cells;
+        while (ptr->next != NULL)
+        {
+            ptr = ptr->next;
+        }
+        ptr->next = node;
+        node->prev = ptr;
+    }
+
+    return node;
+}
+
+void remCell()
+{
+    short x = dsp->cursor->X;
+    short y = dsp->cursor->Y;
+    unsigned int cn = CN(x, y, map.layer->depth);
+
+    ECH(1);
+    map.layer->grid[y][x] = LATENT;
+
+    Node* ptr = searchCN(cn);
+    if (ptr == NULL) return;
+
+    Cell* cell = (Cell*)ptr->data;
+    
+    removeNode(&map.layer->cells, ptr);
+    forget(cell->data); //remove and free allocated cell data
+    forget(cell);       //remove and free allocated cell
+    forget(ptr);        //remove and free allocated node
+}
+
+Node* searchCN(const unsigned int cn)
+{
+    if (map.layer == NULL || map.layer->cells == NULL) return NULL;
+
+    Node* ptr = map.layer->cells;
+    Cell* cell = NULL;
+
+    while (ptr != NULL)
+    {
+        cell = (Cell*)ptr->data;
+        if (cell && cell->data->cn == cn) return ptr;
+
+        ptr = ptr->next;
+    }
+
+    return NULL;
+}
+
+int getRB(Data* data)
+{
+    int rb = 0;
+    int n = 0;
+
+    //loop until end of list, either LATENT_CC or maximum number of contents
+    while (data->cc[n].code != LATENT_CC && n < CONTENTS)
+    {
+        if (data->cc[n].code == RB)
+        {
+            rb = data->cc[n].qty;
+            break;
+        }
+        n++;
+    }
+
+    return rb;
 }

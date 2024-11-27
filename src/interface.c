@@ -10,7 +10,6 @@
 #include "interface.h"
 #include "engine.h"
 
-
 //static global display pointer and menu structure
 static Display* dsp;
 static Menu menu;
@@ -225,7 +224,7 @@ void overlay()
     relCursor(x, y);
     printf(MARKER("%c"), grid[y][x]);
 
-    /******** draw overlay container ********/
+    /********** draw overlay container **********/
     RESET;
 
     //initialize string of horizontal lines
@@ -418,7 +417,7 @@ void editRL()
 {
     unsigned short rl = 0;
 
-    //validate input is numeric
+    //vaidate if rl can be assigned
     if (scanf("%hu", &rl))
     {
         //update radiation level and selected token
@@ -435,23 +434,29 @@ void editRB()
 
     if (scanf("%d", &rb))
     {
+        //clamp RB level to 0-100 pecent
         rb = (rb > MAX_PERCENT) ? MAX_PERCENT : (rb < 0) ? 0 : rb;
 
+        //iterate through cell contents
         while (menu.cell->data->cc[n].code != LATENT_CC && n < CONTENTS)
         {
+            //evaulate mineral for RB code
             if (menu.cell->data->cc[n].code == RB)
             {
+                //update RB level (in %) and update token
                 menu.cell->data->cc[n].qty = rb;
                 snprintf(menu.selection->string, TOKEN, "%d", rb);
+                //flush remaining characters from input buffer
                 FLUSH;
                 return;
             }
             n++;
         }
 
+        //evaluate case where RB is not found
         if (menu.cell->data->cc[n].code == LATENT_CC)
         {
-            //update beginning of list
+            //add RB to list with qty (in %)
             menu.cell->data->cc[n].code = RB;
             menu.cell->data->cc[n].qty = rb;
             snprintf(menu.selection->string, TOKEN, "%d", rb);

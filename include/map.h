@@ -36,7 +36,7 @@ typedef struct Map
 typedef struct Mineral
 {
     int code; //type of mineral
-    int qty; //amount of mineral
+    int qty;  //amount of mineral
 }Mineral;
 
 //structure to hold cell properties data
@@ -74,17 +74,22 @@ enum data
 
 //functions
 void loadMap(struct Display* ptr); //layer operations and corresponding maps
+
+/********** Layer Functions **********/
 char** createGrid(); 
 Layer* createLayer();
 void addLayer();
-Cell* createCell();
-Node* addCell();
-void remCell();
-Node* searchCN(const unsigned int cn);
-int getRB(Data* data);
 void layerUp();
 void layerDown();
 void lastLayer();
 void topLayer();
+
+/********** Cell Functions **********/
+Cell* createCell();
+Node* addCell();
+void remCell();
+
+Node* searchCN(const unsigned int cn);
+int getRB(Data* data);
 
 #endif

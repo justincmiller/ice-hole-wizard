@@ -74,7 +74,7 @@
 #define LDM(string) ESC "(0" string ESC "(B"
 
 /*
-* format string for inactive line
+* format string for path
 * consists of two escape sequences:
 * \x1b[30;43m  - set foreground; background to 30 (black) and 43 (yellow)
 * \x1b[0m      - reset to default colours

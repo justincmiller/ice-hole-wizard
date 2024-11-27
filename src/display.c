@@ -18,17 +18,15 @@ void loadDisplay(Display** ptr)
 
 SMALL_RECT getWindow()
 {
+    //fetch output handle
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     if (out == INVALID_HANDLE_VALUE)
-    {
         printf("Error: could not fetch output handle\n");
-    }
 
+    //fetch console screen buffer info
     CONSOLE_SCREEN_BUFFER_INFO info;
     if (!GetConsoleScreenBufferInfo(out, &info))
-    {
         printf(">> Error: unable to get console screen buffer info.\n");
-    }
 
     return info.srWindow;
 }
@@ -37,6 +35,7 @@ void setWindow()
 {
     SMALL_RECT window = getWindow();
 
+    //compute window width and height
     dsp.size.X = window.Right - window.Left + 1;
     dsp.size.Y = window.Bottom - window.Top + 1;
 
