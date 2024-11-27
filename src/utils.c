@@ -93,6 +93,7 @@ void addNode(Node** head, void* data)
     }
 }
 
+//function to remove node from linked-list
 void removeNode(Node** head, Node* node)
 {
     if (*head == NULL || node == NULL) return;
@@ -111,6 +112,7 @@ void removeNode(Node** head, Node* node)
     }
 }
 
+//searches for node in linked-list
 Node* getNode(Node* head, const unsigned int n)
 {
     Node* ptr = head;
@@ -126,8 +128,10 @@ Node* getNode(Node* head, const unsigned int n)
     return ptr;
 }
 
+//checks to see if memory is allocated properly, if not free memory and exit
 void assert(void* ptr, const short action)
 {
+    //if no memory will purge list and exit program
     if (ptr == NULL)
     {
         printf(">> Error: memory failure.\n");
@@ -135,12 +139,14 @@ void assert(void* ptr, const short action)
         exit(EXIT_FAILURE);
     }
 
+    //if memory, adds to linked-list
     if (action == APPEND)
     {
         addNode(&heap, ptr);
     }
 }
 
+//removes node from linked-list and tracker
 void forget(void* ptr)
 {
     Node* node = heap;

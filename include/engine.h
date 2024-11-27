@@ -11,7 +11,7 @@
 #include "map.h" //layers, map, cells, etc.
 #include "display.h" //system information and menus
 #include "cursor.h" //cursor movement
-#include "interface.h"
+#include "interface.h" //alt-screen menu
 
 //function declarations
 void init(); //initializes console setup

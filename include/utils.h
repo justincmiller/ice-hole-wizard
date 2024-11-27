@@ -156,11 +156,11 @@ typedef struct Node
 bool virtualInput(); //initializes VT100 Input
 bool virtualOutput(); //initializes VT100 Output
 void addNode(Node** head, void* data); //handles adding to linked-lists
-void removeNode(Node** head, Node* node);
-Node* getNode(Node* head, const unsigned int n);
+void removeNode(Node** head, Node* node); //node deletion
+Node* getNode(Node* head, const unsigned int n); //node search function
 void track(void* ptr); //handles updating linked-list "heap"
-void assert(void* ptr, const short action);
-void forget(void* ptr);
+void assert(void* ptr, const short action); //memory tracker
+void forget(void* ptr); //removes node from linked-list and tracker
 void purge(); //frees memory from malloc'd linked-lists
 
 #endif

@@ -123,13 +123,13 @@ void moveControls(const int code)
             render(); //hides cursor in draw state
             return;
         case DEL:
-            remCell();
+            remCell(); //erase character at cursor position
             return;
         case PG_UP:
-            layerUp();
+            layerUp(); //saves current layer, moves up one layer
             return;
         case PG_DN:
-            layerDown();
+            layerDown(); //saves current layer, creates new map layer or uses existing
             return;
         case CTRL_UP:
         case CTRL_DOWN:
@@ -157,23 +157,23 @@ void drawControls(const int code)
             draw(code); //move and draw map
             return;
         case HOME:
-            topLayer();
+            topLayer(); //move to map layer 0
             break;
         case END:
-            lastLayer();
+            lastLayer(); //move to the last map layer created
             break;
         case INSERT:
             dsp->state ^= ( MOVE | DRAW); //change system state
             render(); //enable cursor for move state
             return;
         case DEL:
-            remCell();
+            remCell(); //erase character at cursor position
             break;
         case PG_UP:
-            layerUp();
+            layerUp(); //saves current layer, moves up one layer
             break;
         case PG_DN:
-            layerDown();
+            layerDown(); //saves current layer, creates new map layer or uses existing
             break;
         case CTRL_UP:
         case CTRL_DOWN:
