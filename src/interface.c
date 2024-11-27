@@ -7,8 +7,13 @@
 * linked list.
 */
 
-#include "interface.h"
-#include "engine.h"
+/*
+*  Credit is given to Dr. Larry Hughes for providing the reference code
+*  that was used both as inspiration and used as is throughout this program.
+*/
+
+#include "interface.h" //alt-screen menu
+#include "engine.h" //program operation headers and functions
 
 //static global display pointer and menu structure
 static Display* dsp;

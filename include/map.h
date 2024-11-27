@@ -1,4 +1,12 @@
 /*
+* map.h
+*
+* Contains struct definitions for layers, maps, cells, cell properties.
+* 
+* Also contains functions for manipulating layers, map, cells, and cell properties.
+*/
+
+/*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
 *  that was used both as inspiration and used as is throughout this program.
 */
@@ -76,7 +84,7 @@ enum data
 };
 
 //functions
-void loadMap(struct Display* ptr); //layer operations and corresponding maps
+void loadMap(struct Display* ptr); //loads layer and corresponding map data
 
 /********** Layer Functions **********/
 char** createGrid(); //creates the character grid

@@ -1,4 +1,12 @@
 /*
+* engine.c
+*
+* Contains initialization function for console setup and system status
+* additionally contains functions for reading keyboard input and
+* control functions based on system state
+*/
+
+/*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
 *  that was used both as inspiration and used as is throughout this program.
 */

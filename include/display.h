@@ -1,4 +1,12 @@
 /*
+* display.h
+*
+* Contains structure for display that holds all the system information.
+* 
+* Also contains function definitions for the manipulation of the display and viewport.
+*/
+
+/*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
 *  that was used both as inspiration and used as is throughout this program.
 */
@@ -6,7 +14,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "map.h"
+#include "map.h" //layers, map, cells, etc.
 
 #define INPUT 0x01
 

@@ -1,4 +1,13 @@
 /*
+* utils.h
+*
+* Contains common global variable definitions for VT-100,
+* map, layers, cells, keyboard input. 
+* 
+* Also contains enumerations for keycode, direction, and status.
+*/
+
+/*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
 *  that was used both as inspiration and used as is throughout this program.
 */

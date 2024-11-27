@@ -1,4 +1,10 @@
 /*
+* cursor.c
+*
+* Contains
+*/
+
+/*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
 *  that was used both as inspiration and used as is throughout this program.
 */
@@ -129,7 +135,7 @@ void draw(const int code)
 bool connector(int dir, char c)
 {
     //table of connection options
-    const char connections[4][10] =
+    const char connections[connection_branches][connection_types] =
     {
         {0x5F, 0x6b, 0x6c, 0x6e, 0x74, 0x75, 0x77, 0x78, PLUS, MINUS},
         {0x5F, 0x6a, 0x6d, 0x6e, 0x74, 0x75, 0x76, 0x78, PLUS, MINUS},

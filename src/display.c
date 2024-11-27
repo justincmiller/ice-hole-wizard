@@ -1,10 +1,16 @@
 /*
+* display.c
+*
+* Contains function implementations for the manipulation of the display, window, and viewport.
+*/
+
+/*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
 *  that was used both as inspiration and used as is throughout this program.
 */
 
-#include "display.h"
-#include "engine.h"
+#include "display.h" //system information and menus
+#include "engine.h" //program operation headers and functions
 
 //static global structure (limited scope)
 static Display dsp;

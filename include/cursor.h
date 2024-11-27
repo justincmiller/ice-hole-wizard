@@ -1,4 +1,11 @@
 /*
+* cursor.h
+*
+* Contains definitions for the manipulation of the cursor in
+* all system states, functions for drawing the map and navigating the viewport
+*/
+
+/*
 *  Credit is given to Dr. Larry Hughes for providing the reference code
 *  that was used both as inspiration and used as is throughout this program.
 */
@@ -7,6 +14,9 @@
 #define CURSOR_H
 
 #include "engine.h" //program operations
+
+#define connection_branches 4 //number of connection routes
+#define connection_types 10 //types of connections available on each route
 
 void loadCursor(struct Display* ptr); //loads cursor onto map
 void updateCursor(); //updates cursor position
