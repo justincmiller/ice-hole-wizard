@@ -11,7 +11,7 @@
 //sysyem information struct
 struct Display;
 
-#define BUFF_LEN 8
+#define LATENT_CC -1
 
 #define CN(x,y,z) (x + y * MAP_COLS + z * MAP_ROWS * MAP_COLS)
 
@@ -63,7 +63,7 @@ typedef struct Cell
 //valid mineral types
 enum minerals
 {
-    RB = 1, M2, M3
+    RB, BILLIUM, JUSTINIUM
 };
 
 //valid data types for cell properties

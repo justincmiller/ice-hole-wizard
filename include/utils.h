@@ -61,7 +61,7 @@
 #define NONE      0x5F
 
 //Keyboard Input values for pollKbInput function
-#define SQLEN 7 
+#define SQLEN 6
 #define CONTROLS 17
 #define CONTENTS 3
 

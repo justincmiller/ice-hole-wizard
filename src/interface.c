@@ -112,7 +112,7 @@ void loadMenu(Display* ptr)
     snprintf(menu.text[CN]->string, TOKEN, "Cell Number");
     snprintf(menu.text[EL]->string, TOKEN, "Elevation (m)");
     snprintf(menu.text[CF]->string, TOKEN, "Friction");
-    snprintf(menu.text[TY]->string, TOKEN, "Type");
+    snprintf(menu.text[TY]->string, TOKEN, "Type (%%)");
     snprintf(menu.text[RL]->string, TOKEN, "Radiation (Bq)");
     snprintf(menu.text[CC]->string, TOKEN, "Ritterbarium (%%)");
 
@@ -431,21 +431,32 @@ void editRL()
 void editRB()
 {
     int rb = 0;
+    int n = 0;
 
     if (scanf("%d", &rb))
     {
         rb = (rb > MAX_PERCENT) ? MAX_PERCENT : (rb < 0) ? 0 : rb;
 
-        for (int i = 0; i < CONTENTS; i++)
+        while (menu.cell->data->cc[n].code != LATENT_CC && n < CONTENTS)
         {
-            if (menu.cell->data->cc[i].code == RB)
+            if (menu.cell->data->cc[n].code == RB)
             {
-                menu.cell->data->cc[i].qty = rb;
+                menu.cell->data->cc[n].qty = rb;
                 snprintf(menu.selection->string, TOKEN, "%d", rb);
                 FLUSH;
+                return;
             }
-                
+            n++;
         }
+
+        if (menu.cell->data->cc[n].code == LATENT_CC)
+        {
+            //update beginning of list
+            menu.cell->data->cc[n].code = RB;
+            menu.cell->data->cc[n].qty = rb;
+            snprintf(menu.selection->string, TOKEN, "%d", rb);
+        }
+        FLUSH;
     }  
 }
 

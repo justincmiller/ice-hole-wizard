@@ -67,7 +67,7 @@ void pollKbInput()
     };
 
     //while keys are being pressed and do not exceed sequence limit
-    while (_kbhit() && n < SQLEN - 1)
+    while (_kbhit() && n < SQLEN)
     {
         buffer[n++] = (char)_getch(); //store key strokes as a string
     }

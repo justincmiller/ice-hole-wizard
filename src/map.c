@@ -101,7 +101,12 @@ Cell* createCell()
     cell->y = 0;
 
     //initialize cell data
-    cell->data->cf = 5; //default roughness
+    cell->data->cf = DEF_CF; //default roughness
+    
+    for (int i = 0; i < CONTENTS; i++)
+    {
+        cell->data->cc[i].code = LATENT_CC;
+    }
 
     return cell;
 }
@@ -177,11 +182,17 @@ Node* searchCN(const unsigned int cn)
 int getRB(Data* data)
 {
     int rb = 0;
+    int n = 0;
 
-    for (int i = 0; i < CONTENTS; i++)
+    //loop until end of list indicated by LATENT_CC
+    while (data->cc[n].code != LATENT_CC && n < CONTENTS)
     {
-        if (data->cc[i].code == RB)
-            rb = data->cc[i].qty;
+        if (data->cc[n].code == RB)
+        {
+            rb = data->cc[n].qty;
+            break;
+        }
+        n++;
     }
 
     return rb;
@@ -229,9 +240,7 @@ void layerUp()
 {
     Node* ptr = getNode(map.matrix, map.layer->depth);
 
-    if (ptr == NULL) return;
-
-    if (ptr->prev == NULL) return;
+    if (ptr == NULL || ptr->prev == NULL) return;
 
     map.layer = ptr->prev->data;
     map.last = ptr->data;
