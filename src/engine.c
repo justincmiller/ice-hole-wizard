@@ -1,7 +1,9 @@
 /*
 * engine.c
 *
-* Contains
+* Contains initialization function for console setup and system status
+* additionally contains functions for reading keyboard input and
+* control functions based on system state
 */
 
 /*

@@ -1,7 +1,7 @@
 /*
 * engine.h
 *
-* Contains
+* Contains all program operation headers and functions
 */
 
 /*

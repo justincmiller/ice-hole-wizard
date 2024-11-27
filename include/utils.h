@@ -1,7 +1,10 @@
 /*
 * utils.h
 *
-* Contains
+* Contains common global variable definitions for VT-100,
+* map, layers, cells, keyboard input. 
+* 
+* Also contains enumerations for keycode, direction, and status.
 */
 
 /*
