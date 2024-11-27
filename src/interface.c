@@ -394,10 +394,10 @@ void editCF()
 
     if (scanf("%u", &cf))
     {
-        cf = (cf > 10) ? 10 : (cf < 0) ? 0 : cf;
+        cf = (cf > MAX_CF) ? MAX_CF : (cf < 0) ? 0 : cf;
         menu.cell->data->cf = cf;
         snprintf(menu.selection->string, TOKEN, "%u", cf);
-        while (getchar() != '\n');
+        FLUSH;
     }
 }
 
@@ -407,10 +407,10 @@ void editTY()
 
     if (scanf("%hhu", &ty))
     {
-        ty = (ty > 100) ? 100 : (ty < 10) ? 0 : ty;
+        ty = (ty > MAX_PERCENT) ? MAX_PERCENT : (ty < 0) ? 0 : ty;
         menu.cell->data->ty = ty;
         snprintf(menu.selection->string, TOKEN, "%hhu", ty);
-        while (getchar() != '\n');
+        FLUSH;
     }   
 }
 
@@ -418,11 +418,13 @@ void editRL()
 {
     unsigned short rl = 0;
 
+    //validate input is numeric
     if (scanf("%hu", &rl))
     {
+        //update radiation level and selected token
         menu.cell->data->rl = rl;
         snprintf(menu.selection->string, TOKEN, "%hu", rl);
-        while (getchar() != '\n');
+        FLUSH;
     }
 }
 
@@ -432,7 +434,7 @@ void editRB()
 
     if (scanf("%d", &rb))
     {
-        rb = (rb > 100) ? 100 : (rb < 0) ? 0 : rb;
+        rb = (rb > MAX_PERCENT) ? MAX_PERCENT : (rb < 0) ? 0 : rb;
 
         for (int i = 0; i < CONTENTS; i++)
         {
@@ -440,7 +442,7 @@ void editRB()
             {
                 menu.cell->data->cc[i].qty = rb;
                 snprintf(menu.selection->string, TOKEN, "%d", rb);
-                 while (getchar() != '\n');
+                FLUSH;
             }
                 
         }
@@ -452,12 +454,14 @@ void saveCell()
     //avoid dereferencing NULL pointer
     if (menu.cell == NULL || menu.cell->data == NULL) return;
 
+    //search for cell with current cell number
     Cell* cell = NULL;
     Node* ptr = searchCN(menu.cell->data->cn);
 
     if (ptr != NULL)
     {
-        cell = (Cell*)ptr->data;
+        cell = (Cell*)ptr->data; //update cell pointer
+        //copy existing cell data
         memcpy(cell->data, menu.cell->data, sizeof(Data));
         cell->x = menu.cell->x;
         cell->y = menu.cell->y;
@@ -465,6 +469,7 @@ void saveCell()
         return;
     }
 
+    //create cell if cell at CN does not exist
     cell = (Cell*)addCell()->data;
 
     //copy cell contents from edited cell

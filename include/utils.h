@@ -100,6 +100,7 @@
 #define FIXED CSI "D"
 
 #define ARRAY_LEN(arr) (sizeof(arr) / sizeof((arr)[0]))
+#define FLUSH          while (getchar() != '\n')
 
 //system state options
 #define APPEND 1

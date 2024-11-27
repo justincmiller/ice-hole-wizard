@@ -30,7 +30,10 @@
 #define DATA_X    20
 
 #define OPTIONS   6
+#define MAX_CF    10
 #define DEF_CF    5
+
+#define MAX_PERCENT 100
 
 struct Display;
 
