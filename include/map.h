@@ -1,7 +1,9 @@
 /*
 * map.h
 *
-* Contains
+* Contains struct definitions for layers, maps, cells, cell properties.
+* 
+* Also contains functions for manipulating layers, map, cells, and cell properties.
 */
 
 /*

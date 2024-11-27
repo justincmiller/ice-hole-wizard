@@ -1,7 +1,7 @@
 /*
 * utils.c
 *
-* Contains
+* Contains VT-100 initialization functions and linked-list functions.
 */
 
 /*

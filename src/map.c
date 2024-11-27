@@ -1,7 +1,8 @@
 /*
 * map.c
 *
-* Contains
+* Contains function implementations for the manipulation of 
+* layers, maps, cells, cell properties stuctures and information.
 */
 
 /*

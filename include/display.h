@@ -1,7 +1,9 @@
 /*
 * display.h
 *
-* Contains
+* Contains structure for display that holds all the system information.
+* 
+* Also contains function definitions for the manipulation of the display and viewport.
 */
 
 /*
