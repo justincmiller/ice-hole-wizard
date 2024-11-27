@@ -138,8 +138,9 @@ void moveControls(const int code)
             panViewport(code); //moves viewport in appropriate direction
             return;
         case P:
-            dsp->state ^= EDIT; //set state to edit
+            dsp->state |= EDIT; //set state to edit
             editor(); //call function to edit cell properties
+            render();
             return;
     }
 }
@@ -181,8 +182,9 @@ void drawControls(const int code)
             panViewport(code); //moves viewport in appropriate direction
             return;
         case P:
-            dsp->state ^= EDIT; //set state to edit
+            dsp->state |= EDIT; //set state to edit
             editor(); //call function to edit cell properties
+            render();
             break;
     }
 }
@@ -197,7 +199,7 @@ void editControls(const int code)
             option(code); //move through menu options
             break;
         case P:
-            dsp->state ^= EDIT; //set state to edit
+            dsp->state &= ~EDIT; //set state to edit
             render();
             break;
         case ENTER:

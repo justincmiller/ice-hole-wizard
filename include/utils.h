@@ -84,6 +84,8 @@
 #define PORT_DN(string) LDM(CSI "37;42m" string CSI "0m")
 #define PORT_UP(string) LDM(CSI "37;41m" string CSI "0m")
 
+#define MARKER(string)  LDM(CSI "30;103m" string CSI "0m")
+
 #define GLYPH(a, b) (a) = ((a) == PLUS || (a) == MINUS) ? (a) : (b)
 
 /*

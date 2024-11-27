@@ -12,6 +12,7 @@ static Display dsp;
 //loads structure that holds all the system information
 void loadDisplay(Display** ptr)
 {
+    //update display pointer
     *ptr = &dsp;
 }
 
@@ -68,6 +69,7 @@ void render()
     else
     {
         MAIN_SCREEN;
+        CLEAR;
         viewport();
     }
 }
@@ -101,7 +103,6 @@ void viewport()
 
     COORD offset = {dsp.margin.Left, dsp.margin.Top};
 
-    CLEAR;
     RESET;
 
     int rows = CLAMP_Y(dsp.size.Y + offset.Y);

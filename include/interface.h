@@ -3,8 +3,6 @@
 
 #include "map.h"
 
-#define STATUS_BAR_POS(y) CUP(2, (y))
-
 #define MENU_ROWS 20
 #define MENU_COLS 30
 
@@ -12,6 +10,8 @@
 #define BORDER_ROWS (MENU_ROWS - 2)
 //column offset of 1 to accomodate for corners and NUL terminator
 #define BORDER_COLS (MENU_COLS - 1)
+
+#define SECTION 2
 
 #define COLOUR 0x7F
 #define FMT_BG (1 << 14)
@@ -29,7 +29,7 @@
 #define TEXT_X    3
 #define DATA_X    20
 
-#define OPTIONS    6
+#define OPTIONS   6
 
 struct Display;
 

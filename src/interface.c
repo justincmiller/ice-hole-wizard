@@ -1,6 +1,17 @@
+/*
+* interface.c
+*
+* This file contains definitions for UI element display and menu (editor)
+* controls. Menu contains a cell structure which behaves as a buffer to 
+* hold temporary editor data. Only cells with changes are saved to a 
+* linked list.
+*/
+
 #include "interface.h"
 #include "engine.h"
 
+
+//static global display pointer and menu structure
 static Display* dsp;
 static Menu menu;
 
@@ -50,24 +61,28 @@ const short background[] =
 
 void loadMenu(Display* ptr)
 {
-    dsp = ptr;
-    dsp->menu = &menu;
-    menu.index = 0;
+    dsp = ptr;          //set display pointer
+    dsp->menu = &menu;  //update menu pointer
+    menu.index = 0;     //initialize menu index
 
-    short y = 2;
+    short y = SECTION; //initial row for printing
 
     menu.header = createTk(TEXT_X, y);
-    y += 2; //add space following the header
+    y += SECTION; //add space following the header
 
+    //allocate token array for menu text
     menu.text = malloc(MENU_DATA * sizeof(Token*));
     assert((void*)menu.text, APPEND);
 
+    //allocate token array for menu data
     menu.data = malloc(MENU_DATA * sizeof(Token*));
     assert((void*)menu.data, APPEND);
 
+    //allocate token array for menu options
     menu.options = malloc(OPTIONS * sizeof(Token*));
     assert((void*)menu.options, APPEND);
 
+    //create text and data tokens and initialize with x and y positions
     for (int i = 0; i < MENU_DATA; i++)
     {
         //add space following the constant values (cell number and elevation)
@@ -76,19 +91,24 @@ void loadMenu(Display* ptr)
         menu.data[i] = createTk(DATA_X, y++);
     }
 
+    //copy variable data token pointers to options array
     for (int i = 0; i < MENU_VARS; i++)
     {
+        //offset by fixed data tokens
         menu.options[i] = menu.data[i + MENU_FIXED];
     }   
 
-    y += 2; //add space following menu body
+    y += SECTION; //add space following menu body
 
+    //create save and reset tokens and initialize with x and y positions
     menu.options[SAVE_CELL] = createTk(TEXT_X, y++);
     menu.options[RESET_CELL] = createTk(TEXT_X, y);
 
+    //write header string and format colour
     snprintf(menu.header->string, TOKEN, "Cell Properties");
     formatTk(menu.header, BRIGHT_YELLOW, DEFAULT);
 
+    //write menu text strings
     snprintf(menu.text[CN]->string, TOKEN, "Cell Number");
     snprintf(menu.text[EL]->string, TOKEN, "Elevation (m)");
     snprintf(menu.text[CF]->string, TOKEN, "Friction");
@@ -96,21 +116,26 @@ void loadMenu(Display* ptr)
     snprintf(menu.text[RL]->string, TOKEN, "Radiation (Bq)");
     snprintf(menu.text[CC]->string, TOKEN, "Ritterbarium (%%)");
 
+    //write save and reset strings
     snprintf(menu.options[SAVE_CELL]->string, TOKEN, "Save");
     snprintf(menu.options[RESET_CELL]->string, TOKEN, "Reset");
 
+    //initialize selection pointer using menu index and set highlight format
     menu.selection = menu.options[menu.index];
     formatTk(menu.selection, BLACK, WHITE);
 }
 
 Token* createTk(const short x, const short y)
 {
+    //allocate space for token
     Token* tk = malloc(sizeof(Token));
     assert((void*)tk, APPEND);
 
+    //allocate space for string and initialize to 0
     tk->string = calloc(TOKEN, sizeof(char));
     assert((void*)tk->string, APPEND);
 
+    //initialize default format, x and y positions
     tk->fmt = 0;
     tk->x = x;
     tk->y = y;
@@ -120,46 +145,63 @@ Token* createTk(const short x, const short y)
 
 void printTk(Token* tk)
 {
-    short fg;
-    short bg;
+    //variables to extract foreground and background sgr colours
+    short fg = 0;
+    short bg = 0;
 
+    //evaluate both foreground and background bits
     if (tk->fmt & FMT_BG && tk->fmt & FMT_FG)
     {
+        //extract foreground and background colours
         fg = tk->fmt & COLOUR;
         bg = (tk->fmt >> BG) & COLOUR;
+        //print token with CUP sequence and SGR sequence
         printf(CSI "%d;%dH" CSI "%d;%dm" "%s" CSI "0m",
                tk->y, tk->x, fg, bg, tk->string);
     }
+    //evaluate foreground bit
     else if (tk->fmt & FMT_FG)
     {
+        //extract foreground colour
         fg = tk->fmt & COLOUR;
+        //print token with CUP sequence and SGR sequence
         printf(CSI "%d;%dH" CSI "%dm" "%s" CSI "0m",
                tk->y, tk->x, fg, tk->string);
     }
+    //evaluate background bit
     else if (tk->fmt & FMT_BG)
     {
+        //extract background colour
         bg = (tk->fmt >> BG) & COLOUR;
+        //print token with CUP sequence and SGR sequence
         printf(CSI "%d;%dH" CSI "%dm" "%s" CSI "0m",
                tk->y, tk->x, bg, tk->string);
     }
+    //case when both foreground and background bits are not set
     else
     {
+        //print token with CUP sequence
         printf(CSI "%d;%dH%s", tk->y, tk->x, tk->string);
     }
 }
 
 void formatTk(Token* tk, const unsigned short fg, const unsigned short bg)
 {
+    //intitialze format
     tk->fmt = 0;
 
+    //evaluate foreground parameter
     if (fg != DEFAULT)
     {
+        //set foreground bit and color from table
         tk->fmt |= FMT_FG;
         tk->fmt |= foreground[fg]; 
     }
 
+    //evaluate background parameter
     if (bg != DEFAULT)
     {
+        //set background bit and color from table
         tk->fmt |= FMT_BG;
         tk->fmt |= (background[bg] << BG);
     }
@@ -167,6 +209,7 @@ void formatTk(Token* tk, const unsigned short fg, const unsigned short bg)
 
 void moveToken(Token* tk, const short x, const short y)
 {
+    //update token x and y positions
     tk->x = x;
     tk->y = y;
 }
@@ -175,6 +218,15 @@ void overlay()
 {
     //render underlying grid
     viewport();
+
+    //initailize variables for brevity
+    int x = dsp->cursor->X;
+    int y = dsp->cursor->Y;
+    char** grid = dsp->map->layer->grid;
+
+    //highlight current cell with marker format
+    relCursor(x, y);
+    printf(MARKER("%c"), grid[y][x]);
 
     /******** draw overlay container ********/
     RESET;
@@ -195,15 +247,17 @@ void overlay()
     //print bottom border with corners
     printf(LDM("%c%s%c\n"), UR, border, UL);
 
+    //draw the container contents
     container();
 }
 
 void container()
 {
+    //fetch cell data from menu
     Data* data = menu.cell->data;
-
     if (data == NULL) return;
 
+    //update data tokens with cell data
     snprintf(menu.data[CN]->string, TOKEN, "%u",  data->cn);
     snprintf(menu.data[EL]->string, TOKEN, "%d",  data->el);
     snprintf(menu.data[CF]->string, TOKEN, "%u",  data->cf);
@@ -211,37 +265,44 @@ void container()
     snprintf(menu.data[RL]->string, TOKEN, "%hu", data->rl);
     snprintf(menu.data[CC]->string, TOKEN, "%u",  getRB(data));
 
+    //highlight current menu selection
     formatTk(menu.selection, BLACK, WHITE);
 
+    //print header
     printTk(menu.header);
 
+    //print menu text and data
     for (int i = 0; i < MENU_DATA; i++)
     {
         printTk(menu.text[i]);
         printTk(menu.data[i]);
     }
 
+    //print save and reset options
     printTk(menu.options[SAVE_CELL]);
     printTk(menu.options[RESET_CELL]);
-
-    setCursor(dsp->cursor->X, dsp->cursor->Y);
 }
 
 void statusBar()
 {
+    //hide cursor for rendering
     HIDE_CURSOR;
 
+    //initialize display position and convert to metres
     int x = COL_X(dsp->cursor->X) * CELL_WIDTH;
     int y = ROW_Y(dsp->cursor->Y) * CELL_HEIGHT;
     int z = dsp->map->layer->depth;
 
-    STATUS_BAR_POS(dsp->size.Y);
-    printf("x, y, z: (%d, %d, %d) (m) %12c", x, y, z, LATENT);
+    //print CUP sequence for bottom row, second column (padding)
+    printf(CSI "%d;2H" "x, y, z: (%d, %d, %d) (m) %12c", 
+           dsp->size.Y, x, y, z, LATENT);
 
+    //restore cursor position
     updateCursor();
 
-    //if (dsp->state == MOVE) SHOW_CURSOR;
-    if (dsp->state != EDIT) SHOW_BLOCK;
+    //hide cursor for edit menu
+    if (dsp->state & EDIT) HIDE_CURSOR;
+    else SHOW_BLOCK;
 }
 
 void option(const int code)
@@ -290,8 +351,6 @@ void editor()
         menu.cell->x = cell->x;
         menu.cell->y = cell->y;
         menu.cell->z = cell->z;
-
-        render();
         return;
     }
 
@@ -299,11 +358,7 @@ void editor()
     menu.cell->y = dsp->cursor->Y;
     menu.cell->z = dsp->map->layer->depth;
 
-    //skip initializing if the cn matches the current configuration
-    if (menu.cell->data->cn == CN(menu.cell->x, menu.cell->y, menu.cell->z)) return;
-
     clearData();
-    render();
 }
 
 void edit()
@@ -347,6 +402,8 @@ void editCF()
         menu.cell->data->cf = cf;
         snprintf(menu.selection->string, TOKEN, "%u", cf);
     }
+
+    while (getchar() != '\n');
 }
 
 void editTY()
@@ -359,6 +416,8 @@ void editTY()
         menu.cell->data->ty = ty;
         snprintf(menu.selection->string, TOKEN, "%hhu", ty);
     }
+
+    while (getchar() != '\n');
 }
 
 void editRL()
@@ -370,6 +429,8 @@ void editRL()
         menu.cell->data->rl = rl;
         snprintf(menu.selection->string, TOKEN, "%hu", rl);
     }
+
+    while (getchar() != '\n');
 }
 
 void editRB()
@@ -383,9 +444,15 @@ void editRB()
         for (int i = 0; i < CONTENTS; i++)
         {
             if (menu.cell->data->cc[i].code == RB)
+            {
                 menu.cell->data->cc[i].qty = rb;
+                snprintf(menu.selection->string, TOKEN, "%d", rb);
+            }
+                
         }
     }
+
+    while (getchar() != '\n');
 }
 
 void saveCell()
