@@ -1,7 +1,7 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include "map.h"
+#include "map.h" //layers, map, cells, etc.
 
 #define MENU_ROWS 20
 #define MENU_COLS 30

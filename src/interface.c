@@ -7,8 +7,8 @@
 * linked list.
 */
 
-#include "interface.h"
-#include "engine.h"
+#include "interface.h" //alt-screen menu
+#include "engine.h" //program operation headers and functions
 
 //static global display pointer and menu structure
 static Display* dsp;
