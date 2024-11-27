@@ -3,8 +3,8 @@
 *  that was used both as inspiration and used as is throughout this program.
 */
 
-#include "display.h"
-#include "engine.h"
+#include "display.h" //system information and menus
+#include "engine.h" //program operation headers and functions
 
 //static global structure (limited scope)
 static Display dsp;

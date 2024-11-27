@@ -6,7 +6,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "map.h"
+#include "map.h" //layers, map, cells, etc.
 
 #define INPUT 0x01
 
