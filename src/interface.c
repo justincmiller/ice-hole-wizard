@@ -216,9 +216,6 @@ void moveToken(Token* tk, const short x, const short y)
 
 void overlay()
 {
-    //render underlying grid
-    viewport();
-
     //initailize variables for brevity
     int x = dsp->cursor->X;
     int y = dsp->cursor->Y;
@@ -309,15 +306,11 @@ void option(const int code)
 {
     short dy = 0;
 
-    switch (code)
-    {
-        case ARROW_UP:
-            if (menu.index > MENU_MIN) dy = -1;
-            break;
-        case ARROW_DOWN:
-            if (menu.index < MENU_MAX) dy = 1;
-            break;
-    }
+    //evaluate arrow key code and clamp to menu options
+    if (code == ARROW_UP)
+        dy = (menu.index > MENU_MIN) ? -1 : dy;
+    else if (code == ARROW_DOWN)
+        dy = (menu.index < MENU_MAX) ?  1 : dy;
 
     if (!dy) return;
 
@@ -336,9 +329,11 @@ void option(const int code)
 
 void editor()
 {
+    //initialize menu cell once
     if (menu.cell == NULL)
         menu.cell = createCell();
 
+    //compute cell number
     unsigned int cn = CN(dsp->cursor->X, dsp->cursor->Y, dsp->map->layer->depth);
 
     //check for pre-exisiting cell
@@ -354,41 +349,42 @@ void editor()
         return;
     }
 
+    //if cell doesn't exist, update x, y and z and reset cell data
     menu.cell->x = dsp->cursor->X;
     menu.cell->y = dsp->cursor->Y;
     menu.cell->z = dsp->map->layer->depth;
-
     clearData();
 }
 
 void edit()
 {
-    Token* option = menu.options[menu.index];
+    //move cursor to selected index
+    CUP(menu.selection->x, menu.selection->y);
 
-    CUP(option->x, option->y);
-
+    //determine option action
     switch (menu.index)
     {
-        case FRICTION:
+        case FRICTION: //edit cell friction
             editCF();
             break;
-        case TYPE:
+        case TYPE: //edit cell type
             editTY();
             break;
-        case RADIATION:
+        case RADIATION: //edit cell radiation
             editRL();
             break;
-        case RITTERBARIUM:
+        case RITTERBARIUM: //edit ritterbarium
             editRB();
             break;
-        case SAVE_CELL:
+        case SAVE_CELL: //save cell to layer
             saveCell();
             break;
-        case RESET_CELL:
+        case RESET_CELL: //clear edited cell data
             clearData();
             break;        
     }
 
+    //update overlay
     overlay();
 }
 
@@ -401,9 +397,8 @@ void editCF()
         cf = (cf > 10) ? 10 : (cf < 0) ? 0 : cf;
         menu.cell->data->cf = cf;
         snprintf(menu.selection->string, TOKEN, "%u", cf);
+        while (getchar() != '\n');
     }
-
-    while (getchar() != '\n');
 }
 
 void editTY()
@@ -415,9 +410,8 @@ void editTY()
         ty = (ty > 100) ? 100 : (ty < 10) ? 0 : ty;
         menu.cell->data->ty = ty;
         snprintf(menu.selection->string, TOKEN, "%hhu", ty);
-    }
-
-    while (getchar() != '\n');
+        while (getchar() != '\n');
+    }   
 }
 
 void editRL()
@@ -428,9 +422,8 @@ void editRL()
     {
         menu.cell->data->rl = rl;
         snprintf(menu.selection->string, TOKEN, "%hu", rl);
+        while (getchar() != '\n');
     }
-
-    while (getchar() != '\n');
 }
 
 void editRB()
@@ -447,16 +440,16 @@ void editRB()
             {
                 menu.cell->data->cc[i].qty = rb;
                 snprintf(menu.selection->string, TOKEN, "%d", rb);
+                 while (getchar() != '\n');
             }
                 
         }
-    }
-
-    while (getchar() != '\n');
+    }  
 }
 
 void saveCell()
 {
+    //avoid dereferencing NULL pointer
     if (menu.cell == NULL || menu.cell->data == NULL) return;
 
     Cell* cell = NULL;
@@ -483,6 +476,7 @@ void saveCell()
 
 void clearData()
 {
+    //avoid dereferencing NULL pointer
     if (menu.cell == NULL || menu.cell->data == NULL) return;
 
     //clear cell data
@@ -491,5 +485,5 @@ void clearData()
     //set nonzero default values
     menu.cell->data->cn = CN(menu.cell->x, menu.cell->y, menu.cell->z);
     menu.cell->data->el = menu.cell->z;
-    menu.cell->data->cf = 5;
+    menu.cell->data->cf = DEF_CF;
 }

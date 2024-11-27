@@ -30,6 +30,7 @@
 #define DATA_X    20
 
 #define OPTIONS   6
+#define DEF_CF    5
 
 struct Display;
 
