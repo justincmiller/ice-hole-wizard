@@ -1,7 +1,7 @@
 /*
 * display.c
 *
-* Contains
+* Contains function implementations for the manipulation of the display, window, and viewport.
 */
 
 /*

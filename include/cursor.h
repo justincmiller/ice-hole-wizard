@@ -1,7 +1,8 @@
 /*
 * cursor.h
 *
-* Contains
+* Contains definitions for the manipulation of the cursor in
+* all system states, functions for drawing the map and navigating the viewport
 */
 
 /*
