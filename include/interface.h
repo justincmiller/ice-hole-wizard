@@ -1,3 +1,9 @@
+/*
+* interface.h
+* 
+* Contains Menu and Token structure definitions, Token, UI element and editor
+* function declarations, and menu and editor constants.
+*/
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
@@ -6,34 +12,32 @@
 #define MENU_ROWS 20
 #define MENU_COLS 30
 
-//row offset of 2 to accomodate top/bottom borders
+//number of middle rows offset by 2 to accomodate top/bottom borders
 #define BORDER_ROWS (MENU_ROWS - 2)
-//column offset of 1 to accomodate for corners and NUL terminator
+//number of columns offset by 1 to accomodate for corners and NUL terminator
 #define BORDER_COLS (MENU_COLS - 1)
 
-#define SECTION 2
+#define SECTION 2 //section break value
 
-#define COLOUR 0x7F
-#define FMT_BG (1 << 14)
-#define FMT_FG (1 << 15)
-#define BG     7
-#define TOKEN  32
+#define COLOUR     0x7F         //bitmask for colour extraction
+#define FMT_BG     (1 << 14)    //bitmask for foreground bit
+#define FMT_FG     (1 << 15)    //bitmask for background bit
+#define BG         7            //bit shift for background
+#define TOKEN      32           //maximum token string size for
 
-#define MENU_MAX 5
-#define MENU_MIN 0
+#define MENU_MAX   5  //maximum array index for menu options
+#define MENU_MIN   0  //minimum array index for menu options
 
-#define MENU_FIXED 2
-#define MENU_VARS  4
+#define MENU_FIXED 2  //amount of fixed menu data items
+#define MENU_VARS  4  //amount of variable menu data items
 
-#define MENU_DATA 6
-#define TEXT_X    3
-#define DATA_X    20
+#define MENU_DATA  6  //amount of menu data items
+#define TEXT_X     3  //starting column for text printing
+#define DATA_X     20 //starting column for data printing
 
-#define OPTIONS   6
-#define MAX_CF    10
-#define DEF_CF    5
+#define OPTIONS    6  //number of selectable menu options
 
-#define MAX_PERCENT 100
+#define MAX_PERCENT 100 //maximum percent value
 
 struct Display;
 
@@ -91,12 +95,18 @@ enum options
 };
 
 void loadMenu(struct Display* ptr);
+
+/********** Token Functions **********/
 Token* createTk(const short x, const short y);
 void printTk(Token* tk);
 void formatTk(Token* tk, const unsigned short fg, const unsigned short bg);
+
+/********** UI Element Functions **********/
 void overlay();
 void container();
 void statusBar();
+
+/********* Cell Editor Functions **********/
 void option(const int code);
 void editor();
 void edit();

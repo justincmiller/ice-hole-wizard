@@ -12,6 +12,8 @@
 struct Display;
 
 #define LATENT_CC -1
+#define MAX_CF  10
+#define DEF_CF  5
 
 #define CN(x,y,z) (x + y * MAP_COLS + z * MAP_ROWS * MAP_COLS)
 

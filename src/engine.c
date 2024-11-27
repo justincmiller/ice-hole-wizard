@@ -13,7 +13,7 @@ void init()
 {
     //enable virtual terminal I/O
     virtualOutput(); //VT100 drawings
-    virtualInput(); //VT100 Esc commands
+    virtualInput();  //VT100 Esc commands
 
     //load modules
     loadDisplay(&dsp);
