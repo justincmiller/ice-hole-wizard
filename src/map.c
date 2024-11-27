@@ -3,12 +3,13 @@
 *  that was used both as inspiration and used as is throughout this program.
 */
 
-#include "map.h"
-#include "engine.h"
+#include "map.h" //layers, map, cells, etc.
+#include "engine.h" //program operation headers and functions
 
-static Display* dsp;
-static Map map;
+static Display* dsp; //static global variable for display (limited scope)
+static Map map; //map data structure
 
+//loads layer and corresponding map data
 void loadMap(Display* ptr)
 {
     addLayer();
@@ -19,6 +20,7 @@ void loadMap(Display* ptr)
     dsp->cursor = &map.layer->cursor;
 }
 
+//created character grid to display characters on screen
 char** createGrid()
 {
     //allocate row pointers
@@ -41,6 +43,7 @@ char** createGrid()
     return grid;
 }
 
+//creates new layer in memory
 Layer* createLayer()
 {
     //allocate layer
@@ -59,6 +62,7 @@ Layer* createLayer()
     return layer;
 }
 
+//adds newly created layer to cave system
 void addLayer()
 {
     Node* node = malloc(sizeof(Node));
@@ -84,6 +88,7 @@ void addLayer()
     }
 }
 
+//saves current layer and moves down one layer or adds new layer
 void layerDown()
 {
     //initialize ptr to head of map matrix
@@ -106,6 +111,7 @@ void layerDown()
 
     map.layer->cursor = map.last->cursor;
 
+    //if in drawing state add portals at entrance and exit
     if (dsp->state == DRAW)
     {
         int x = dsp->cursor->X;
@@ -122,10 +128,12 @@ void layerDown()
     render();
 }
 
+//saves current layer and moves up one layer if possible
 void layerUp()
 {
     Node* ptr = getNode(map.matrix, map.layer->depth);
 
+    //if no higher layer exists, then do nothing
     if (ptr == NULL || ptr->prev == NULL) return;
 
     map.layer = ptr->prev->data;
@@ -133,6 +141,7 @@ void layerUp()
 
     map.layer->cursor = map.last->cursor;
 
+    //if in drawing state save/load portal positions
     if (dsp->state == DRAW)
     {
         int x = dsp->cursor->X;
@@ -148,6 +157,7 @@ void layerUp()
     render();
 }
 
+//move to the last layer created
 void lastLayer()
 {
     Layer* last = map.layer;
@@ -159,6 +169,7 @@ void lastLayer()
     render();
 }
 
+//moves to layer 0
 void topLayer()
 {
     Layer* last = map.layer;
@@ -174,6 +185,7 @@ void topLayer()
     render();
 }
 
+//creates a cell data node within the map
 Cell* createCell()
 {
     //allocate cell
@@ -199,6 +211,7 @@ Cell* createCell()
     return cell;
 }
 
+//adds a newly created cell data struct to map
 Node* addCell()
 {
     Node* node = malloc(sizeof(Node));
@@ -226,6 +239,7 @@ Node* addCell()
     return node;
 }
 
+//removes cell and cell data from the map
 void remCell()
 {
     short x = dsp->cursor->X;
@@ -240,12 +254,13 @@ void remCell()
 
     Cell* cell = (Cell*)ptr->data;
     
-    removeNode(&map.layer->cells, ptr);
+    removeNode(&map.layer->cells, ptr); //removes cell node
     forget(cell->data); //remove and free allocated cell data
     forget(cell);       //remove and free allocated cell
     forget(ptr);        //remove and free allocated node
 }
 
+//seaches node by cell number
 Node* searchCN(const unsigned int cn)
 {
     if (map.layer == NULL || map.layer->cells == NULL) return NULL;
@@ -264,6 +279,7 @@ Node* searchCN(const unsigned int cn)
     return NULL;
 }
 
+//gets RB values
 int getRB(Data* data)
 {
     int rb = 0;
