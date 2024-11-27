@@ -11,10 +11,11 @@
 //sysyem information struct
 struct Display;
 
-#define LATENT_CC -1
+#define LATENT_CC -1 //no cell content or end of list
 
-#define CN(x,y,z) (x + y * MAP_COLS + z * MAP_ROWS * MAP_COLS)
+#define CN(x,y,z) (x + y * MAP_COLS + z * MAP_ROWS * MAP_COLS) //cell number
 
+//struct to hold layer data
 typedef struct Layer
 {
     Node* cells;    //list to hold cells
@@ -76,20 +77,20 @@ enum data
 void loadMap(struct Display* ptr); //layer operations and corresponding maps
 
 /********** Layer Functions **********/
-char** createGrid(); 
-Layer* createLayer();
-void addLayer();
-void layerUp();
-void layerDown();
-void lastLayer();
-void topLayer();
+char** createGrid(); //creates the character grid
+Layer* createLayer(); //creates a new layer
+void addLayer(); //adds new layer 
+void layerUp(); //saves current layer and moves up one layer
+void layerDown(); //saves current layer and moves down one later or creates new layer
+void lastLayer(); //moves to the last layer created
+void topLayer(); //moves to map layer 0
 
 /********** Cell Functions **********/
-Cell* createCell();
-Node* addCell();
-void remCell();
+Cell* createCell(); //creates the cell properties data holder
+Node* addCell(); //adds cell to map
+void remCell(); //deletes cell and cell data from map
 
-Node* searchCN(const unsigned int cn);
-int getRB(Data* data);
+Node* searchCN(const unsigned int cn); //gets the cell number
+int getRB(Data* data); //gets RB value from cell contents
 
 #endif
