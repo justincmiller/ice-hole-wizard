@@ -1,7 +1,10 @@
 /*
 * cursor.c
 *
-* Contains
+* Contains function implementations to manipulate the cursor in
+* all states, and map drawing functions for lines and interesctions on the map.
+* 
+* Also contains function to pan the viewport.
 */
 
 /*
