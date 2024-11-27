@@ -391,8 +391,10 @@ void editCF()
 {
     unsigned int cf = 0;
 
+    //validate if cf can be assigned
     if (scanf("%u", &cf))
     {
+        //clamp friction to max or min value and update selected token
         cf = (cf > MAX_CF) ? MAX_CF : (cf < 0) ? 0 : cf;
         menu.cell->data->cf = cf;
         snprintf(menu.selection->string, TOKEN, "%u", cf);
@@ -404,8 +406,10 @@ void editTY()
 {
     unsigned char ty = 0;
 
+    //validate if ty can be assigned
     if (scanf("%hhu", &ty))
     {
+        //clamp type to max or min percentage and update selected token
         ty = (ty > MAX_PERCENT) ? MAX_PERCENT : (ty < 0) ? 0 : ty;
         menu.cell->data->ty = ty;
         snprintf(menu.selection->string, TOKEN, "%hhu", ty);
