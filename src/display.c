@@ -55,7 +55,7 @@ void resetMargins()
     will be aligned top left.*/
     dsp.margin.Left = CLAMP_X(dsp.cursor->X - dsp.size.X / 2);
     dsp.margin.Top =  CLAMP_Y(dsp.cursor->Y - dsp.size.Y / 2);
-    dsp.margin.Right = dsp.margin.Left + dsp.size.X - 2;
+    dsp.margin.Right = dsp.margin.Left + dsp.size.X - 1;
     dsp.margin.Bottom = dsp.margin.Top + dsp.size.Y - 2;
 
     //render window with new margins

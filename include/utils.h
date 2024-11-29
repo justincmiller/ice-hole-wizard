@@ -74,8 +74,6 @@
 #define CONTROLS 17
 #define CONTENTS 3
 
-#define SCROLL_STEP 2
-
 /* 
 * format string for line drawing mode
 * consists of two escape sequences:

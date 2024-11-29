@@ -62,7 +62,9 @@ typedef struct Menu
     Token** data;     //array of variable menu data
     Token** options;  //array of menu selections
     Token* selection; //pointer to current selected option
+    Token* message;
     Cell* cell;       //cell buffer for editing
+    bool saved;
 }Menu;
 
 //Array indices for foreground and background SGR values

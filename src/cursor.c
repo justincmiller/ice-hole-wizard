@@ -282,39 +282,19 @@ void panViewport(const int code)
     {
         case UP:
         case CTRL_UP:
-            if (dsp->margin.Top - SCROLL_STEP >= GRID_MIN)
-            {
-                dy = -SCROLL_STEP;
-                // dsp->margin.Top -= SCROLL_STEP;
-                // dsp->margin.Bottom -= SCROLL_STEP;
-            }
+            if (dsp->margin.Top > GRID_MIN) dy = -1;
             break;
         case DOWN:
         case CTRL_DOWN:
-            if (dsp->margin.Bottom + SCROLL_STEP <= GRID_MAX)
-            {
-                dy = SCROLL_STEP;
-                // dsp->margin.Top += SCROLL_STEP;
-                // dsp->margin.Bottom += SCROLL_STEP;
-            }
+            if (dsp->margin.Bottom < GRID_MAX) dy = 1;
             break;
         case LEFT:
         case CTRL_LEFT:
-            if (dsp->margin.Left - SCROLL_STEP >= GRID_MIN)
-            {
-                dx = -SCROLL_STEP;
-                // dsp->margin.Left -= SCROLL_STEP;
-                // dsp->margin.Right -= SCROLL_STEP;
-            }
+            if (dsp->margin.Left > GRID_MIN) dx = -1;
             break;
         case RIGHT:
         case CTRL_RIGHT:
-            if (dsp->margin.Right + SCROLL_STEP <= GRID_MAX)
-            {
-                dx = SCROLL_STEP;
-                // dsp->margin.Left += SCROLL_STEP;
-                // dsp->margin.Right += SCROLL_STEP;
-            }
+            if (dsp->margin.Right < GRID_MAX) dx = 1;
             break;
     }
 

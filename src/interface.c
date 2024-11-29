@@ -108,6 +108,8 @@ void loadMenu(Display* ptr)
     menu.options[SAVE_CELL] = createTk(TEXT_X, y++);
     menu.options[RESET_CELL] = createTk(TEXT_X, y);
 
+    menu.message = createTk(TEXT_X, BORDER_ROWS);
+
     //write header string and format colour
     snprintf(menu.header->string, TOKEN, "Cell Properties");
     formatTk(menu.header, BRIGHT_YELLOW, DEFAULT);
@@ -123,6 +125,8 @@ void loadMenu(Display* ptr)
     //write save and reset strings
     snprintf(menu.options[SAVE_CELL]->string, TOKEN, "Save");
     snprintf(menu.options[RESET_CELL]->string, TOKEN, "Reset");
+
+    snprintf(menu.message->string, TOKEN, "Cell Data Loaded.");
 
     //initialize selection pointer using menu index and set highlight format
     menu.selection = menu.options[menu.index];
@@ -282,6 +286,11 @@ void container()
     //print save and reset options
     printTk(menu.options[SAVE_CELL]);
     printTk(menu.options[RESET_CELL]);
+
+    if (menu.saved)
+    {
+        printTk(menu.message);
+    }
 }
 
 void statusBar()
@@ -294,8 +303,6 @@ void statusBar()
     int y = ROW_Y(dsp->cursor->Y) * CELL_HEIGHT;
     int z = dsp->map->layer->depth;
 
-    //#define DEBUG
-
     #ifdef DEBUG
         printf(CSI "%d;2H" "x, y, z: (%d, %d, %d) (m)" CSI "K", 
               dsp->size.Y, dsp->cursor->X, dsp->cursor->Y, z);
@@ -306,8 +313,13 @@ void statusBar()
                 dsp->margin.Bottom, dsp->margin.Right);
     #else
         //print CUP sequence for bottom row, second column (padding)
-        printf(CSI "%d;2H" "x, y, z: (%d, %d, %d) (m)" CSI "K", 
+        printf(CSI "%d;H" " x, y, z: (%d, %d, %d) (m)" CSI "K", 
                dsp->size.Y, x, y, z);
+        
+        if (dsp->state & DRAW)
+            printf(CSI "%d;%dH" "DRAW", dsp->size.Y, dsp->size.X - 4);
+        else if (dsp->state & MOVE)
+            printf(CSI "%d;%dH" "MOVE", dsp->size.Y, dsp->size.X - 4);
     #endif
 
     //restore cursor position
@@ -362,6 +374,7 @@ void editor()
         menu.cell->x = cell->x;
         menu.cell->y = cell->y;
         menu.cell->z = cell->z;
+        menu.saved = true;
         return;
     }
 
@@ -369,6 +382,7 @@ void editor()
     menu.cell->x = dsp->cursor->X;
     menu.cell->y = dsp->cursor->Y;
     menu.cell->z = dsp->map->layer->depth;
+    menu.saved = false;
     clearData();
 }
 
