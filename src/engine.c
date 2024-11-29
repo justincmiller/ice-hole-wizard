@@ -33,7 +33,7 @@ void init()
     dsp->state = MOVE;
     
     //set cursor to origin and set window size and margins
-    setCursor(X_COL(1), Y_ROW(1));
+    setCursor(X_COL(0), Y_ROW(0));
     setWindow();
 }
 

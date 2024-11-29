@@ -294,9 +294,21 @@ void statusBar()
     int y = ROW_Y(dsp->cursor->Y) * CELL_HEIGHT;
     int z = dsp->map->layer->depth;
 
-    //print CUP sequence for bottom row, second column (padding)
-    printf(CSI "%d;2H" "x, y, z: (%d, %d, %d) (m) %12c", 
-           dsp->size.Y, x, y, z, LATENT);
+    //#define DEBUG
+
+    #ifdef DEBUG
+        printf(CSI "%d;2H" "x, y, z: (%d, %d, %d) (m)" CSI "K", 
+              dsp->size.Y, dsp->cursor->X, dsp->cursor->Y, z);
+        printf(CSI "%d;%dH" "Display: %d x %d",
+               dsp->size.Y, dsp->size.X / 3, dsp->size.X, dsp->size.Y);
+        printf(CSI "4C" "T, L, B, R: (%d, %d, %d, %d)",
+                dsp->margin.Top, dsp->margin.Left, 
+                dsp->margin.Bottom, dsp->margin.Right);
+    #else
+        //print CUP sequence for bottom row, second column (padding)
+        printf(CSI "%d;2H" "x, y, z: (%d, %d, %d) (m)" CSI "K", 
+               dsp->size.Y, x, y, z);
+    #endif
 
     //restore cursor position
     updateCursor();

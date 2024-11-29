@@ -55,8 +55,8 @@ void resetMargins()
     will be aligned top left.*/
     dsp.margin.Left = CLAMP_X(dsp.cursor->X - dsp.size.X / 2);
     dsp.margin.Top =  CLAMP_Y(dsp.cursor->Y - dsp.size.Y / 2);
-    dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.size.X);
-    dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.size.Y);
+    dsp.margin.Right = dsp.margin.Left + dsp.size.X - 2;
+    dsp.margin.Bottom = dsp.margin.Top + dsp.size.Y - 2;
 
     //render window with new margins
     render();
@@ -119,8 +119,8 @@ void viewport()
     RESET;
 
     //clamp rows and cols to visible boundaries of the grid
-    int rows = CLAMP_Y(dsp.size.Y + offset.Y);
-    int cols = CLAMP_X(dsp.size.X + offset.X);
+    int rows = 1 + CLAMP_Y(dsp.size.Y + offset.Y);
+    int cols = 1 + CLAMP_X(dsp.size.X + offset.X);
 
     //iterate through rows and columns, only printing if character is not latent
     for (int i = offset.Y; i < rows; i++)

@@ -24,8 +24,11 @@ void setCursor(const short x, const short y); //move cursor using absolute param
 void relCursor(const short x, const short y);
 void move(const int code); //cursor movement operations
 void draw(const int code); //map drawing operations
-bool connector(int dir, char c); //intersection handling
 char lineType(char** grid, int row, int col); //line type handling
+bool upConnectors(const char c);
+bool downConnectors(const char c);
+bool leftConnectors(const char c);
+bool rightConnectors(const char c);
 void panViewport(const int code); //handles moving viewport
 
 #endif

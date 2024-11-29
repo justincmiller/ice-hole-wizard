@@ -74,6 +74,8 @@
 #define CONTROLS 17
 #define CONTENTS 3
 
+#define SCROLL_STEP 2
+
 /* 
 * format string for line drawing mode
 * consists of two escape sequences:
@@ -128,7 +130,8 @@ enum directions
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
+    DIRECTIONS
 };
 
 //possible valid key press options
@@ -160,6 +163,8 @@ typedef struct Node
     struct Node* next;
     struct Node* prev;
 }Node;
+
+//const char connectors[11];
 
 //functions
 bool virtualInput(); //initializes VT100 Input
