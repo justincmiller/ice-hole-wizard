@@ -56,7 +56,7 @@ void resetMargins()
     dsp.margin.Left = CLAMP_X(dsp.cursor->X - dsp.size.X / 2);
     dsp.margin.Top =  CLAMP_Y(dsp.cursor->Y - dsp.size.Y / 2);
     dsp.margin.Right = CLAMP_X(dsp.margin.Left + dsp.size.X);
-    dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.size.Y) - 2;
+    dsp.margin.Bottom = CLAMP_Y(dsp.margin.Top + dsp.size.Y) - PADDING;
 
     //render window with new margins
     render();

@@ -24,6 +24,7 @@
 #define BORDER_COLS (MENU_COLS - 1)
 
 #define SECTION 2 //section break value
+#define PADDING 2
 
 #define COLOUR     0x7F       //bitmask for colour extraction
 #define FMT_BG     (1 << 14)  //bitmask for foreground bit

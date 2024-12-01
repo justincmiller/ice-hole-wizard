@@ -259,16 +259,16 @@ void overlay()
 void container()
 {
     //fetch cell data from menu
-    Data* data = menu.cell->data;
-    if (data == NULL) return;
+    Cell* cell = menu.cell;
+    if (cell == NULL) return;
 
     //update data tokens with cell data
-    snprintf(menu.data[CN]->string, TOKEN, "%u",  data->cn);
-    snprintf(menu.data[EL]->string, TOKEN, "%d",  data->el);
-    snprintf(menu.data[CF]->string, TOKEN, "%u",  data->cf);
-    snprintf(menu.data[TY]->string, TOKEN, "%d",  data->ty);
-    snprintf(menu.data[RL]->string, TOKEN, "%hu", data->rl);
-    snprintf(menu.data[CC]->string, TOKEN, "%u",  getRB(data));
+    snprintf(menu.data[CN]->string, TOKEN, "%u",  cell->cn);
+    snprintf(menu.data[EL]->string, TOKEN, "%d",  cell->el);
+    snprintf(menu.data[CF]->string, TOKEN, "%u",  cell->cf);
+    snprintf(menu.data[TY]->string, TOKEN, "%d",  cell->ty);
+    snprintf(menu.data[RL]->string, TOKEN, "%hu", cell->rl);
+    snprintf(menu.data[CC]->string, TOKEN, "%u",  getRB(cell));
 
     //highlight current menu selection
     formatTk(menu.selection, BLACK, WHITE);
@@ -370,18 +370,12 @@ void editor()
     {
         //copy cell data for editing
         Cell* cell = ptr->data;
-        memcpy(menu.cell->data, cell->data, sizeof(Data));
-        menu.cell->x = cell->x;
-        menu.cell->y = cell->y;
-        menu.cell->z = cell->z;
+        memcpy(menu.cell, cell, sizeof(Cell));
         menu.saved = true;
         return;
     }
 
     //if cell doesn't exist, update x, y and z and reset cell data
-    menu.cell->x = dsp->cursor->X;
-    menu.cell->y = dsp->cursor->Y;
-    menu.cell->z = dsp->map->layer->depth;
     menu.saved = false;
     clearData();
 }
@@ -427,7 +421,7 @@ void editCF()
     {
         //clamp friction to max or min value and update selected token
         cf = (cf > MAX_CF) ? MAX_CF : (cf < 0) ? 0 : cf;
-        menu.cell->data->cf = cf;
+        menu.cell->cf = cf;
         snprintf(menu.selection->string, TOKEN, "%u", cf);
         FLUSH;
     }
@@ -442,7 +436,7 @@ void editTY()
     {
         //clamp type to max or min percentage and update selected token
         ty = (ty > MAX_PERCENT) ? MAX_PERCENT : (ty < 0) ? 0 : ty;
-        menu.cell->data->ty = ty;
+        menu.cell->ty = ty;
         snprintf(menu.selection->string, TOKEN, "%hhu", ty);
         FLUSH;
     }   
@@ -456,7 +450,7 @@ void editRL()
     if (scanf("%hu", &rl))
     {
         //update radiation level and selected token
-        menu.cell->data->rl = rl;
+        menu.cell->rl = rl;
         snprintf(menu.selection->string, TOKEN, "%hu", rl);
         FLUSH;
     }
@@ -473,13 +467,13 @@ void editRB()
         rb = (rb > MAX_PERCENT) ? MAX_PERCENT : (rb < 0) ? 0 : rb;
 
         //iterate through cell contents
-        while (menu.cell->data->cc[n].code != LATENT_CC && n < CONTENTS)
+        while (menu.cell->cc[n].code != LATENT_CC && n < CONTENTS)
         {
             //evaulate mineral for RB code
-            if (menu.cell->data->cc[n].code == RB)
+            if (menu.cell->cc[n].code == RB)
             {
                 //update RB level (in %) and update token
-                menu.cell->data->cc[n].qty = rb;
+                menu.cell->cc[n].qty = rb;
                 snprintf(menu.selection->string, TOKEN, "%d", rb);
                 //flush remaining characters from input buffer
                 FLUSH;
@@ -489,11 +483,11 @@ void editRB()
         }
 
         //evaluate case where RB is not found
-        if (menu.cell->data->cc[n].code == LATENT_CC)
+        if (menu.cell->cc[n].code == LATENT_CC)
         {
             //add RB to list with qty (in %)
-            menu.cell->data->cc[n].code = RB;
-            menu.cell->data->cc[n].qty = rb;
+            menu.cell->cc[n].code = RB;
+            menu.cell->cc[n].qty = rb;
             snprintf(menu.selection->string, TOKEN, "%d", rb);
         }
         FLUSH;
@@ -503,20 +497,17 @@ void editRB()
 void saveCell()
 {
     //avoid dereferencing NULL pointer
-    if (menu.cell == NULL || menu.cell->data == NULL) return;
+    if (menu.cell == NULL || menu.cell == NULL) return;
 
     //search for cell with current cell number
     Cell* cell = NULL;
-    Node* ptr = searchCN(menu.cell->data->cn);
+    Node* ptr = searchCN(menu.cell->cn);
 
     if (ptr != NULL)
     {
         cell = (Cell*)ptr->data; //update cell pointer
         //copy existing cell data
-        memcpy(cell->data, menu.cell->data, sizeof(Data));
-        cell->x = menu.cell->x;
-        cell->y = menu.cell->y;
-        cell->z = menu.cell->z;
+        memcpy(cell, menu.cell, sizeof(Cell));
         return;
     }
 
@@ -524,22 +515,19 @@ void saveCell()
     cell = (Cell*)addCell()->data;
 
     //copy cell contents from edited cell
-    memcpy(cell->data, menu.cell->data, sizeof(Data));
-    cell->x = menu.cell->x;
-    cell->y = menu.cell->y;
-    cell->z = menu.cell->z;
+    memcpy(cell, menu.cell, sizeof(Cell));
 }
 
 void clearData()
 {
     //avoid dereferencing NULL pointer
-    if (menu.cell == NULL || menu.cell->data == NULL) return;
+    if (menu.cell == NULL || menu.cell == NULL) return;
 
     //clear cell data
-    memset(menu.cell->data, 0, sizeof(Data));
+    memset(menu.cell, 0, sizeof(Cell));
 
     //set nonzero default values
-    menu.cell->data->cn = CN(menu.cell->x, menu.cell->y, menu.cell->z);
-    menu.cell->data->el = menu.cell->z;
-    menu.cell->data->cf = DEF_CF;
+    menu.cell->cn = CN(dsp->cursor->X, dsp->cursor->Y, dsp->map->layer->depth);
+    menu.cell->el = dsp->map->layer->depth;
+    menu.cell->cf = DEF_CF;
 }

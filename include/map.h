@@ -50,8 +50,8 @@ typedef struct Mineral
     int qty;  //amount of mineral
 }Mineral;
 
-//structure to hold cell properties data
-typedef struct Data
+//structure to hold cell data
+typedef struct Cell
 {
     unsigned int cn;      // cell number
     int el;               // elevation
@@ -59,15 +59,6 @@ typedef struct Data
     unsigned char ty;     // type
     unsigned short rl;    // radiation level
     Mineral cc[CONTENTS]; // cell contents
-}Data;
-
-//structure to hold cell data
-typedef struct Cell
-{
-    short x;
-    short y;
-    short z;
-    Data* data;     //cell properties
 }Cell;
 
 //todo: update with additional mineral types
@@ -101,6 +92,6 @@ Node* addCell(); //adds cell to map
 void remCell(); //deletes cell and cell data from map
 
 Node* searchCN(const unsigned int cn); //gets the cell number
-int getRB(Data* data); //gets RB value from cell contents
+int getRB(Cell* cell); //gets RB value from cell contents
 
 #endif
