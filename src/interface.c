@@ -108,7 +108,7 @@ void loadMenu(Display* ptr)
     menu.options[SAVE_CELL] = createTk(TEXT_X, y++);
     menu.options[RESET_CELL] = createTk(TEXT_X, y);
 
-    menu.message = createTk(TEXT_X, BORDER_ROWS);
+    menu.message = createTk(TEXT_X, MENU_ROWS-1);
 
     //write header string and format colour
     snprintf(menu.header->string, TOKEN, "Cell Properties");
@@ -317,9 +317,9 @@ void statusBar()
                dsp->size.Y, x, y, z);
         
         if (dsp->state & DRAW)
-            printf(CSI "%d;%dH" "DRAW", dsp->size.Y, dsp->size.X - 4);
+            printf(CSI "%d;%dH" "DRAW", dsp->size.Y, dsp->size.X - 3);
         else if (dsp->state & MOVE)
-            printf(CSI "%d;%dH" "MOVE", dsp->size.Y, dsp->size.X - 4);
+            printf(CSI "%d;%dH" "MOVE", dsp->size.Y, dsp->size.X - 3);
     #endif
 
     //restore cursor position

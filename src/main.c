@@ -6,7 +6,7 @@
 //engine header includes program operation headers and functions
 #include "engine.h"
 
-int main(void)
+int main(int argc, char* argv[])
 {
     init(); //initializes the console setup
 
