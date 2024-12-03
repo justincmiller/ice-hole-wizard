@@ -1,7 +1,8 @@
 /*
 * rover.c
 *
-* This file contains 
+* This file contains rover initialization functions as well as
+* functions to automate.
 */
 
 /*
