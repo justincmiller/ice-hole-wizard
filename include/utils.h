@@ -21,6 +21,7 @@
 #include <windows.h> //Windows API functions
 #include <stdbool.h>
 #include <string.h>
+#include <fcntl.h>
 
 //supress security warnings
 #define _CRT_SECURE_NO_WARNINGS
