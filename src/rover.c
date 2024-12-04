@@ -12,3 +12,25 @@
 
 #include "rover.h"
 
+void rover_init() {
+	Rover rover = {
+		.x = 0,
+		.y = 0,
+		.battery = max_battery,
+		.ice = false
+	};
+}
+
+int battery_level() {
+
+}
+
+bool next_move() {
+
+}
+
+bool explore_map() {
+	//move function similar to draw() or move() in cursor.c
+
+}
+

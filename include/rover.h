@@ -20,16 +20,14 @@
 //structure that holds all the rover information
 typedef struct Rover
 {
-    //x
-    //y
-    //battery life = max_battery
-    //ice_found = false
+    int x;
+    int y;
+    int battery = max_battery;
+    bool ice = false;
 }Rover;
 
 //functions
-//initialize rover
-//battery cost/recovery
-//check if move is valid
-//explore map
-//retreat low battery
-//retreat ice found
+void rover_init();//initialize rover
+int battery_level();//battery cost/recovery
+bool next_move();//check if move is valid
+bool explore_map();//explore map
