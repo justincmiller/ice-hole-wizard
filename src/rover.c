@@ -95,6 +95,7 @@ bool explore_map() {
 	//if battery hits threshold to return
 	if (rover->battery <= battery_warning) {
 		//abandon mission
+		//need to remember path taken by rover so that we can flip it and reverse it
 	}
 
 	//default if failure
