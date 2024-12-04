@@ -1,8 +1,8 @@
 /*
 * rover.h
 *
-* This file contains the structures and definitions used by the program for
-* the rover.
+* This file should contain the structures and definitions used by the program for
+* the rover. However, we were unable to complete this task due to time constraints.
 */
 
 /*

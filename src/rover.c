@@ -1,8 +1,8 @@
 /*
 * rover.c
 *
-* This file contains rover initialization functions as well as
-* functions to automate.
+* This file should contain rover initialization functions as well as
+* functions to automate. However, we were unable to complete this task due to time constraints.
 */
 
 /*
@@ -12,6 +12,7 @@
 
 #include "rover.h"
 
+//initializing rover
 void rover_init() {
 	Rover rover = {
 		.x = 0,
@@ -23,6 +24,7 @@ void rover_init() {
 	//get coords from file and map them to .x and .y
 }
 
+//calculates gains/losses for cells the rover goes into
 int battery_impact() {
 	//think he said to ignore powder?
 	//needs to using battery_conditions to make calculations
@@ -45,8 +47,8 @@ void ice_ice_baby() {
 	//print congrats banner if ice is found?
 }
 
+//map exploration function to search for ice
 bool explore_map() {
-	//possible directions
 	while (rover->battery > battery_warning) {
 		//check adjacent cells for ice
 		//move towards cell with highest % ice
@@ -57,7 +59,7 @@ bool explore_map() {
 			ice_ice_baby();
 		}
 		
-		//make move
+		//check adjacent cells for moves
 		bool moved = false;
 		for (int i = 0; i < no_directions; i++) { //loop directions
 			int new_x = rover->x + dx[i];
@@ -83,6 +85,7 @@ bool explore_map() {
 					break;
 				}
 			}
+			//if more than one valid move, need to go to cell with highest % ice
 		}
 
 		//if no move was made

@@ -41,6 +41,7 @@ void setCursor(const short x, const short y)
     updateCursor();
 }
 
+//reloads cursor on window resizing
 void relCursor(const short x, const short y)
 {
     unsigned short offsetX = 1 + CLAMP_X(x - dsp->margin.Left);
@@ -212,6 +213,7 @@ char lineType(char** grid, int row, int col)
     return line[type];
 }
 
+//line connections in the up direction
 bool upConnectors(const char c)
 {
     switch (c)
@@ -227,6 +229,7 @@ bool upConnectors(const char c)
     }
 }
 
+//line connections in the down direction
 bool downConnectors(const char c)
 {
     switch (c)
@@ -242,6 +245,7 @@ bool downConnectors(const char c)
     }
 }
 
+//line connections in the left direction
 bool leftConnectors(const char c)
 {
     switch (c)
@@ -257,6 +261,7 @@ bool leftConnectors(const char c)
     }
 }
 
+//line connections in the right direction
 bool rightConnectors(const char c)
 {
     switch (c)
