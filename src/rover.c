@@ -16,13 +16,16 @@ void rover_init() {
 	Rover rover = {
 		.x = 0,
 		.y = 0,
-		.battery = max_battery,
+		.battery = battery_max,
 		.ice = false
 	};
+
+	//get coords from file and map them to .x and .y
 }
 
 int battery_level() {
-
+	//needs to using battery_conditions to make calculations
+	//friction makes penalty = |friction - 5| / 5
 }
 
 bool next_move() {

@@ -15,14 +15,24 @@
 
 #inlcude "engine.h"
 
-#define max_battery 100
+#define battery_max 150
+#define battery_loss 0.05
+
+//structure to hold battery loss and gain data
+typedef enum {
+    NORMAL = 0,
+    A_SLOPE = 1,
+    D_SLOPE = 2,
+    RB = 3,
+    RAD = 4,    
+} BATTERY_CONDITIONS;
 
 //structure that holds all the rover information
 typedef struct Rover
 {
     int x;
     int y;
-    int battery = max_battery;
+    int battery = battery_max;
     bool ice = false;
 }Rover;
 
