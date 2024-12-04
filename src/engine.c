@@ -23,7 +23,7 @@ void init()
     virtualOutput(); //VT100 drawings
     virtualInput();  //VT100 Esc commands
 
-    //load modules
+    //load display modules
     loadDisplay(&dsp);
     loadMap(dsp);
     loadMenu(dsp);

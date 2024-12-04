@@ -12,7 +12,21 @@
 #ifndef MAPFILES_H
 #define MAPFILES_H
 
-#include "engine.h"
+#include "utils.h"
+
+#define ARGUMENT   1
+#define PATH_LEN   128
+#define EXTENSION  ".licemap"
+#define LABEL_NEW  CSI "2;2H" CSI "2K"
+#define LABEL_LOAD CSI "2;3H" CSI "2K"
+#define FILE_INPUT CSI "2;5H" CSI "2K"
+#define MESSAGE    CSI "2;7H" CSI "2K"
+
+#ifdef _WIN32
+#define SLASH '\\'
+#else
+#define SLASH '/'
+#endif
 
 typedef struct Metadata
 {
@@ -50,5 +64,20 @@ enum recordStatus
 {
     DEFAULT, EDITED, DELETED
 };
+
+
+bool importFile(const char *fname);
+
+void filePrompt();
+
+void fileInput();
+
+bool fileStatus();
+
+bool exportFile();
+
+bool importMap();
+
+bool cellCopy(Record *src);
 
 #endif

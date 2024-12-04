@@ -93,6 +93,7 @@ enum data
 
 //functions
 void loadMap(struct Display* ptr); //loads layer and corresponding map data
+void newMap();
 
 /********** Layer Functions **********/
 char** createGrid(); //creates the character grid

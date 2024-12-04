@@ -10,6 +10,22 @@ int main(int argc, char* argv[])
 {
     init(); //initializes the console setup
 
+    if (argc > 1)
+    {
+        //process first argument only
+        if (importFile(argv[ARGUMENT]) == false)
+        {
+            //trim full path to file name
+            char* fileName = strrchr(argv[ARGUMENT], SLASH);
+            fileName = (fileName == NULL) ? argv[ARGUMENT] : ++fileName;
+
+            printf(MESSAGE ">> Error: could not open file [%s].", fileName);
+            filePrompt();
+        }
+    }
+    else
+        filePrompt();
+
     while (status() != QUIT) //while the quit state is not triggered
     {
         pollWindow(); //check if console was resized, update as required

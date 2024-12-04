@@ -9,24 +9,90 @@
 *  that was used both as inspiration and used as is throughout this program.
 */
 
+#include "engine.h"
 #include "mapfiles.h"
 
 static FILE* file;
 static Layer** layers;
 static Metadata meta;
+static bool fileOpen;
 
 bool importFile(const char* fname)
 {
     file = fopen(fname, "rb+");
-    if (file == NULL)
-    {
-        printf(">> Error: could not open file [%s].\n", fname);
-        return false;
-    }
+    if (file == NULL) return false;
 
     importMap();
-    
+    fileOpen = true;
     return true;
+}
+
+void filePrompt()
+{
+
+    char key = 0;
+    bool valid = false;
+
+    printf(LABEL_NEW  "[N] New Project");
+    printf(LABEL_LOAD "[L] Load Project");
+
+    while (!valid)
+    {
+        if (!_kbhit()) continue;
+
+        key = (char)_getch();
+
+        switch (key)
+        {
+            case 'n':
+                newMap();
+                valid = true;
+                break;
+            case 'l':
+                fileInput();
+                valid = true;
+                break;
+            case '\x1b':
+                purge();
+                exit(EXIT_SUCCESS);
+        }
+    }
+}
+
+void fileInput()
+{
+    char buffer[PATH_LEN] = {0};
+
+    printf(FILE_INPUT "File path: >");
+
+    fgets(buffer, PATH_LEN, stdin);
+    buffer[strcspn(buffer, '\n')] = '\0';
+
+    char* ext = strrchr(buffer, '.');
+    if (ext == NULL)
+    {
+        printf(MESSAGE ">> Error: file extension not found.");
+        filePrompt();
+    }
+    else if (strcmp(ext, EXTENSION) != 0)
+    {
+        printf(MESSAGE ">> Error: unexpected file type.");
+        filePrompt();
+    }
+    else if (importFile(buffer) == true)
+    {
+        return;
+    }
+    else
+    {
+        printf(MESSAGE ">> Error: could not open file [%s].", buffer);
+        filePrompt();
+    }
+}
+
+bool fileStatus()
+{
+    return fileOpen;
 }
 
 bool exportFile()

@@ -19,11 +19,15 @@ static Map map; //map data structure
 //loads layer and corresponding map data
 void loadMap(Display* ptr)
 {
-    map.layer = addLayer();
-    map.last = map.layer;
     dsp = ptr;
     dsp->map = &map;
     dsp->cursor = &map.layer->cursor;
+}
+
+void newMap()
+{
+    map.layer = addLayer();
+    map.last = map.layer;
 }
 
 //created character grid to display characters on screen
