@@ -24,7 +24,7 @@
 int dx[] = {0, 1, 0, -1};
 int dy[] = {1, 0, -1, 0};
 
-//structure to hold battery loss and gain data
+//structure to hold battery gain data from RB
 typedef enum {
     R0 = 0,
     R1 = 0.5,
@@ -44,6 +44,6 @@ typedef struct Rover
 //functions
 void rover_init(); //initialize rover
 int battery_impact(); //battery cost/recovery
-bool next_move(); //check if move is valid
+bool next_move(int x, int y); //check if move is valid
 void ice_ice_baby(); //ice found
 bool explore_map(); //explore map
