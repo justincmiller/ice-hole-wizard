@@ -23,7 +23,9 @@ struct Display;
 #define MAX_CF  10
 #define DEF_CF  5
 
-#define CN(x,y,z) (x + y * MAP_COLS + z * MAP_ROWS * MAP_COLS) //cell number
+#define CN(x,y) (x + y * MAP_COLS) //cell number
+#define CN_X(cn) ((cn) % MAP_COLS)
+#define CN_Y(cn) ((cn) / MAP_COLS)
 
 //struct to hold layer data
 typedef struct Layer
@@ -50,6 +52,7 @@ typedef struct Mineral
     int qty;  //amount of mineral
 }Mineral;
 
+#ifdef ENABLE_CC
 //structure to hold cell data
 typedef struct Cell
 {
@@ -60,6 +63,20 @@ typedef struct Cell
     unsigned short rl;    // radiation level
     Mineral cc[CONTENTS]; // cell contents
 }Cell;
+
+int getRB(Cell* cell); //gets RB value from cell contents
+#else
+//structure to hold cell data
+typedef struct Cell
+{
+    unsigned int cn;      // cell number
+    int el;               // elevation
+    unsigned int cf;      // friction
+    unsigned char ty;     // type
+    unsigned short rl;    // radiation level
+    int rb;               // ritterbarium
+}Cell;
+#endif
 
 //todo: update with additional mineral types
 //valid mineral types
@@ -80,7 +97,7 @@ void loadMap(struct Display* ptr); //loads layer and corresponding map data
 /********** Layer Functions **********/
 char** createGrid(); //creates the character grid
 Layer* createLayer(); //creates a new layer
-void addLayer(); //adds new layer 
+Layer* addLayer(); //adds new layer 
 void layerUp(); //saves current layer and moves up one layer
 void layerDown(); //saves current layer and moves down one later or creates new layer
 void lastLayer(); //moves to the last layer created
@@ -88,10 +105,9 @@ void topLayer(); //moves to map layer 0
 
 /********** Cell Functions **********/
 Cell* createCell(); //creates the cell properties data holder
-Node* addCell(); //adds cell to map
+Cell* addCell(Layer* layer); //adds cell to map
 void remCell(); //deletes cell and cell data from map
 
 Node* searchCN(const unsigned int cn); //gets the cell number
-int getRB(Cell* cell); //gets RB value from cell contents
 
 #endif

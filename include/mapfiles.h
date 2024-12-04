@@ -12,34 +12,25 @@
 #ifndef MAPFILES_H
 #define MAPFILES_H
 
-#include <fcntl.h>
 #include "engine.h"
 
-typedef struct Header
+typedef struct Metadata
 {
     unsigned short layers;
     unsigned long cells;
     long deleted;
-}Header;
-
-typedef struct defaultCell
-{
-    char glyph;
-    unsigned char status;
-    unsigned int cn;
-    int el;
-}defaultCell;
+}Metadata;
 
 typedef struct editedCell
 {
-    char glyph;
     unsigned char status;
+    char glyph;
     unsigned int cn;
     int el;
     unsigned int cf;
     unsigned char ty;
     unsigned short rl;
-    Mineral cc[CONTENTS];
+    int rb;
 }editedCell;
 
 typedef struct deletedCell
@@ -48,13 +39,12 @@ typedef struct deletedCell
     long next;
 }deletedCell;
 
-union Record
+typedef union Record
 {
-    editedCell editcell;
-    defaultCell defcell;
-    deletedCell delcell;
-    Header header;
-};
+    editedCell cell;
+    deletedCell del;
+    Metadata meta;
+}Record;
 
 enum recordStatus
 {

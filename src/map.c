@@ -19,8 +19,7 @@ static Map map; //map data structure
 //loads layer and corresponding map data
 void loadMap(Display* ptr)
 {
-    addLayer();
-    map.layer = map.matrix->data;
+    map.layer = addLayer();
     map.last = map.layer;
     dsp = ptr;
     dsp->map = &map;
@@ -70,7 +69,7 @@ Layer* createLayer()
 }
 
 //adds newly created layer to cave system
-void addLayer()
+Layer* addLayer()
 {
     Node* node = malloc(sizeof(Node));
     assert((void*)node, APPEND);
@@ -93,6 +92,8 @@ void addLayer()
         ptr->next = node;
         node->prev = ptr;
     }
+
+    return node->data;
 }
 
 //saves current layer and moves down one layer or adds new layer
@@ -202,16 +203,18 @@ Cell* createCell()
     //initialize cell data
     cell->cf = DEF_CF; //default roughness
     
+    #ifdef ENABLE_CC
     for (int i = 0; i < CONTENTS; i++)
     {
         cell->cc[i].code = LATENT_CC;
     }
+    #endif
 
     return cell;
 }
 
 //adds a newly created cell data struct to map
-Node* addCell()
+Cell* addCell(Layer* layer)
 {
     Node* node = malloc(sizeof(Node));
     assert((void*)node, APPEND);
@@ -221,12 +224,12 @@ Node* addCell()
     node->prev = NULL;
     
     //if list is empty, add node to list
-    if (map.layer->cells == NULL)
-        map.layer->cells = node;
+    if (layer->cells == NULL)
+        layer->cells = node;
     else
     {
         //traverse to end of list and insert node
-        Node* ptr = map.layer->cells;
+        Node* ptr = layer->cells;
         while (ptr->next != NULL)
         {
             ptr = ptr->next;
@@ -235,7 +238,7 @@ Node* addCell()
         node->prev = ptr;
     }
 
-    return node;
+    return node->data;
 }
 
 //removes cell and cell data from the map
@@ -243,7 +246,7 @@ void remCell()
 {
     short x = dsp->cursor->X;
     short y = dsp->cursor->Y;
-    unsigned int cn = CN(x, y, map.layer->depth);
+    unsigned int cn = CN(x, y);
 
     ECH(1);
     map.layer->grid[y][x] = LATENT;
@@ -277,22 +280,18 @@ Node* searchCN(const unsigned int cn)
     return NULL;
 }
 
-//gets RB values
+#ifdef ENABLE_CC
 int getRB(Cell* cell)
 {
-    int rb = 0;
     int n = 0;
-
     //loop until end of list, either LATENT_CC or maximum number of contents
     while (cell->cc[n].code != LATENT_CC && n < CONTENTS)
     {
         if (cell->cc[n].code == RB)
         {
-            rb = cell->cc[n].qty;
-            break;
+            return cell->cc[n].qty;
         }
         n++;
     }
-
-    return rb;
 }
+#endif

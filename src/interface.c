@@ -268,7 +268,12 @@ void container()
     snprintf(menu.data[CF]->string, TOKEN, "%u",  cell->cf);
     snprintf(menu.data[TY]->string, TOKEN, "%d",  cell->ty);
     snprintf(menu.data[RL]->string, TOKEN, "%hu", cell->rl);
-    snprintf(menu.data[CC]->string, TOKEN, "%u",  getRB(cell));
+
+    #ifdef ENABLE_CC
+        snprintf(menu.data[CC]->string, TOKEN, "%u",  getRB(cell));
+    #else
+        snprintf(menu.data[CC]->string, TOKEN, "%u",  cell->rb);
+    #endif
 
     //highlight current menu selection
     formatTk(menu.selection, BLACK, WHITE);
@@ -362,7 +367,7 @@ void editor()
         menu.cell = createCell();
 
     //compute cell number
-    unsigned int cn = CN(dsp->cursor->X, dsp->cursor->Y, dsp->map->layer->depth);
+    unsigned int cn = CN(dsp->cursor->X, dsp->cursor->Y);
 
     //check for pre-exisiting cell
     Node* ptr = searchCN(cn);
@@ -466,30 +471,35 @@ void editRB()
         //clamp RB level to 0-100 pecent
         rb = (rb > MAX_PERCENT) ? MAX_PERCENT : (rb < 0) ? 0 : rb;
 
-        //iterate through cell contents
-        while (menu.cell->cc[n].code != LATENT_CC && n < CONTENTS)
-        {
-            //evaulate mineral for RB code
-            if (menu.cell->cc[n].code == RB)
+        #ifdef ENABLE_CC
+            //iterate through cell contents
+            while (menu.cell->cc[n].code != LATENT_CC && n < CONTENTS)
             {
-                //update RB level (in %) and update token
+                //evaulate mineral for RB code
+                if (menu.cell->cc[n].code == RB)
+                {
+                    //update RB level (in %) and update token
+                    menu.cell->cc[n].qty = rb;
+                    snprintf(menu.selection->string, TOKEN, "%d", rb);
+                    //flush remaining characters from input buffer
+                    FLUSH;
+                    return;
+                }
+                n++;
+            }
+
+            //evaluate case where RB is not found
+            if (menu.cell->cc[n].code == LATENT_CC)
+            {
+                //add RB to list with qty (in %)
+                menu.cell->cc[n].code = RB;
                 menu.cell->cc[n].qty = rb;
                 snprintf(menu.selection->string, TOKEN, "%d", rb);
-                //flush remaining characters from input buffer
-                FLUSH;
-                return;
             }
-            n++;
-        }
-
-        //evaluate case where RB is not found
-        if (menu.cell->cc[n].code == LATENT_CC)
-        {
-            //add RB to list with qty (in %)
-            menu.cell->cc[n].code = RB;
-            menu.cell->cc[n].qty = rb;
+        #else
+            menu.cell->rb = rb;
             snprintf(menu.selection->string, TOKEN, "%d", rb);
-        }
+        #endif
         FLUSH;
     }  
 }
@@ -497,7 +507,7 @@ void editRB()
 void saveCell()
 {
     //avoid dereferencing NULL pointer
-    if (menu.cell == NULL || menu.cell == NULL) return;
+    if (menu.cell == NULL) return;
 
     //search for cell with current cell number
     Cell* cell = NULL;
@@ -512,7 +522,7 @@ void saveCell()
     }
 
     //create cell if cell at CN does not exist
-    cell = (Cell*)addCell()->data;
+    cell = addCell(dsp->map->layer);
 
     //copy cell contents from edited cell
     memcpy(cell, menu.cell, sizeof(Cell));
@@ -521,13 +531,13 @@ void saveCell()
 void clearData()
 {
     //avoid dereferencing NULL pointer
-    if (menu.cell == NULL || menu.cell == NULL) return;
+    if (menu.cell == NULL) return;
 
     //clear cell data
     memset(menu.cell, 0, sizeof(Cell));
 
     //set nonzero default values
-    menu.cell->cn = CN(dsp->cursor->X, dsp->cursor->Y, dsp->map->layer->depth);
+    menu.cell->cn = CN(dsp->cursor->X, dsp->cursor->Y);
     menu.cell->el = dsp->map->layer->depth;
     menu.cell->cf = DEF_CF;
 }
