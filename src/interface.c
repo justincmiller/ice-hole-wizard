@@ -322,9 +322,9 @@ void statusBar()
                dsp->size.Y, x, y, z);
         
         if (dsp->state & DRAW)
-            printf(CSI "%d;%dH" "DRAW", dsp->size.Y, dsp->size.X - 3);
+            printf(CSI "%d;%dH" "DRAW", dsp->size.Y, dsp->size.X - 4);
         else if (dsp->state & MOVE)
-            printf(CSI "%d;%dH" "MOVE", dsp->size.Y, dsp->size.X - 3);
+            printf(CSI "%d;%dH" "MOVE", dsp->size.Y, dsp->size.X - 4);
     #endif
 
     //restore cursor position

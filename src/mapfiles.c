@@ -50,10 +50,12 @@ void filePrompt()
         switch (key)
         {
             case 'n':
+                SHOW_CURSOR;
                 newMap();
                 valid = true;
                 break;
             case 'l':
+                SHOW_CURSOR;
                 fileInput();
                 valid = true;
                 break;
@@ -69,7 +71,6 @@ void fileInput()
     char buffer[PATH_LEN] = {0};
 
     printf(FILE_INPUT "File path: >");
-    SHOW_CURSOR;
 
     fgets(buffer, PATH_LEN, stdin);
     buffer[strcspn(buffer, "\n")] = '\0';
