@@ -21,13 +21,17 @@ void loadMap(Display* ptr)
 {
     dsp = ptr;
     dsp->map = &map;
-    dsp->cursor = &map.layer->cursor;
 }
 
 void newMap()
 {
     map.layer = addLayer();
     map.last = map.layer;
+    dsp->cursor = &map.layer->cursor;
+
+    //set cursor to origin and set window size and margins
+    setCursor(X_COL(0), Y_ROW(0));
+    setWindow();
 }
 
 //created character grid to display characters on screen

@@ -17,10 +17,13 @@
 #define ARGUMENT   1
 #define PATH_LEN   128
 #define EXTENSION  ".licemap"
-#define LABEL_NEW  CSI "2;2H" CSI "2K"
-#define LABEL_LOAD CSI "2;3H" CSI "2K"
-#define FILE_INPUT CSI "2;5H" CSI "2K"
-#define MESSAGE    CSI "2;7H" CSI "2K"
+#define TITLE(s)      CSI "2;2H" CSI "2K" CSI "94m" s CSI "0m"
+#define SUBTITLE(s)   CSI "3;2H" CSI "2K" CSI "94m" s CSI "0m"
+#define LABEL_NEW     CSI "5;2H" CSI "2K"
+#define LABEL_LOAD    CSI "6;2H" CSI "2K"
+#define LABEL_QUIT    CSI "7;2H" CSI "2K"
+#define FILE_INPUT    CSI "9;2H" CSI "2K"
+#define MESSAGE       CSI "10;2H" CSI "2K"
 
 #ifdef _WIN32
 #define SLASH '\\'
@@ -62,7 +65,7 @@ typedef union Record
 
 enum recordStatus
 {
-    DEFAULT, EDITED, DELETED
+    UNEDITED, EDITED, DELETED
 };
 
 

@@ -33,8 +33,13 @@ void filePrompt()
     char key = 0;
     bool valid = false;
 
-    printf(LABEL_NEW  "[N] New Project");
-    printf(LABEL_LOAD "[L] Load Project");
+    HIDE_CURSOR;
+
+    printf(TITLE("Ice Hole Wizard"));
+    printf(SUBTITLE("Lunar Ice Cave Explorer Program"));
+    printf(LABEL_NEW  "[N]   New Project");
+    printf(LABEL_LOAD "[L]   Load Project");
+    printf(LABEL_QUIT "[ESC] Quit");
 
     while (!valid)
     {
@@ -64,9 +69,10 @@ void fileInput()
     char buffer[PATH_LEN] = {0};
 
     printf(FILE_INPUT "File path: >");
+    SHOW_CURSOR;
 
     fgets(buffer, PATH_LEN, stdin);
-    buffer[strcspn(buffer, '\n')] = '\0';
+    buffer[strcspn(buffer, "\n")] = '\0';
 
     char* ext = strrchr(buffer, '.');
     if (ext == NULL)
@@ -147,8 +153,8 @@ bool cellCopy(Record* src)
     //set grid character
     layers[z]->grid[y][x] = src->cell.glyph;
 
-    //finished processing if status is DEFAULT, return success
-    if (src->cell.status == DEFAULT) return true;
+    //finished processing if status is UNEDITED, return success
+    if (src->cell.status == UNEDITED) return true;
 
     cell->cf = src->cell.cf;
     cell->ty = src->cell.ty;

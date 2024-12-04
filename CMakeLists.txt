@@ -14,6 +14,7 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/map.c
     ${CMAKE_SOURCE_DIR}/src/display.c
     ${CMAKE_SOURCE_DIR}/src/interface.c
-    ${CMAKE_SOURCE_DIR}/src/cursor.c)
+    ${CMAKE_SOURCE_DIR}/src/cursor.c
+    ${CMAKE_SOURCE_DIR}/src/mapfiles.c)
 
 add_executable(ice-hole-wizard ${SOURCES})
