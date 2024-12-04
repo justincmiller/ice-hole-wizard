@@ -17,6 +17,7 @@
 #define ARGUMENT   1
 #define PATH_LEN   128
 #define EXTENSION  ".licemap"
+
 #define TITLE(s)      CSI "2;2H" CSI "2K" CSI "94m" s CSI "0m"
 #define SUBTITLE(s)   CSI "3;2H" CSI "2K" CSI "94m" s CSI "0m"
 #define LABEL_NEW     CSI "5;2H" CSI "2K"
@@ -48,6 +49,7 @@ typedef struct editedCell
     unsigned char ty;
     unsigned short rl;
     int rb;
+    long next;
 }editedCell;
 
 typedef struct deletedCell
@@ -68,6 +70,9 @@ enum recordStatus
     UNEDITED, EDITED, DELETED
 };
 
+struct Display;
+
+void loadFiles(struct Display* ptr);
 
 bool importFile(const char *fname);
 
@@ -78,6 +83,12 @@ void fileInput();
 bool fileStatus();
 
 bool exportFile();
+
+bool updateFile();
+
+bool createFile();
+
+bool writeFile(const char *fname);
 
 bool importMap();
 

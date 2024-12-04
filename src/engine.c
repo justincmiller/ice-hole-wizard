@@ -28,12 +28,10 @@ void init()
     loadMap(dsp);
     loadMenu(dsp);
     loadCursor(dsp);
+    loadFiles(dsp);
     
     //set initial state to movement
     dsp->state = MOVE;
-
-    //set file operations to binary
-    _set_fmode(_O_BINARY);
 }
 
 //get program state: draw, move, quit

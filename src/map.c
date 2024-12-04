@@ -138,6 +138,7 @@ void layerDown()
         printf(PORT_UP("%c") FIXED, dsp->map->layer->grid[y][x]);
     }
 
+    saveLayer(map.last);
     //update cursor pointer
     dsp->cursor = &map.layer->cursor;
 
@@ -168,6 +169,7 @@ void layerUp()
         printf(PORT_DN("%c") FIXED, dsp->map->layer->grid[y][x]);
     }
 
+    saveLayer(map.last);
     dsp->cursor = &map.layer->cursor;
 
     render();
@@ -181,6 +183,8 @@ void lastLayer()
     map.last = last;
 
     dsp->cursor = &map.layer->cursor;
+
+    saveLayer(map.last);
 
     render();
 }
@@ -196,9 +200,46 @@ void topLayer()
     map.layer = (Layer*)ptr->data;
     map.last = last;
 
+    saveLayer(map.last);
+
     dsp->cursor = &map.layer->cursor;
 
     render();
+}
+
+void saveLayer(Layer* layer)
+{
+    if (map.layer == NULL || map.layer->cells == NULL) return;
+
+    bool* saved = calloc(MAP_ROWS * MAP_COLS, sizeof(char));
+    assert((void*)saved, IGNORE);
+
+    Node* ptr = map.layer->cells;
+    Cell* cell = NULL;
+
+    while (ptr != NULL)
+    {
+        cell = (Cell*)ptr->data;
+        if (cell)
+            saved[cell->cn] = true;
+
+        ptr = ptr->next;
+    }
+
+    unsigned short x = 0;
+    unsigned short y = 0;
+
+    for (int i = 0; i < MAP_ROWS * MAP_COLS; i++)
+    {
+        x = CN_X(i);
+        y = CN_Y(i);
+        if (saved[i] = false && map.layer->grid[y][x] != LATENT)
+        {
+            addCell(map.layer);
+        }
+    }
+
+    free(saved);
 }
 
 //creates a cell data node within the map
@@ -245,6 +286,8 @@ Cell* addCell(Layer* layer)
         ptr->next = node;
         node->prev = ptr;
     }
+
+    layer->cellCount++;
 
     return node->data;
 }

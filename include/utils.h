@@ -114,6 +114,7 @@
 
 //system state options
 #define APPEND 1
+#define IGNORE 0
 
 enum status
 {
