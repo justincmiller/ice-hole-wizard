@@ -23,7 +23,7 @@ struct Display;
 #define MAX_CF  10
 #define DEF_CF  5
 
-#define CN(x,y) (x + y * MAP_COLS) //cell number
+#define CN(x,y)  (x + y * MAP_COLS) //cell number
 #define CN_X(cn) ((cn) % MAP_COLS)
 #define CN_Y(cn) ((cn) / MAP_COLS)
 
@@ -33,6 +33,7 @@ typedef struct Layer
     Node* cells;    //list to hold cells
     char** grid;    //2d array to hold glyphs
     unsigned short depth;    //current layer depth
+    unsigned int cellCount;
     COORD cursor;
 }Layer;
 
@@ -103,6 +104,7 @@ void layerUp(); //saves current layer and moves up one layer
 void layerDown(); //saves current layer and moves down one later or creates new layer
 void lastLayer(); //moves to the last layer created
 void topLayer(); //moves to map layer 0
+void saveLayer(Layer* layer);
 
 /********** Cell Functions **********/
 Cell* createCell(); //creates the cell properties data holder
