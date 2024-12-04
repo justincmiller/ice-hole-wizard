@@ -20,12 +20,11 @@
 
 //structure to hold battery loss and gain data
 typedef enum {
-    NORMAL = 0,
-    A_SLOPE = 1,
-    D_SLOPE = 2,
-    RB = 3,
-    RAD = 4,    
-} BATTERY_CONDITIONS;
+    R0 = 0,
+    R1 = 0.5,
+    R2 = 2.5,
+    R3 = 5,
+} battery_gain;
 
 //structure that holds all the rover information
 typedef struct Rover

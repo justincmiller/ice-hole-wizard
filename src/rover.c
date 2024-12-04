@@ -24,8 +24,10 @@ void rover_init() {
 }
 
 int battery_level() {
+	//think he said to ignore powder?
 	//needs to using battery_conditions to make calculations
 	//friction makes penalty = |friction - 5| / 5
+	//battery gain based on RB
 }
 
 bool next_move() {
