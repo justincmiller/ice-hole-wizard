@@ -17,6 +17,7 @@
 
 #define battery_max 150
 #define battery_loss 0.05
+#define battery_warning battery_max/1.8
 
 //structure to hold battery loss and gain data
 typedef enum {
@@ -36,7 +37,8 @@ typedef struct Rover
 }Rover;
 
 //functions
-void rover_init();//initialize rover
-int battery_level();//battery cost/recovery
-bool next_move();//check if move is valid
-bool explore_map();//explore map
+void rover_init(); //initialize rover
+int battery_level(); //battery cost/recovery
+bool next_move(); //check if move is valid
+bool explore_map(); //explore map
+void ice_ice_baby(); //ice found

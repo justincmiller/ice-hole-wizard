@@ -27,15 +27,34 @@ int battery_level() {
 	//think he said to ignore powder?
 	//needs to using battery_conditions to make calculations
 	//friction makes penalty = |friction - 5| / 5
-	//battery gain based on RB
+	//battery gain based on RB and battery_gain
+	switch () {
+		case;
+		default: return battery_loss;
+	}
 }
 
+//check if move is valid
 bool next_move() {
-
+	//must be within map bounds
+	//must be on a drawn path
 }
 
 bool explore_map() {
-	//move function similar to draw() or move() in cursor.c
+	//possible directions
+	while (rover->battery > battery_warning) {
+		//stuff
+		
+		if (!moved) {
+			//rover is broken or stuck
+			return false;
+		}
+	}
 
+	return false;
+}
+
+void ice_ice_baby() {
+	//print congrats banner if ice is found?
 }
 
