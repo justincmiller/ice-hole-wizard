@@ -22,6 +22,7 @@ void loadDisplay(Display** ptr)
     *ptr = &dsp;
 }
 
+//gets data to initialize window
 SMALL_RECT getWindow()
 {
     //fetch output handle
@@ -37,6 +38,7 @@ SMALL_RECT getWindow()
     return info.srWindow;
 }
 
+//sets window size
 void setWindow()
 {
     SMALL_RECT window = getWindow();
@@ -48,6 +50,7 @@ void setWindow()
     resetMargins();
 }
 
+//sets the margin values for the window
 void resetMargins()
 {
     /*CLAMP macros use max and min functions clamp margins to grid 
@@ -62,6 +65,7 @@ void resetMargins()
     render();
 }
 
+//refreshes window
 void render()
 {
     //hide cursor for rendering
@@ -82,6 +86,7 @@ void render()
     }
 }
 
+//resizing window requires recalculations
 void pollWindow()
 {
     //fetch window dimensions
@@ -106,6 +111,7 @@ void pollWindow()
     }
 }
 
+//function to handle the viewport manipulations
 void viewport()
 {
     //fetch grid from current layer

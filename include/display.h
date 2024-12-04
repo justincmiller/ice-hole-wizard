@@ -31,12 +31,12 @@ typedef struct Display
     struct Menu* menu; //cell content editing menu
 }Display;
 
-void loadDisplay(Display** ptr);
-SMALL_RECT getWindow();
-void setWindow();
-void resetMargins();
-void render();
-void pollWindow();
-void viewport();
+void loadDisplay(Display** ptr); //loads display
+SMALL_RECT getWindow(); //initializes window
+void setWindow(); //sets the window dimensions
+void resetMargins(); //adjust margins
+void render(); //refresh
+void pollWindow(); //get window bounds
+void viewport(); //viewport function
 
 #endif

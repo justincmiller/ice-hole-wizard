@@ -21,14 +21,14 @@
 void loadCursor(struct Display* ptr); //loads cursor onto map
 void updateCursor(); //updates cursor position
 void setCursor(const short x, const short y); //move cursor using absolute parameters
-void relCursor(const short x, const short y);
+void relCursor(const short x, const short y); //reloads cursor on window resize
 void move(const int code); //cursor movement operations
 void draw(const int code); //map drawing operations
 char lineType(char** grid, int row, int col); //line type handling
-bool upConnectors(const char c);
-bool downConnectors(const char c);
-bool leftConnectors(const char c);
-bool rightConnectors(const char c);
+bool upConnectors(const char c); //handles connections in the up direction
+bool downConnectors(const char c); //handles connections in the down direction
+bool leftConnectors(const char c); //handles connections in the left direction
+bool rightConnectors(const char c); //handles connections in the right direction
 void panViewport(const int code); //handles moving viewport
 
 #endif
