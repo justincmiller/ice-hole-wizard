@@ -67,7 +67,7 @@ typedef union Record
 
 enum recordStatus
 {
-    UNEDITED, EDITED, DELETED
+    EDITED, DELETED
 };
 
 struct Display;

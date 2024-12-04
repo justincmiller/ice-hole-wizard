@@ -262,6 +262,7 @@ bool writeFile(const char* fname)
         layerPtr = layerPtr->next;
     }
 
+    //update metadata
     fseek(file, 0, SEEK_SET);
     memcpy(&buffer.meta, &meta, sizeof(Metadata));
     fwrite(&buffer, sizeof(Record), 1, file);
@@ -316,9 +317,6 @@ bool cellCopy(Record* src)
 
     //set grid character
     layers[z]->grid[y][x] = src->cell.glyph;
-
-    //finished processing if status is UNEDITED, return success
-    if (src->cell.status == UNEDITED) return true;
 
     cell->cf = src->cell.cf;
     cell->ty = src->cell.ty;
